@@ -1,0 +1,180 @@
+{
+  "slug": "wcs",
+  "name": "WCs",
+  "hero": { "img": "p048_01.png", "caption": "Lagoon wall hung WC with co-ordinating brushed gold Halo flush plate, paper holder and round mini kit." },
+  "ranges": [
+    {
+      "slug": "lagoon",
+      "name": "Lagoon",
+      "title": "Lagoon",
+      "tagline": "Rimless on the inside, blind fixings to give clear surfaces on the outside, soft-close quick release slim profile seats and special finish accessories creates a superior choice of toilets.",
+      "hero": { "img": "p048_01.png", "caption": "Lagoon wall hung WC with co-ordinating brushed gold Halo flush plate, paper holder and round mini kit." },
+      "products": [
+        {
+          "slug": "close-coupled-wc",
+          "name": "Close coupled WC with cistern fittings and seat",
+          "dims": "845h x 665d x 390w",
+          "image": "p049_01.png",
+          "variants": [
+            { "sku": "LG.711", "finish": "White", "price": 699 }
+          ]
+        },
+        {
+          "slug": "close-coupled-wc-cut-out",
+          "name": "Close coupled WC cut out with cistern fittings and seat",
+          "image": "p049_03.png",
+          "note": "Left/right when facing WC.",
+          "variants": [
+            { "sku": "LG.711.CL", "finish": "Cut out left", "price": 874 },
+            { "sku": "LG.711.CR", "finish": "Cut out right", "price": 874 },
+            { "sku": "LG.711.CB", "finish": "Cut out both", "price": 1034 }
+          ]
+        },
+        {
+          "slug": "back-to-wall-wc",
+          "name": "Back to wall WC with seat",
+          "dims": "435h x 570d x 355w",
+          "image": "p049_02.png",
+          "variants": [
+            { "sku": "LG.712", "finish": "White", "price": 571 }
+          ]
+        },
+        {
+          "slug": "wall-hung-wc",
+          "name": "Wall hung WC with seat",
+          "dims": "355h x 490d x 360w",
+          "image": "p049_10.png",
+          "variants": [
+            { "sku": "LG.713", "finish": "White", "price": 571 }
+          ]
+        },
+        {
+          "slug": "wall-hung-wc-vortex",
+          "name": "Wall hung WC with seat with VORTEX flush",
+          "dims": "355h x 490d x 360w",
+          "image": "p049_09.png",
+          "note": "VORTEX is only suitable for minimum 980mm height cisterns.",
+          "variants": [
+            { "sku": "LG.714", "finish": "White", "price": 571 }
+          ]
+        },
+        {
+          "slug": "comfort-height-close-coupled-wc",
+          "name": "Comfort height close coupled WC with cistern fittings and seat",
+          "dims": "870h x 625d x 390w",
+          "image": "p049_04.png",
+          "note": "Comfort height WCs are taller than a standard WC — ideally suited to taller or less able people; the extra height makes it easier to sit on or stand up from the WC.",
+          "variants": [
+            { "sku": "LG.811", "finish": "White", "price": 740 }
+          ]
+        },
+        {
+          "slug": "comfort-height-close-coupled-wc-cut-out",
+          "name": "Comfort height close coupled WC cut out with cistern fittings and seat",
+          "image": "p049_06.png",
+          "note": "Left/right when facing WC. Comfort height WCs are taller than a standard WC — ideally suited to taller or less able people.",
+          "variants": [
+            { "sku": "LG.811.CL", "finish": "Cut out left", "price": 899 },
+            { "sku": "LG.811.CR", "finish": "Cut out right", "price": 899 },
+            { "sku": "LG.811.CB", "finish": "Cut out both", "price": 1061 }
+          ]
+        },
+        {
+          "slug": "comfort-height-back-to-wall-wc",
+          "name": "Comfort height back to wall WC with seat",
+          "dims": "450h x 570d x 365w",
+          "image": "p049_05.png",
+          "note": "Comfort height WCs are taller than a standard WC — ideally suited to taller or less able people; the extra height makes it easier to sit on or stand up from the WC.",
+          "variants": [
+            { "sku": "LG.812", "finish": "White", "price": 599 }
+          ]
+        }
+      ],
+      "addons": [
+        {
+          "name": "Flush button for close coupled WC",
+          "image": "p049_07.png",
+          "variants": [
+            { "sku": "FL.715.5", "finish": "Matt black", "price": 71 },
+            { "sku": "FL.715.6", "finish": "Brushed gold", "price": 71 },
+            { "sku": "FL.715.7", "finish": "Brushed stainless steel", "price": 71 }
+          ]
+        },
+        {
+          "name": "Seat hinge cover caps",
+          "image": "p049_08.png",
+          "variants": [
+            { "sku": "WC.972.5", "finish": "Brushed black", "price": 45 },
+            { "sku": "WC.972.6", "finish": "Brushed gold", "price": 45 }
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "anthem",
+      "name": "Anthem",
+      "title": "Anthem",
+      "tagline": "Rimless on the inside, blind fixings to give clear surfaces on the outside, soft-close quick release slim profile seats and special finish accessories creates a superior choice of toilets.",
+      "hero": { "img": "p050_01.png", "caption": "Anthem wall hung WC." },
+      "products": [
+        {
+          "slug": "close-coupled-wc",
+          "name": "Close coupled WC with cistern fittings and seat",
+          "dims": "845h x 685d x 385w",
+          "image": "p051_03.png",
+          "variants": [
+            { "sku": "AN.711", "finish": "White", "price": 699 }
+          ]
+        },
+        {
+          "slug": "close-coupled-wc-cut-out",
+          "name": "Close coupled WC cut out with cistern fittings and seat",
+          "image": "p051_06.png",
+          "note": "Left/right when facing WC.",
+          "variants": [
+            { "sku": "AN.711.CL", "finish": "Cut out left", "price": 874 },
+            { "sku": "AN.711.CR", "finish": "Cut out right", "price": 874 },
+            { "sku": "AN.711.CB", "finish": "Cut out both", "price": 1034 }
+          ]
+        },
+        {
+          "slug": "back-to-wall-wc",
+          "name": "Back to wall WC with seat",
+          "dims": "435h x 600d x 355w",
+          "image": "p051_02.png",
+          "variants": [
+            { "sku": "AN.712", "finish": "White", "price": 571 }
+          ]
+        },
+        {
+          "slug": "wall-hung-wc",
+          "name": "Wall hung WC with seat",
+          "dims": "355h x 535d x 365w",
+          "image": "p051_01.png",
+          "variants": [
+            { "sku": "AN.713", "finish": "White", "price": 571 }
+          ]
+        }
+      ],
+      "addons": [
+        {
+          "name": "Flush button for close coupled WC",
+          "image": "p051_04.png",
+          "variants": [
+            { "sku": "FL.715.5", "finish": "Matt black", "price": 71 },
+            { "sku": "FL.715.6", "finish": "Brushed gold", "price": 71 },
+            { "sku": "FL.715.7", "finish": "Brushed stainless steel", "price": 71 }
+          ]
+        },
+        {
+          "name": "Seat hinge cover caps",
+          "image": "p051_05.png",
+          "variants": [
+            { "sku": "WC.972.5", "finish": "Brushed black", "price": 45 },
+            { "sku": "WC.972.6", "finish": "Brushed gold", "price": 45 }
+          ]
+        }
+      ]
+    }
+  ]
+}

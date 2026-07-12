@@ -1,0 +1,675 @@
+{
+  "slug": "furniture-and-basins",
+  "name": "Furniture & Basins",
+  "hero": { "img": "p016_01.png", "caption": "1200mm 2 drawer wall hung Atoll unit in matt white, curved linear bowl on Arctic white 12mm counter top, Oculus wall mounted monobasin in brushed black." },
+  "ranges": [
+    {
+      "slug": "atoll-furniture",
+      "name": "Atoll",
+      "title": "Atoll furniture",
+      "tagline": "Flattering and perfectly carved lines draw you in.",
+      "hero": { "img": "p016_01.png", "caption": "1200mm 2 drawer wall hung Atoll unit in matt white, curved linear bowl on Arctic white 12mm counter top, Oculus wall mounted monobasin in brushed black. Two Scene 600mm round LED demister mirrors." },
+      "altHero": { "img": "p021_01.png", "caption": "1200mm Atoll wall hung cabinet, 800mm wall hung unit in Potter’s clay with no tap hole ceramic basin and Lantic wall mounted basin mixer in brushed gold." },
+      "swatches": [
+        { "code": "11", "name": "Graphite grey", "img": "p017_06.png" },
+        { "code": "12", "name": "Walnut noir", "img": "p017_07.png" },
+        { "code": "17", "name": "Matt white", "img": "p017_05.png" },
+        { "code": "22", "name": "Potter’s clay", "img": "p017_08.png" }
+      ],
+      "products": [
+        {
+          "slug": "600mm-2-drawer-wall-hung-unit",
+          "name": "600mm 2 drawer wall hung unit",
+          "dims": "600w x 520h x 460d",
+          "note": "Price excludes ceramic basin.",
+          "basinLink": "in-cabinet-ceramic-basins",
+          "variants": [
+            { "sku": "AT.620.600.11", "finish": "Graphite grey", "code": "11", "price": 1019 },
+            { "sku": "AT.620.600.12", "finish": "Walnut noir", "code": "12", "price": 1019 },
+            { "sku": "AT.620.600.17", "finish": "Matt white", "code": "17", "price": 798 },
+            { "sku": "AT.620.600.22", "finish": "Potter’s clay", "code": "22", "price": 798 }
+          ],
+          "imagesByCode": { "11": "p017_01.png", "12": "p018_01.png", "17": "p019_02.png", "22": "p020_01.png" }
+        },
+        {
+          "slug": "800mm-2-drawer-wall-hung-unit",
+          "name": "800mm 2 drawer wall hung unit",
+          "dims": "800w x 520h x 460d",
+          "note": "Price excludes ceramic basin.",
+          "basinLink": "in-cabinet-ceramic-basins",
+          "variants": [
+            { "sku": "AT.620.800.11", "finish": "Graphite grey", "code": "11", "price": 1153 },
+            { "sku": "AT.620.800.12", "finish": "Walnut noir", "code": "12", "price": 1153 },
+            { "sku": "AT.620.800.17", "finish": "Matt white", "code": "17", "price": 903 },
+            { "sku": "AT.620.800.22", "finish": "Potter’s clay", "code": "22", "price": 903 }
+          ],
+          "imagesByCode": { "11": "p017_02.png", "12": "p018_02.png", "17": "p019_03.png", "22": "p020_07.png" }
+        },
+        {
+          "slug": "1200mm-2-drawer-wall-hung-unit",
+          "name": "1200mm 2 drawer wall hung unit",
+          "dims": "1205w x 370h x 460d",
+          "note": "Price excludes ceramic basin.",
+          "basinLink": "in-cabinet-ceramic-basins",
+          "variants": [
+            { "sku": "AT.619.1200.11", "finish": "Graphite grey", "code": "11", "price": 1736 },
+            { "sku": "AT.619.1200.12", "finish": "Walnut noir", "code": "12", "price": 1736 },
+            { "sku": "AT.619.1200.17", "finish": "Matt white", "code": "17", "price": 1557 },
+            { "sku": "AT.619.1200.22", "finish": "Potter’s clay", "code": "22", "price": 1557 }
+          ],
+          "imagesByCode": { "11": "p017_03.png", "12": "p018_03.png", "17": "p019_04.png", "22": "p020_02.png" }
+        },
+        {
+          "slug": "1500mm-2-door-wall-hung-cabinet",
+          "name": "1500mm 2 door wall hung cabinet",
+          "dims": "350w x 1500h x 300d",
+          "note": "Cabinet can be hung for left or right side opening.",
+          "variants": [
+            { "sku": "AT.650.1500.11", "finish": "Graphite grey", "code": "11", "price": 1066 },
+            { "sku": "AT.650.1500.12", "finish": "Walnut noir", "code": "12", "price": 1066 },
+            { "sku": "AT.650.1500.17", "finish": "Matt white", "code": "17", "price": 857 },
+            { "sku": "AT.650.1500.22", "finish": "Potter’s clay", "code": "22", "price": 857 }
+          ],
+          "imagesByCode": { "11": "p017_04.png", "12": "p018_04.png", "17": "p019_05.png", "22": "p020_03.png" }
+        }
+      ],
+      "addons": [
+        {
+          "name": "400mm Cabinet towel rail",
+          "image": "p017_09.png",
+          "variants": [
+            { "sku": "RE.551.4", "finish": "Chrome", "price": 161 },
+            { "sku": "RE.551.5", "finish": "Brushed black", "price": 246 },
+            { "sku": "RE.551.6", "finish": "Brushed gold", "price": 246 },
+            { "sku": "RE.551.7", "finish": "Brushed stainless steel", "price": 246 }
+          ]
+        },
+        {
+          "name": "Drawer organiser",
+          "image": "p017_11.png",
+          "variants": [
+            { "sku": "PA.910.370.30", "finish": "For 500 & 600 units", "price": 128 },
+            { "sku": "PA.910.570.30", "finish": "For 800 units", "price": 150 }
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "palladium-furniture",
+      "name": "Palladium",
+      "title": "Palladium furniture",
+      "tagline": "A statement range boasting uninterrupted columns in natural warm tones.",
+      "hero": { "img": "p022_01.png", "caption": "Palladium 800mm unit in Volcanic ash with Arctic white slab and organic counter top bowl. Lantic extended single lever monobasin mixer in brushed stainless steel." },
+      "altHero": { "img": "p027_01.png", "caption": "Palladium 600mm unit in natural oak with dapple white slab and round counter top bowl. Maze extended single lever monobasin mixer in brushed stainless steel." },
+      "swatches": [
+        { "code": "16", "name": "Natural oak", "img": "p023_04.png" },
+        { "code": "20", "name": "Walnut glow", "img": "p023_05.png" },
+        { "code": "21", "name": "Volcanic ash", "img": "p023_07.png" },
+        { "code": "22", "name": "Potter’s clay", "img": "p023_08.png" }
+      ],
+      "products": [
+        {
+          "slug": "500mm-1-drawer-wall-hung-unit",
+          "name": "500mm 1 drawer wall hung unit with hidden internal drawer",
+          "dims": "500w x 450h x 420d",
+          "note": "Price excludes ceramic basin.",
+          "basinLink": "in-cabinet-ceramic-basins",
+          "variants": [
+            { "sku": "PA.611.500.16", "finish": "Natural oak", "code": "16", "price": 745 },
+            { "sku": "PA.611.500.20", "finish": "Walnut glow", "code": "20", "price": 745 },
+            { "sku": "PA.611.500.21", "finish": "Volcanic ash", "code": "21", "price": 745 },
+            { "sku": "PA.611.500.22", "finish": "Potter’s clay", "code": "22", "price": 745 }
+          ],
+          "imagesByCode": { "16": "p023_01.png", "20": "p024_01.png", "21": "p025_01.png", "22": "p026_01.png" }
+        },
+        {
+          "slug": "600mm-1-drawer-wall-hung-unit",
+          "name": "600mm 1 drawer wall hung unit with hidden internal drawer",
+          "dims": "600w x 450h x 460d",
+          "note": "Price excludes ceramic basin.",
+          "basinLink": "in-cabinet-ceramic-basins",
+          "variants": [
+            { "sku": "PA.611.600.16", "finish": "Natural oak", "code": "16", "price": 852 },
+            { "sku": "PA.611.600.20", "finish": "Walnut glow", "code": "20", "price": 852 },
+            { "sku": "PA.611.600.21", "finish": "Volcanic ash", "code": "21", "price": 852 },
+            { "sku": "PA.611.600.22", "finish": "Potter’s clay", "code": "22", "price": 852 }
+          ],
+          "imagesByCode": { "16": "p023_03.png", "20": "p024_03.png", "21": "p025_03.png", "22": "p026_03.png" }
+        },
+        {
+          "slug": "800mm-1-drawer-wall-hung-unit",
+          "name": "800mm 1 drawer wall hung unit with hidden internal drawer",
+          "dims": "800w x 450h x 460d",
+          "note": "Price excludes ceramic basin.",
+          "basinLink": "in-cabinet-ceramic-basins",
+          "variants": [
+            { "sku": "PA.611.800.16", "finish": "Natural oak", "code": "16", "price": 959 },
+            { "sku": "PA.611.800.20", "finish": "Walnut glow", "code": "20", "price": 959 },
+            { "sku": "PA.611.800.21", "finish": "Volcanic ash", "code": "21", "price": 959 },
+            { "sku": "PA.611.800.22", "finish": "Potter’s clay", "code": "22", "price": 959 }
+          ],
+          "imagesByCode": { "16": "p023_06.png", "20": "p024_04.png", "21": "p025_04.png", "22": "p026_04.png" }
+        },
+        {
+          "slug": "1200mm-1-door-wall-hung-cabinet",
+          "name": "1200mm 1 door wall hung cabinet",
+          "dims": "350w x 1200h x 210d",
+          "note": "Cabinet can be hung for left or right side opening.",
+          "variants": [
+            { "sku": "PA.650.1200.16", "finish": "Natural oak", "code": "16", "price": 953 },
+            { "sku": "PA.650.1200.20", "finish": "Walnut glow", "code": "20", "price": 953 },
+            { "sku": "PA.650.1200.21", "finish": "Volcanic ash", "code": "21", "price": 953 },
+            { "sku": "PA.650.1200.22", "finish": "Potter’s clay", "code": "22", "price": 953 }
+          ],
+          "imagesByCode": { "16": "p023_02.png", "20": "p024_02.png", "21": "p025_02.png", "22": "p026_02.png" }
+        }
+      ],
+      "addons": [
+        {
+          "name": "400mm Cabinet towel rail",
+          "image": "p017_09.png",
+          "variants": [
+            { "sku": "RE.551.4", "finish": "Chrome", "price": 161 },
+            { "sku": "RE.551.5", "finish": "Brushed black", "price": 246 },
+            { "sku": "RE.551.6", "finish": "Brushed gold", "price": 246 },
+            { "sku": "RE.551.7", "finish": "Brushed stainless steel", "price": 246 }
+          ]
+        },
+        {
+          "name": "Drawer organiser",
+          "image": "p017_11.png",
+          "variants": [
+            { "sku": "PA.910.370.30", "finish": "For 500 & 600 units", "price": 128 },
+            { "sku": "PA.910.570.30", "finish": "For 800 units", "price": 150 }
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "opa-furniture",
+      "name": "Opa",
+      "title": "Opa furniture",
+      "tagline": "Contemporary full-width fascia with hideaway handle.",
+      "hero": { "img": "p028_01.png", "caption": "Opa Washed Oak 800mm unit with dapple white grey slab and round counter top bowl. Maze extended monobasin mixer tap in brushed stainless steel." },
+      "altHero": { "img": "p033_01.png", "caption": "Two 600mm Opa units in cavern blue, round bowls on dapple white counter top, Vaere wall mounted mixer taps in brushed gold." },
+      "swatches": [
+        { "code": "10", "name": "Gloss white", "img": null },
+        { "code": "13", "name": "Washed oak", "img": "p029_08.png" },
+        { "code": "14", "name": "Concrete grey", "img": "p029_07.png" },
+        { "code": "15", "name": "Cavern blue", "img": "p029_09.png" }
+      ],
+      "products": [
+        {
+          "slug": "400mm-1-door-wall-hung-unit",
+          "name": "400mm 1 door wall hung unit",
+          "dims": "395w x 580h x 210d",
+          "note": "Price excludes ceramic basin. Door can be hung for left or right side opening.",
+          "basinLink": "in-cabinet-ceramic-basins",
+          "variants": [
+            { "sku": "OP.640.400.10", "finish": "Gloss white", "code": "10", "price": 348 },
+            { "sku": "OP.640.400.13", "finish": "Washed oak", "code": "13", "price": 348 },
+            { "sku": "OP.640.400.14", "finish": "Concrete grey", "code": "14", "price": 348 },
+            { "sku": "OP.640.400.15", "finish": "Cavern blue", "code": "15", "price": 348 }
+          ],
+          "imagesByCode": { "10": "p029_01.png", "13": "p030_02.png", "14": "p031_04.png", "15": "p032_02.png" }
+        },
+        {
+          "slug": "500mm-2-drawer-wall-hung-unit",
+          "name": "500mm 2 drawer wall hung unit",
+          "dims": "500w x 520h x 420d",
+          "note": "Price excludes ceramic basin.",
+          "basinLink": "in-cabinet-ceramic-basins",
+          "variants": [
+            { "sku": "OP.620.500.10", "finish": "Gloss white", "code": "10", "price": 601 },
+            { "sku": "OP.620.500.13", "finish": "Washed oak", "code": "13", "price": 601 },
+            { "sku": "OP.620.500.14", "finish": "Concrete grey", "code": "14", "price": 601 },
+            { "sku": "OP.620.500.15", "finish": "Cavern blue", "code": "15", "price": 601 }
+          ],
+          "imagesByCode": { "10": "p029_02.png", "13": "p030_03.png", "14": "p031_05.png", "15": "p032_05.png" }
+        },
+        {
+          "slug": "600mm-2-drawer-wall-hung-unit",
+          "name": "600mm 2 drawer wall hung unit",
+          "dims": "600w x 520h x 460d",
+          "note": "Price excludes ceramic basin.",
+          "basinLink": "in-cabinet-ceramic-basins",
+          "variants": [
+            { "sku": "OP.620.600.10", "finish": "Gloss white", "code": "10", "price": 629 },
+            { "sku": "OP.620.600.13", "finish": "Washed oak", "code": "13", "price": 629 },
+            { "sku": "OP.620.600.14", "finish": "Concrete grey", "code": "14", "price": 629 },
+            { "sku": "OP.620.600.15", "finish": "Cavern blue", "code": "15", "price": 629 }
+          ],
+          "imagesByCode": { "10": "p029_03.png", "13": "p030_04.png", "14": "p031_06.png", "15": "p032_06.png" }
+        },
+        {
+          "slug": "600mm-3-drawer-floor-standing-unit",
+          "name": "600mm 3 drawer floor standing unit",
+          "dims": "600w x 830h x 460d",
+          "note": "Price excludes ceramic basin.",
+          "basinLink": "in-cabinet-ceramic-basins",
+          "variants": [
+            { "sku": "OP.630.600.10", "finish": "Gloss white", "code": "10", "price": 838 },
+            { "sku": "OP.630.600.13", "finish": "Washed oak", "code": "13", "price": 838 },
+            { "sku": "OP.630.600.14", "finish": "Concrete grey", "code": "14", "price": 838 },
+            { "sku": "OP.630.600.15", "finish": "Cavern blue", "code": "15", "price": 838 }
+          ],
+          "imagesByCode": { "10": "p029_04.png", "13": "p030_01.png", "14": "p031_02.png", "15": "p032_03.png" }
+        },
+        {
+          "slug": "800mm-2-drawer-wall-hung-unit",
+          "name": "800mm 2 drawer wall hung unit",
+          "dims": "800w x 520h x 460d",
+          "note": "Price excludes ceramic basin.",
+          "basinLink": "in-cabinet-ceramic-basins",
+          "variants": [
+            { "sku": "OP.620.800.10", "finish": "Gloss white", "code": "10", "price": 838 },
+            { "sku": "OP.620.800.13", "finish": "Washed oak", "code": "13", "price": 838 },
+            { "sku": "OP.620.800.14", "finish": "Concrete grey", "code": "14", "price": 838 },
+            { "sku": "OP.620.800.15", "finish": "Cavern blue", "code": "15", "price": 838 }
+          ],
+          "imagesByCode": { "10": "p029_05.png", "13": "p030_05.png", "14": "p031_03.png", "15": "p032_04.png" }
+        },
+        {
+          "slug": "600mm-wc-cabinet",
+          "name": "600mm WC Cabinet",
+          "dims": "600w x 860h x 240d",
+          "note": "Price excludes cistern.",
+          "variants": [
+            { "sku": "OP.690.600.10", "finish": "Gloss white", "code": "10", "price": 349 },
+            { "sku": "OP.690.600.13", "finish": "Washed oak", "code": "13", "price": 349 },
+            { "sku": "OP.690.600.14", "finish": "Concrete grey", "code": "14", "price": 349 },
+            { "sku": "OP.690.600.15", "finish": "Cavern blue", "code": "15", "price": 349 }
+          ],
+          "imagesByCode": { "10": "p029_10.png", "13": "p030_10.png", "14": "p031_01.png", "15": "p032_01.png" }
+        },
+        {
+          "slug": "1500mm-2-door-wall-hung-cabinet",
+          "name": "1500mm 2 door wall hung cabinet",
+          "dims": "350w x 1500h x 300d",
+          "note": "Cabinet can be hung for left or right side opening.",
+          "variants": [
+            { "sku": "OP.650.1500.10", "finish": "Gloss white", "code": "10", "price": 825 },
+            { "sku": "OP.650.1500.13", "finish": "Washed oak", "code": "13", "price": 825 },
+            { "sku": "OP.650.1500.14", "finish": "Concrete grey", "code": "14", "price": 825 },
+            { "sku": "OP.650.1500.15", "finish": "Cavern blue", "code": "15", "price": 825 }
+          ],
+          "imagesByCode": { "10": "p029_06.png", "13": "p030_06.png", "14": "p031_10.png", "15": "p032_07.png" }
+        }
+      ],
+      "addons": [
+        {
+          "name": "400mm Cabinet towel rail",
+          "image": "p017_09.png",
+          "variants": [
+            { "sku": "RE.551.4", "finish": "Chrome", "price": 161 },
+            { "sku": "RE.551.5", "finish": "Brushed black", "price": 246 },
+            { "sku": "RE.551.6", "finish": "Brushed gold", "price": 246 },
+            { "sku": "RE.551.7", "finish": "Brushed stainless steel", "price": 246 }
+          ]
+        },
+        {
+          "name": "Drawer organiser",
+          "image": "p017_11.png",
+          "variants": [
+            { "sku": "PA.910.370.30", "finish": "For 500 & 600 units", "price": 128 },
+            { "sku": "PA.910.570.30", "finish": "For 800 units", "price": 150 }
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "reef-furniture",
+      "name": "Reef",
+      "title": "Reef furniture",
+      "tagline": "Flaunting shapely curves with a slimmer projection creating beautiful proportions.",
+      "hero": { "img": "p034_01.png", "caption": "600mm Reef wall hung unit in Atom grey, Reef 600mm basin with Latitude single lever monobasin mixer and co-ordinating overflow in brushed black." },
+      "altHero": { "img": "p039_01.png", "caption": "Reef basin and 380mm 1 door wall hung unit in matt white, with Vaere single lever monobasin mixer and co-ordinating overflow in brushed stainless steel." },
+      "swatches": [
+        { "code": "17", "name": "Matt white", "img": null },
+        { "code": "18", "name": "Atom grey", "img": "p035_06.png" },
+        { "code": "19", "name": "Claypit green", "img": "p035_05.png" },
+        { "code": "22", "name": "Potter’s clay", "img": "p035_07.png" }
+      ],
+      "products": [
+        {
+          "slug": "380mm-1-door-wall-hung-unit",
+          "name": "380mm 1 door wall hung unit",
+          "dims": "375w x 400h x 290d",
+          "note": "Price excludes ceramic basin. Door can be hung for left or right side opening.",
+          "basinLink": "reef-holloway-ceramic-basins",
+          "variants": [
+            { "sku": "RF.640.380.17", "finish": "Matt white", "code": "17", "price": 535 },
+            { "sku": "RF.640.380.18", "finish": "Atom grey", "code": "18", "price": 535 },
+            { "sku": "RF.640.380.19", "finish": "Claypit green", "code": "19", "price": 535 },
+            { "sku": "RF.640.380.22", "finish": "Potter’s clay", "code": "22", "price": 535 }
+          ],
+          "imagesByCode": { "17": "p035_04.png", "18": "p036_06.png", "19": "p037_04.png", "22": "p038_02.png" }
+        },
+        {
+          "slug": "500mm-2-drawer-wall-hung-unit",
+          "name": "500mm 2 drawer wall hung unit",
+          "dims": "480w x 520h x 337d",
+          "note": "Price excludes ceramic basin.",
+          "basinLink": "reef-holloway-ceramic-basins",
+          "variants": [
+            { "sku": "RF.620.500.17", "finish": "Matt white", "code": "17", "price": 642 },
+            { "sku": "RF.620.500.18", "finish": "Atom grey", "code": "18", "price": 642 },
+            { "sku": "RF.620.500.19", "finish": "Claypit green", "code": "19", "price": 642 },
+            { "sku": "RF.620.500.22", "finish": "Potter’s clay", "code": "22", "price": 642 }
+          ],
+          "imagesByCode": { "17": "p035_01.png", "18": "p036_03.png", "19": "p037_01.png", "22": "p038_01.png" }
+        },
+        {
+          "slug": "600mm-2-drawer-wall-hung-unit",
+          "name": "600mm 2 drawer wall hung unit",
+          "dims": "580w x 520h x 362d",
+          "note": "Price excludes ceramic basin.",
+          "basinLink": "reef-holloway-ceramic-basins",
+          "variants": [
+            { "sku": "RF.620.600.17", "finish": "Matt white", "code": "17", "price": 696 },
+            { "sku": "RF.620.600.18", "finish": "Atom grey", "code": "18", "price": 696 },
+            { "sku": "RF.620.600.19", "finish": "Claypit green", "code": "19", "price": 696 },
+            { "sku": "RF.620.600.22", "finish": "Potter’s clay", "code": "22", "price": 696 }
+          ],
+          "imagesByCode": { "17": "p035_02.png", "18": "p036_04.png", "19": "p037_02.png", "22": "p038_06.png" }
+        },
+        {
+          "slug": "1200mm-1-door-wall-hung-cabinet",
+          "name": "1200mm 1 door wall hung cabinet",
+          "dims": "350w x 1200h x 220d",
+          "note": "Cabinet can be hung for left or right side opening.",
+          "variants": [
+            { "sku": "RF.650.1200.17", "finish": "Matt white", "code": "17", "price": 825 },
+            { "sku": "RF.650.1200.18", "finish": "Atom grey", "code": "18", "price": 825 },
+            { "sku": "RF.650.1200.19", "finish": "Claypit green", "code": "19", "price": 825 },
+            { "sku": "RF.650.1200.22", "finish": "Potter’s clay", "code": "22", "price": 825 }
+          ],
+          "imagesByCode": { "17": "p035_03.png", "18": "p036_05.png", "19": "p037_03.png", "22": "p038_07.png" }
+        }
+      ],
+      "addons": [
+        {
+          "name": "Reef drawer organiser",
+          "image": "p035_08.png",
+          "variants": [
+            { "sku": "RF.910.304.30", "finish": "For 500 units", "price": 107 },
+            { "sku": "RF.910.404.30", "finish": "For 600 units", "price": 128 }
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "holloway-furniture",
+      "name": "Holloway",
+      "title": "Holloway furniture",
+      "tagline": "Shaker reborn with curved detailing, creating the perfect modern or traditional setting.",
+      "hero": { "img": "p040_01.png", "caption": "Holloway 600mm 2 door free-standing unit with under shelf in mineral blue with Reef 600mm basin and Vaere monobasin mixer in brushed black." },
+      "swatches": [
+        { "code": "17", "name": "Matt white", "img": "p041_09.png" },
+        { "code": "22", "name": "Potter’s clay", "img": "p041_08.png" },
+        { "code": "23", "name": "Mineral blue", "img": "p041_10.png" }
+      ],
+      "products": [
+        {
+          "slug": "380mm-1-door-free-standing-unit",
+          "name": "380mm 1 door free-standing unit with under shelf",
+          "dims": "375w x 750h x 290d",
+          "note": "Price excludes handle (see below) and ceramic basin.",
+          "basinLink": "reef-holloway-ceramic-basins",
+          "variants": [
+            { "sku": "HW.643.380.17", "finish": "Matt white", "code": "17", "price": 575 },
+            { "sku": "HW.643.380.22", "finish": "Potter’s clay", "code": "22", "price": 575 },
+            { "sku": "HW.643.380.23", "finish": "Mineral blue", "code": "23", "price": 575 }
+          ],
+          "imagesByCode": { "17": "p041_11.png", "22": "p042_04.png", "23": "p043_04.png" }
+        },
+        {
+          "slug": "500mm-1-door-free-standing-unit",
+          "name": "500mm 1 door free-standing unit with under shelf",
+          "dims": "480w x 750h x 337d",
+          "note": "Price excludes handle (see below) and ceramic basin.",
+          "basinLink": "reef-holloway-ceramic-basins",
+          "variants": [
+            { "sku": "HW.643.500.17", "finish": "Matt white", "code": "17", "price": 642 },
+            { "sku": "HW.643.500.22", "finish": "Potter’s clay", "code": "22", "price": 642 },
+            { "sku": "HW.643.500.23", "finish": "Mineral blue", "code": "23", "price": 642 }
+          ],
+          "imagesByCode": { "17": "p041_12.png", "22": "p042_05.png", "23": "p043_05.png" }
+        },
+        {
+          "slug": "600mm-2-door-free-standing-unit",
+          "name": "600mm 2 door free-standing unit with under shelf",
+          "dims": "580w x 750h x 362d",
+          "note": "Price excludes handles (this unit requires two handles, see below) and ceramic basin.",
+          "basinLink": "reef-holloway-ceramic-basins",
+          "variants": [
+            { "sku": "HW.645.600.17", "finish": "Matt white", "code": "17", "price": 696 },
+            { "sku": "HW.645.600.22", "finish": "Potter’s clay", "code": "22", "price": 696 },
+            { "sku": "HW.645.600.23", "finish": "Mineral blue", "code": "23", "price": 696 }
+          ],
+          "imagesByCode": { "17": "p041_13.png", "22": "p042_06.png", "23": "p043_06.png" }
+        }
+      ],
+      "footnote": "These cabinets require handles to be ordered separately.",
+      "addons": [
+        {
+          "name": "Criterion furniture handle (each)",
+          "image": "p041_05.png",
+          "variants": [
+            { "sku": "FH.967.4", "finish": "Chrome", "price": 21 },
+            { "sku": "FH.967.5", "finish": "Brushed stainless steel", "price": 34 },
+            { "sku": "FH.967.6", "finish": "Brushed gold", "price": 34 },
+            { "sku": "FH.967.7", "finish": "Matt black", "price": 34 }
+          ]
+        },
+        {
+          "name": "T-bar handle (each)",
+          "image": "p041_03.png",
+          "variants": [
+            { "sku": "FH.960.20", "finish": "Brushed stainless steel", "price": 34 },
+            { "sku": "FH.960.21", "finish": "Brushed gold", "price": 34 },
+            { "sku": "FH.960.22", "finish": "Matt black", "price": 34 }
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "in-cabinet-ceramic-basins",
+      "name": "Ceramic basins",
+      "title": "In-cabinet ceramic basins",
+      "tagline": "Feather-edged ceramic lines with flat polished profiles brings the latest in basin design to your bathroom.",
+      "hero": { "img": "p044_01.png", "caption": "Atoll 800mm unit in graphite grey, 800mm ceramic basin, Oculus single lever monobasin mixer in brushed gold and co-ordinating brushed gold overflow ring." },
+      "products": [
+        {
+          "slug": "400mm-cabinet-basin",
+          "name": "400mm reversible left or right cabinet basin with single tap hole",
+          "image": "p045_01.png",
+          "variants": [
+            { "sku": "CB.723.400", "finish": "With tap hole", "price": 189 }
+          ]
+        },
+        {
+          "slug": "500mm-cabinet-basin",
+          "name": "500mm cabinet basin with overflow",
+          "image": "p045_05.png",
+          "variants": [
+            { "sku": "CB.721.500", "finish": "With tap hole", "price": 268 },
+            { "sku": "CB.724.500", "finish": "No tap hole", "price": 268 }
+          ]
+        },
+        {
+          "slug": "600mm-cabinet-basin",
+          "name": "600mm cabinet basin with overflow",
+          "image": "p045_06.png",
+          "variants": [
+            { "sku": "CB.721.600", "finish": "With tap hole", "price": 375 },
+            { "sku": "CB.724.600", "finish": "No tap hole", "price": 375 }
+          ]
+        },
+        {
+          "slug": "800mm-cabinet-basin",
+          "name": "800mm cabinet basin with overflow",
+          "image": "p045_07.png",
+          "variants": [
+            { "sku": "CB.721.800", "finish": "With tap hole", "price": 510 },
+            { "sku": "CB.724.800", "finish": "No tap hole", "price": 510 }
+          ]
+        },
+        {
+          "slug": "1200mm-double-cabinet-basin",
+          "name": "1200mm double cabinet basin with overflows",
+          "image": "p045_03.png",
+          "variants": [
+            { "sku": "CB.721.1200", "finish": "With tap holes", "price": 595 },
+            { "sku": "CB.724.1200", "finish": "No tap holes", "price": 595 }
+          ]
+        }
+      ],
+      "footnote": "Please note that the ceramic basins do not come with the basin waste, however they are included in monobasin taps coded 110 and 111 in all finishes. Chrome overflow rings are included with 500mm, 600mm, 800mm and 1200mm basins as standard.",
+      "addons": [
+        {
+          "name": "Basin waste with adaptable installation for click clack (push up/down) or free flow locked position",
+          "image": "p045_04.png",
+          "variants": [
+            { "sku": "BW.210.66.4", "finish": "Chrome", "price": 57 },
+            { "sku": "BW.210.66.5", "finish": "Brushed black", "price": 130 },
+            { "sku": "BW.210.66.6", "finish": "Brushed gold", "price": 130 },
+            { "sku": "BW.210.66.7", "finish": "Brushed stainless steel", "price": 130 },
+            { "sku": "BW.210.66.17", "finish": "Matt white", "price": 95 }
+          ]
+        },
+        {
+          "name": "Overflow ring for basins",
+          "image": "p045_02.png",
+          "variants": [
+            { "sku": "CB.971.5", "finish": "Brushed black", "price": 28 },
+            { "sku": "CB.971.6", "finish": "Brushed gold", "price": 28 },
+            { "sku": "CB.971.7", "finish": "Brushed stainless steel", "price": 28 }
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "reef-holloway-ceramic-basins",
+      "name": "Reef/Holloway basins",
+      "title": "Reef/Holloway ceramic basins",
+      "tagline": "Elegantly slim walls defining modernity & pleasing beauty.",
+      "hero": { "img": "p039_01.png", "caption": "Reef basin and 380mm 1 door wall hung unit in matt white, with Vaere single lever monobasin mixer and co-ordinating overflow in brushed stainless steel." },
+      "products": [
+        {
+          "slug": "390mm-wall-mounted-basin",
+          "name": "390mm wall mounted basin with single tap hole and overflow",
+          "dims": "390w x 300d",
+          "image": "p046_05.png",
+          "variants": [
+            { "sku": "RF.725.390", "finish": "With tap hole", "price": 214 }
+          ]
+        },
+        {
+          "slug": "500mm-wall-or-cabinet-mounted-basin",
+          "name": "500mm wall or cabinet mounted basin with overflow",
+          "dims": "500w x 350d",
+          "image": "p046_06.png",
+          "variants": [
+            { "sku": "RF.725.500", "finish": "With tap hole", "price": 296 },
+            { "sku": "RF.826.500", "finish": "No tap hole", "price": 296 }
+          ]
+        },
+        {
+          "slug": "600mm-wall-or-cabinet-mounted-basin",
+          "name": "600mm wall or cabinet mounted basin with overflow",
+          "dims": "600w x 380d",
+          "image": "p046_02.png",
+          "variants": [
+            { "sku": "RF.725.600", "finish": "With tap hole", "price": 403 },
+            { "sku": "RF.826.600", "finish": "No tap hole", "price": 403 }
+          ]
+        }
+      ],
+      "footnote": "Please note that the ceramic basins do not come with the basin waste, however they are included in monobasin taps coded 110 and 111 in all finishes. Chrome overflow rings are included with 390mm, 500mm & 600mm basins as standard."
+    },
+    {
+      "slug": "counter-top-basins",
+      "name": "Counter top basins",
+      "title": "Counter top basins",
+      "tagline": "Counter top bowls atop a solid quartz slab epitomises luxury.",
+      "hero": { "img": "p046_08.png", "caption": "Counter top basin with brushed gold basin mixer." },
+      "products": [
+        {
+          "slug": "round-counter-top-bowl",
+          "name": "Round counter top bowl",
+          "dims": "Ø360mm",
+          "image": "p046_04.png",
+          "variants": [
+            { "sku": "VE.722.66", "finish": "White ceramic", "price": 385 }
+          ]
+        },
+        {
+          "slug": "curved-linear-counter-top-bowl",
+          "name": "Curved linear counter top bowl",
+          "dims": "465 x 335mm",
+          "image": "p046_03.png",
+          "variants": [
+            { "sku": "VE.722.55", "finish": "White ceramic", "price": 385 }
+          ]
+        },
+        {
+          "slug": "organic-counter-top-bowl",
+          "name": "Organic counter top bowl",
+          "dims": "460 x 368mm",
+          "image": "p046_01.png",
+          "variants": [
+            { "sku": "VE.722.33", "finish": "White ceramic", "price": 415 }
+          ]
+        }
+      ],
+      "footnote": "Please note that the ceramic basins do not come with the basin waste, however they are included in monobasin taps coded 110 and 111 in all finishes."
+    },
+    {
+      "slug": "solid-quartz-slabs",
+      "name": "Slabs",
+      "title": "Solid quartz slabs",
+      "tagline": "Pairing a counter top bowl with a slim 12mm or 20mm solid quartz slab characterises contemporary.",
+      "hero": { "img": "p047_03.png", "caption": "Round counter top bowls with brushed gold basin mixers on a solid quartz counter top." },
+      "products": [
+        {
+          "slug": "arctic-white-12mm-slab",
+          "name": "Arctic white 12mm slab",
+          "image": "p047_05.png",
+          "note": "Solid quartz with 12mm height, supplied with a cut-out for the waste to suit ARMERA counter-top basins.",
+          "variants": [
+            { "sku": "SL.770.500.3", "finish": "500mm", "price": 375 },
+            { "sku": "SL.770.600.3", "finish": "600mm", "price": 428 },
+            { "sku": "SL.770.800.3", "finish": "800mm", "price": 535 },
+            { "sku": "SL.770.1200.3", "finish": "1200mm", "price": 856 }
+          ]
+        },
+        {
+          "slug": "dapple-white-grey-20mm-slab",
+          "name": "Dapple white-grey 20mm slab",
+          "image": "p047_01.png",
+          "note": "Solid quartz with 20mm height, supplied with a cut-out for the waste to suit ARMERA counter-top basins.",
+          "variants": [
+            { "sku": "SL.670.500.1", "finish": "500mm", "price": 610 },
+            { "sku": "SL.670.600.1", "finish": "600mm", "price": 712 },
+            { "sku": "SL.670.800.1", "finish": "800mm", "price": 857 },
+            { "sku": "SL.670.1200.1", "finish": "1200mm", "price": 1140 }
+          ]
+        },
+        {
+          "slug": "tempest-black-20mm-slab",
+          "name": "Tempest black 20mm slab",
+          "image": "p047_04.png",
+          "note": "Solid quartz with 20mm height, supplied with a cut-out for the waste to suit ARMERA counter-top basins.",
+          "variants": [
+            { "sku": "SL.670.500.2", "finish": "500mm", "price": 786 },
+            { "sku": "SL.670.600.2", "finish": "600mm", "price": 897 },
+            { "sku": "SL.670.800.2", "finish": "800mm", "price": 1072 },
+            { "sku": "SL.670.1200.2", "finish": "1200mm", "price": 1428 }
+          ]
+        }
+      ],
+      "footnote": "Please note 1200mm slabs have 2 cut-outs to accommodate 2 basins."
+    }
+  ]
+}

@@ -1,0 +1,243 @@
+{
+  "slug": "showering",
+  "name": "Showering",
+  "hero": { "img": "p080_01.png", "caption": "Domus round 250mm fixed head in brushed gold with 100mm ceiling dropper in co-ordinating brushed gold." },
+  "ranges": [
+    {
+      "slug": "fixed-heads-and-arms",
+      "name": "Fixed heads & arms",
+      "title": "Showering — Fixed heads & arms",
+      "tagline": "Submerge and envelop the senses with ARMERA’s showering collection.",
+      "hero": { "img": "p080_01.png", "caption": "Domus round 250mm fixed head in brushed gold with 100mm ceiling dropper in co-ordinating brushed gold." },
+      "products": [
+        {
+          "slug": "domus-round-250mm-fixed-head",
+          "name": "Domus round 250mm fixed head",
+          "image": "p081_02.png",
+          "variants": [
+            { "sku": "DO.410.250.66.4", "finish": "Chrome", "price": 257 },
+            { "sku": "DO.410.250.66.5", "finish": "Brushed black", "price": 364 },
+            { "sku": "DO.410.250.66.6", "finish": "Brushed gold", "price": 364 },
+            { "sku": "DO.410.250.66.7", "finish": "Brushed stainless steel", "price": 364 }
+          ]
+        },
+        {
+          "slug": "domus-round-300mm-fixed-head",
+          "name": "Domus round 300mm fixed head",
+          "image": "p081_06.png",
+          "variants": [
+            { "sku": "DO.410.300.66.4", "finish": "Chrome", "price": 307 },
+            { "sku": "DO.410.300.66.5", "finish": "Brushed black", "price": 411 },
+            { "sku": "DO.410.300.66.6", "finish": "Brushed gold", "price": 411 },
+            { "sku": "DO.410.300.66.7", "finish": "Brushed stainless steel", "price": 411 }
+          ]
+        },
+        {
+          "slug": "domus-square-250mm-fixed-head",
+          "name": "Domus square 250mm fixed head",
+          "image": "p081_04.png",
+          "variants": [
+            { "sku": "DO.410.250.55.4", "finish": "Chrome", "price": 257 },
+            { "sku": "DO.410.250.55.5", "finish": "Brushed black", "price": 364 },
+            { "sku": "DO.410.250.55.6", "finish": "Brushed gold", "price": 364 }
+          ]
+        },
+        {
+          "slug": "ceiling-dropper-100mm",
+          "name": "Ceiling dropper 100mm",
+          "image": "p081_03.png",
+          "variants": [
+            { "sku": "SH.450.100.4", "finish": "Chrome", "price": 83 },
+            { "sku": "SH.450.100.5", "finish": "Brushed black", "price": 110 },
+            { "sku": "SH.450.100.6", "finish": "Brushed gold", "price": 110 },
+            { "sku": "SH.450.100.7", "finish": "Brushed stainless steel", "price": 110 }
+          ]
+        },
+        {
+          "slug": "round-wall-mounted-shower-arm",
+          "name": "Round wall mounted shower arm",
+          "image": "p081_05.png",
+          "variants": [
+            { "sku": "SH.423.66.4", "finish": "Chrome", "price": 123 },
+            { "sku": "SH.423.66.5", "finish": "Brushed black", "price": 139 },
+            { "sku": "SH.423.66.6", "finish": "Brushed gold", "price": 139 },
+            { "sku": "SH.423.66.7", "finish": "Brushed stainless steel", "price": 139 }
+          ]
+        },
+        {
+          "slug": "square-wall-mounted-shower-arm",
+          "name": "Square wall mounted shower arm",
+          "image": "p081_01.png",
+          "variants": [
+            { "sku": "SH.423.55.4", "finish": "Chrome", "price": 123 },
+            { "sku": "SH.423.55.5", "finish": "Brushed black", "price": 139 },
+            { "sku": "SH.423.55.6", "finish": "Brushed gold", "price": 139 }
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "slide-rail-kits-mini-kits-and-outlets",
+      "name": "Slide rail kits, mini kits & outlets",
+      "title": "Showering — Slide rail kits, mini kits & outlets",
+      "tagline": "Boasting push button multi-function handsets and easy-gliding rails encapsulated in sleek designs.",
+      "hero": { "img": "p083_01.png", "caption": "Rio Round in brushed black. Also shown Maze wall mounted basin mixer in brushed black with round counter top basin." },
+      "products": [
+        {
+          "slug": "protus-slide-rail-kit",
+          "name": "Protus multi function adjustable slide rail kit",
+          "image": "p082_08.png",
+          "note": "Kit does not include wall outlet. Chrome only.",
+          "variants": [
+            { "sku": "PR.468.4", "finish": "Chrome", "price": 117 }
+          ]
+        },
+        {
+          "slug": "rhapsody-slide-rail-kit",
+          "name": "Rhapsody adjustable slide rail kit with multi-function handset and smoothflex hose",
+          "image": "p082_05.png",
+          "note": "Adjustable bracket position. Kit does not include wall outlet.",
+          "variants": [
+            { "sku": "RH.468.4", "finish": "Chrome", "price": 268 },
+            { "sku": "RH.468.5", "finish": "Brushed black", "price": 364 },
+            { "sku": "RH.468.6", "finish": "Brushed gold", "price": 364 },
+            { "sku": "RH.468.7", "finish": "Brushed stainless steel", "price": 364 }
+          ]
+        },
+        {
+          "slug": "spectre-slide-rail-kit",
+          "name": "Spectre slide rail kit with multi-function handset and smoothflex hose",
+          "image": "p082_06.png",
+          "note": "Kit does not include wall outlet.",
+          "variants": [
+            { "sku": "SP.468.4", "finish": "Chrome", "price": 310 },
+            { "sku": "SP.468.5", "finish": "Brushed black", "price": 397 },
+            { "sku": "SP.468.6", "finish": "Brushed gold", "price": 397 }
+          ]
+        },
+        {
+          "slug": "ribbon-slide-rail-kit",
+          "name": "Ribbon slide rail kit with multi-function handset and smoothflex hose",
+          "image": "p082_07.png",
+          "note": "Kit does not include wall outlet.",
+          "variants": [
+            { "sku": "RI.468.4", "finish": "Chrome", "price": 310 },
+            { "sku": "RI.468.5", "finish": "Brushed black", "price": 397 },
+            { "sku": "RI.468.6", "finish": "Brushed gold", "price": 397 }
+          ]
+        },
+        {
+          "slug": "round-wall-outlet",
+          "name": "Round wall outlet",
+          "image": "p082_04.png",
+          "variants": [
+            { "sku": "SH.440.66.4", "finish": "Chrome", "price": 57 },
+            { "sku": "SH.440.66.5", "finish": "Brushed black", "price": 83 },
+            { "sku": "SH.440.66.6", "finish": "Brushed gold", "price": 83 },
+            { "sku": "SH.440.66.7", "finish": "Brushed stainless steel", "price": 83 }
+          ]
+        },
+        {
+          "slug": "square-wall-outlet",
+          "name": "Square wall outlet",
+          "image": "p082_02.png",
+          "variants": [
+            { "sku": "SH.440.55.4", "finish": "Chrome", "price": 57 },
+            { "sku": "SH.440.55.5", "finish": "Brushed black", "price": 83 },
+            { "sku": "SH.440.55.6", "finish": "Brushed gold", "price": 83 }
+          ]
+        },
+        {
+          "slug": "square-mini-kit",
+          "name": "Square mini kit",
+          "image": "p082_01.png",
+          "variants": [
+            { "sku": "SH.430.55.4", "finish": "Chrome", "price": 205 },
+            { "sku": "SH.430.55.5", "finish": "Brushed black", "price": 225 },
+            { "sku": "SH.430.55.6", "finish": "Brushed gold", "price": 225 }
+          ]
+        },
+        {
+          "slug": "round-mini-kit",
+          "name": "Round mini kit",
+          "image": "p082_03.png",
+          "variants": [
+            { "sku": "SH.430.66.4", "finish": "Chrome", "price": 205 },
+            { "sku": "SH.430.66.5", "finish": "Brushed black", "price": 225 },
+            { "sku": "SH.430.66.6", "finish": "Brushed gold", "price": 225 },
+            { "sku": "SH.430.66.7", "finish": "Brushed stainless steel", "price": 225 }
+          ]
+        },
+        {
+          "slug": "deck-mounted-shower-kit",
+          "name": "Deck mounted shower kit",
+          "image": "p082_09.png",
+          "variants": [
+            { "sku": "SH.333.66.4", "finish": "Chrome", "price": 219 },
+            { "sku": "SH.333.66.5", "finish": "Brushed black", "price": 249 },
+            { "sku": "SH.333.66.6", "finish": "Brushed gold", "price": 249 },
+            { "sku": "SH.333.66.7", "finish": "Brushed stainless steel", "price": 249 }
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "showering-sets",
+      "name": "Showering sets",
+      "title": "Showering sets",
+      "tagline": "Complete co-ordinated showering, beautifully matched in every finish.",
+      "hero": { "img": "p084_01.png", "caption": "Pivot mini kit set in brushed stainless steel. Also shown Lagoon wall mounted WC with Halo flush plate in brushed stainless steel." },
+      "products": [
+        {
+          "slug": "pivot-minikit-set",
+          "name": "Pivot minikit set",
+          "image": "p085_05.png",
+          "gallery": ["p085_02.png", "p085_03.png", "p085_04.png"],
+          "variants": [
+            { "sku": "SS.342.430.66.4", "finish": "Chrome", "price": 1402 },
+            { "sku": "SS.342.430.66.5", "finish": "Brushed black", "price": 1714 },
+            { "sku": "SS.342.430.66.6", "finish": "Brushed gold", "price": 1714 },
+            { "sku": "SS.342.430.66.7", "finish": "Brushed stainless steel", "price": 1714 }
+          ]
+        },
+        {
+          "slug": "index-minikit-set",
+          "name": "Index minikit set",
+          "image": "p085_07.png",
+          "gallery": ["p085_08.png", "p085_09.png", "p085_18.png"],
+          "variants": [
+            { "sku": "SS.332.430.66.4", "finish": "Chrome", "price": 1402 },
+            { "sku": "SS.332.430.66.5", "finish": "Brushed black", "price": 1714 },
+            { "sku": "SS.332.430.66.6", "finish": "Brushed gold", "price": 1714 },
+            { "sku": "SS.332.430.66.7", "finish": "Brushed stainless steel", "price": 1714 }
+          ]
+        },
+        {
+          "slug": "pivot-sliderail-set",
+          "name": "Pivot sliderail set",
+          "image": "p085_19.png",
+          "gallery": ["p085_12.png", "p085_13.png", "p085_11.png", "p085_14.png"],
+          "variants": [
+            { "sku": "SS.342.460.66.4", "finish": "Chrome", "price": 1520 },
+            { "sku": "SS.342.460.66.5", "finish": "Brushed black", "price": 1936 },
+            { "sku": "SS.342.460.66.6", "finish": "Brushed gold", "price": 1936 },
+            { "sku": "SS.342.460.66.7", "finish": "Brushed stainless steel", "price": 1936 }
+          ]
+        },
+        {
+          "slug": "index-sliderail-set",
+          "name": "Index sliderail set",
+          "image": "p085_21.png",
+          "gallery": ["p085_23.png", "p085_24.png", "p085_22.png", "p085_25.png"],
+          "variants": [
+            { "sku": "SS.332.460.66.4", "finish": "Chrome", "price": 1520 },
+            { "sku": "SS.332.460.66.5", "finish": "Brushed black", "price": 1936 },
+            { "sku": "SS.332.460.66.6", "finish": "Brushed gold", "price": 1936 },
+            { "sku": "SS.332.460.66.7", "finish": "Brushed stainless steel", "price": 1936 }
+          ]
+        }
+      ],
+      "footnote": "Also available: the Solace set and Rio rigid riser kits — see Thermostatic Valves."
+    }
+  ]
+}

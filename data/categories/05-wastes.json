@@ -1,0 +1,90 @@
+{
+  "slug": "wastes",
+  "name": "Wastes",
+  "hero": { "img": "p066_01.png", "caption": "Oculus wall mounted basin mixer in brushed gold with co-ordinated click clack waste in brushed gold." },
+  "ranges": [
+    {
+      "slug": "bath-and-basin-wastes",
+      "name": "Wastes",
+      "title": "Wastes",
+      "tagline": "Beautifully designed to coordinate perfectly with your ARMERA bathroom.",
+      "hero": { "img": "p066_01.png", "caption": "Oculus wall mounted basin mixer in brushed gold with co-ordinated click clack waste in brushed gold." },
+      "products": [
+        {
+          "slug": "bath-waste-click-clack",
+          "name": "Bath waste with click clack plug",
+          "image": "p067_02.png",
+          "variants": [
+            { "sku": "BW.222.4", "finish": "Chrome", "price": 87 },
+            { "sku": "BW.222.5", "finish": "Brushed black", "price": 142 },
+            { "sku": "BW.222.6", "finish": "Brushed gold", "price": 142 },
+            { "sku": "BW.222.7", "finish": "Brushed stainless steel", "price": 142 }
+          ]
+        },
+        {
+          "slug": "bath-filler-waste-click-clack",
+          "name": "Bath filler waste with click clack plug",
+          "image": "p067_05.png",
+          "variants": [
+            { "sku": "BW.232.4", "finish": "Chrome", "price": 186 },
+            { "sku": "BW.232.5", "finish": "Brushed black", "price": 285 },
+            { "sku": "BW.232.6", "finish": "Brushed gold", "price": 285 },
+            { "sku": "BW.232.7", "finish": "Brushed stainless steel", "price": 285 }
+          ]
+        },
+        {
+          "slug": "bath-waste-twist-handle",
+          "name": "Bath waste with twist handle plug operation",
+          "image": "p067_01.png",
+          "note": "Chrome only.",
+          "variants": [
+            { "sku": "BW.223.4", "finish": "Chrome", "price": 87 }
+          ]
+        },
+        {
+          "slug": "bath-filler-waste-twist-handle",
+          "name": "Bath filler waste with twist handle plug operation",
+          "image": "p067_07.png",
+          "note": "Chrome only.",
+          "variants": [
+            { "sku": "BW.233.4", "finish": "Chrome", "price": 186 }
+          ]
+        },
+        {
+          "slug": "basin-waste",
+          "name": "Basin waste with adaptable installation",
+          "image": "p067_03.png",
+          "note": "Adaptable installation for click clack (push up/down) or free flow locked position. Suitable for slotted and unslotted basins. Please note that basin wastes are included in monobasin taps coded 110 and extended monobasin taps coded 111 in all finishes.",
+          "variants": [
+            { "sku": "BW.210.66.4", "finish": "Chrome", "price": 57 },
+            { "sku": "BW.210.66.5", "finish": "Brushed black", "price": 130 },
+            { "sku": "BW.210.66.6", "finish": "Brushed gold", "price": 130 },
+            { "sku": "BW.210.66.7", "finish": "Brushed stainless steel", "price": 130 },
+            { "sku": "BW.210.66.17", "finish": "Matt white", "price": 95 }
+          ]
+        },
+        {
+          "slug": "bottle-trap",
+          "name": "Bottle trap",
+          "image": "p067_04.png",
+          "variants": [
+            { "sku": "BT.211.66.4", "finish": "Chrome", "price": 99 },
+            { "sku": "BT.211.66.5", "finish": "Brushed black", "price": 215 },
+            { "sku": "BT.211.66.6", "finish": "Brushed gold", "price": 215 },
+            { "sku": "BT.211.66.7", "finish": "Brushed stainless steel", "price": 215 }
+          ]
+        },
+        {
+          "slug": "overflow-ring",
+          "name": "Overflow ring for basins",
+          "image": "p067_06.png",
+          "variants": [
+            { "sku": "CB.971.5", "finish": "Brushed black", "price": 28 },
+            { "sku": "CB.971.6", "finish": "Brushed gold", "price": 28 },
+            { "sku": "CB.971.7", "finish": "Brushed stainless steel", "price": 28 }
+          ]
+        }
+      ]
+    }
+  ]
+}

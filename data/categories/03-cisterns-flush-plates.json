@@ -1,0 +1,133 @@
+{
+  "slug": "concealed-cisterns-and-flush-plates",
+  "name": "Concealed Cisterns & Flush Plates",
+  "hero": { "img": "p052_01.png", "caption": "Halo flush plate in brushed gold." },
+  "ranges": [
+    {
+      "slug": "concealed-cisterns",
+      "name": "Concealed cisterns",
+      "title": "Concealed cisterns",
+      "tagline": "The clean concealed look is coupled with an easy-to-use ergonomic feel.",
+      "hero": { "img": "p052_01.png", "caption": "Halo flush plate in brushed gold." },
+      "products": [
+        {
+          "slug": "slimline-concealed-cistern",
+          "name": "Slimline concealed cistern with frame",
+          "image": "p053_02.png",
+          "note": "Minimum height 1168mm. Halo & Modus flush plates fit above this cistern.",
+          "variants": [
+            { "sku": "CI.732", "finish": "Concealed cistern", "price": 494 }
+          ]
+        },
+        {
+          "slug": "mid-height-concealed-cistern",
+          "name": "Mid height concealed cistern with frame",
+          "image": "p053_10.png",
+          "note": "Minimum height 980mm. Terrain & Mood flush plates fit above this cistern.",
+          "variants": [
+            { "sku": "CI.733", "finish": "Concealed cistern", "price": 467 }
+          ]
+        },
+        {
+          "slug": "short-concealed-cistern",
+          "name": "Short concealed cistern with frame",
+          "image": "p053_08.png",
+          "note": "Minimum height 820mm. Terrain & Mood flush plates fit above this cistern.",
+          "variants": [
+            { "sku": "CI.734", "finish": "Concealed cistern", "price": 467 }
+          ]
+        },
+        {
+          "slug": "in-wall-concealed-cistern",
+          "name": "In-wall concealed cistern with adjustable pipe length",
+          "image": "p053_09.png",
+          "note": "Terrain & Mood flush plates fit above this cistern.",
+          "variants": [
+            { "sku": "CI.735", "finish": "Concealed cistern", "price": 192 }
+          ]
+        },
+        {
+          "slug": "concealed-cistern-for-wc-furniture-units",
+          "name": "Concealed cistern for WC furniture units",
+          "image": "p053_01.png",
+          "note": "Includes chrome flush button.",
+          "variants": [
+            { "sku": "CI.736", "finish": "Furniture cistern", "price": 150 }
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "flush-plates",
+      "name": "Flush plates",
+      "title": "Flush plates",
+      "tagline": "The clean concealed look is coupled with an easy-to-use ergonomic feel.",
+      "hero": { "img": "p052_01.png", "caption": "Halo flush plate in brushed gold." },
+      "products": [
+        {
+          "slug": "halo-mechanical-flush-plate",
+          "name": "Halo mechanical flush plate",
+          "image": "p053_03.png",
+          "note": "For cistern CI.732 only.",
+          "variants": [
+            { "sku": "FL.750.66.4", "finish": "Chrome", "price": 57 },
+            { "sku": "FL.750.66.5", "finish": "Matt black", "price": 139 },
+            { "sku": "FL.750.66.6", "finish": "Brushed gold", "price": 139 },
+            { "sku": "FL.750.66.7", "finish": "Brushed stainless steel", "price": 139 },
+            { "sku": "FL.750.66.17", "finish": "Matt white", "price": 139 }
+          ]
+        },
+        {
+          "slug": "modus-mechanical-flush-plate",
+          "name": "Modus mechanical flush plate",
+          "image": "p053_05.png",
+          "note": "For cistern CI.732 only.",
+          "variants": [
+            { "sku": "FL.880.55.4", "finish": "Chrome", "price": 57 },
+            { "sku": "FL.880.55.5", "finish": "Matt black", "price": 139 },
+            { "sku": "FL.880.55.6", "finish": "Brushed gold", "price": 139 },
+            { "sku": "FL.880.55.7", "finish": "Brushed stainless steel", "price": 139 },
+            { "sku": "FL.880.55.17", "finish": "Matt white", "price": 139 }
+          ]
+        },
+        {
+          "slug": "terrain-pneumatic-flush-plate",
+          "name": "Terrain pneumatic flush plate",
+          "image": "p053_07.png",
+          "note": "For cisterns CI.733, CI.734 and CI.735 only.",
+          "variants": [
+            { "sku": "FL.790.66.4", "finish": "Chrome", "price": 57 },
+            { "sku": "FL.790.66.5", "finish": "Matt black", "price": 139 },
+            { "sku": "FL.790.66.6", "finish": "Brushed gold", "price": 139 },
+            { "sku": "FL.790.66.7", "finish": "Brushed stainless steel", "price": 139 }
+          ]
+        },
+        {
+          "slug": "mood-pneumatic-flush-plate",
+          "name": "Mood pneumatic flush plate",
+          "image": "p053_06.png",
+          "note": "For cisterns CI.733, CI.734 and CI.735 only.",
+          "variants": [
+            { "sku": "FL.870.55.4", "finish": "Chrome", "price": 57 },
+            { "sku": "FL.870.55.5", "finish": "Matt black", "price": 139 },
+            { "sku": "FL.870.55.6", "finish": "Brushed gold", "price": 139 },
+            { "sku": "FL.870.55.7", "finish": "Brushed stainless steel", "price": 139 },
+            { "sku": "FL.870.55.17", "finish": "Matt white", "price": 139 }
+          ]
+        },
+        {
+          "slug": "eos-flush-button",
+          "name": "Eos flush button",
+          "image": "p053_04.png",
+          "note": "For furniture cistern CI.736.",
+          "variants": [
+            { "sku": "FL.720.66.5", "finish": "Matt black", "price": 71 },
+            { "sku": "FL.720.66.6", "finish": "Brushed gold", "price": 71 },
+            { "sku": "FL.720.66.7", "finish": "Brushed stainless steel", "price": 71 }
+          ]
+        }
+      ],
+      "footnote": "For dimensional drawings and installation heights please contact us or refer to the catalogue."
+    }
+  ]
+}

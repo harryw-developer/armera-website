@@ -1,0 +1,331 @@
+{
+  "slug": "thermostatic-valves",
+  "name": "Thermostatic Valves",
+  "hero": { "img": "p068_01.png", "caption": "Pivot round 2 outlet concealed valve in brushed gold." },
+  "ranges": [
+    {
+      "slug": "pivot-concealed",
+      "name": "Pivot",
+      "title": "Pivot thermostatic valves",
+      "tagline": "Pivot provides smooth-glide rotational on/off operation with the safety and comfort of thermostatic technology.",
+      "hero": { "img": "p068_01.png", "caption": "Pivot round 2 outlet concealed valve in brushed gold." },
+      "products": [
+        {
+          "slug": "pivot-round-concealed-valve",
+          "name": "Pivot round concealed thermostatic valve",
+          "image": "p069_02.png",
+          "note": "This valve requires an ARMERA DOCK TH.310 for first-fix installation. When using for shower, 0.2 bar minimum pressure is recommended; for filling a bath, 1 bar minimum.",
+          "variants": [
+            { "sku": "PI.341.66.4", "finish": "Chrome — 1 outlet", "price": 525 },
+            { "sku": "PI.341.66.5", "finish": "Brushed black — 1 outlet", "price": 701 },
+            { "sku": "PI.341.66.6", "finish": "Brushed gold — 1 outlet", "price": 701 },
+            { "sku": "PI.341.66.7", "finish": "Brushed stainless steel — 1 outlet", "price": 701 },
+            { "sku": "PI.342.66.4", "finish": "Chrome — 2 outlet", "price": 642 },
+            { "sku": "PI.342.66.5", "finish": "Brushed black — 2 outlet", "price": 813 },
+            { "sku": "PI.342.66.6", "finish": "Brushed gold — 2 outlet", "price": 813 },
+            { "sku": "PI.342.66.7", "finish": "Brushed stainless steel — 2 outlet", "price": 813 },
+            { "sku": "PI.343.66.4", "finish": "Chrome — 3 outlet", "price": 642 },
+            { "sku": "PI.343.66.5", "finish": "Brushed black — 3 outlet", "price": 813 },
+            { "sku": "PI.343.66.6", "finish": "Brushed gold — 3 outlet", "price": 813 },
+            { "sku": "PI.343.66.7", "finish": "Brushed stainless steel — 3 outlet", "price": 813 }
+          ]
+        },
+        {
+          "slug": "pivot-round-horizontal-concealed-valve",
+          "name": "Pivot round horizontal concealed thermostatic valve",
+          "image": "p069_04.png",
+          "note": "This valve requires an ARMERA DOCK TH.310 for first-fix installation.",
+          "variants": [
+            { "sku": "PI.342.66H.4", "finish": "Chrome — 2 outlet", "price": 642 },
+            { "sku": "PI.342.66H.5", "finish": "Brushed black — 2 outlet", "price": 813 },
+            { "sku": "PI.342.66H.6", "finish": "Brushed gold — 2 outlet", "price": 813 },
+            { "sku": "PI.342.66H.7", "finish": "Brushed stainless steel — 2 outlet", "price": 813 }
+          ]
+        },
+        {
+          "slug": "pivot-square-concealed-valve",
+          "name": "Pivot square concealed thermostatic valve",
+          "image": "p069_03.png",
+          "note": "This valve requires an ARMERA DOCK TH.310 for first-fix installation. 1 and 3 outlet available in chrome only.",
+          "variants": [
+            { "sku": "PI.341.55.4", "finish": "Chrome — 1 outlet", "price": 525 },
+            { "sku": "PI.342.55.4", "finish": "Chrome — 2 outlet", "price": 642 },
+            { "sku": "PI.342.55.5", "finish": "Brushed black — 2 outlet", "price": 813 },
+            { "sku": "PI.342.55.6", "finish": "Brushed gold — 2 outlet", "price": 813 },
+            { "sku": "PI.343.55.4", "finish": "Chrome — 3 outlet", "price": 642 }
+          ]
+        },
+        {
+          "slug": "armera-dock",
+          "name": "ARMERA-DOCK first fix housing for concealed valves",
+          "image": "p069_01.png",
+          "variants": [
+            { "sku": "TH.310", "finish": "First fix housing", "price": 177 }
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "criterion-concealed",
+      "name": "Criterion",
+      "title": "Criterion thermostatic valves",
+      "tagline": "The distinctive fluting brings both elegance and intention. Its design-led form is complemented by smooth, intuitive operation, ensuring both beauty & function are always in sync.",
+      "hero": { "img": "p070_01.png", "caption": "Criterion round 2 outlet concealed valve in brushed black." },
+      "products": [
+        {
+          "slug": "criterion-concealed-valve",
+          "name": "Criterion concealed thermostatic valve",
+          "image": "p071_01.png",
+          "note": "This valve requires an ARMERA DOCK TH.310 for first-fix installation. When using for shower, 0.2 bar minimum pressure is recommended; for filling a bath, 1 bar minimum.",
+          "variants": [
+            { "sku": "CR.341.66.4", "finish": "Chrome — 1 outlet", "price": 567 },
+            { "sku": "CR.341.66.5", "finish": "Brushed black — 1 outlet", "price": 749 },
+            { "sku": "CR.341.66.6", "finish": "Brushed gold — 1 outlet", "price": 749 },
+            { "sku": "CR.341.66.7", "finish": "Brushed stainless steel — 1 outlet", "price": 749 },
+            { "sku": "CR.342.66.4", "finish": "Chrome — 2 outlet", "price": 686 },
+            { "sku": "CR.342.66.5", "finish": "Brushed black — 2 outlet", "price": 862 },
+            { "sku": "CR.342.66.6", "finish": "Brushed gold — 2 outlet", "price": 862 },
+            { "sku": "CR.342.66.7", "finish": "Brushed stainless steel — 2 outlet", "price": 862 },
+            { "sku": "CR.343.66.4", "finish": "Chrome — 3 outlet", "price": 686 },
+            { "sku": "CR.343.66.5", "finish": "Brushed black — 3 outlet", "price": 862 },
+            { "sku": "CR.343.66.6", "finish": "Brushed gold — 3 outlet", "price": 862 },
+            { "sku": "CR.343.66.7", "finish": "Brushed stainless steel — 3 outlet", "price": 862 }
+          ]
+        },
+        {
+          "slug": "criterion-horizontal-concealed-valve",
+          "name": "Criterion horizontal concealed thermostatic valve",
+          "image": "p071_02.png",
+          "note": "This valve requires an ARMERA DOCK TH.310 for first-fix installation.",
+          "variants": [
+            { "sku": "CR.342.66H.4", "finish": "Chrome — 2 outlet", "price": 686 },
+            { "sku": "CR.342.66H.5", "finish": "Brushed black — 2 outlet", "price": 862 },
+            { "sku": "CR.342.66H.6", "finish": "Brushed gold — 2 outlet", "price": 862 },
+            { "sku": "CR.342.66H.7", "finish": "Brushed stainless steel — 2 outlet", "price": 862 }
+          ]
+        },
+        {
+          "slug": "armera-dock",
+          "name": "ARMERA-DOCK first fix housing for concealed valves",
+          "image": "p071_03.png",
+          "variants": [
+            { "sku": "TH.310", "finish": "First fix housing", "price": 177 }
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "index-concealed",
+      "name": "Index",
+      "title": "Index thermostatic valves",
+      "tagline": "Beautifully designed, Index provides an easy push on/off operation with the safety and comfort of thermostatic technology.",
+      "hero": { "img": "p072_01.png", "caption": "Index 2 outlet concealed valve in chrome." },
+      "products": [
+        {
+          "slug": "index-1-outlet-concealed-valve",
+          "name": "Index 1 outlet concealed thermostatic valve",
+          "image": "p073_02.png",
+          "note": "This valve requires an ARMERA DOCK TH.310 for first-fix installation. Supplied with 3 etched buttons with handset, overhead shower and bath tub graphics.",
+          "variants": [
+            { "sku": "IN.331.60.4", "finish": "Chrome", "price": 525 },
+            { "sku": "IN.331.60.5", "finish": "Brushed black", "price": 701 },
+            { "sku": "IN.331.60.6", "finish": "Brushed gold", "price": 701 },
+            { "sku": "IN.331.60.7", "finish": "Brushed stainless steel", "price": 701 }
+          ]
+        },
+        {
+          "slug": "index-2-outlet-concealed-valve",
+          "name": "Index 2 outlet concealed thermostatic valve",
+          "image": "p073_01.png",
+          "note": "This valve requires an ARMERA DOCK TH.310 for first-fix installation. Supplied with 3 etched buttons with handset, overhead shower and bath tub graphics.",
+          "variants": [
+            { "sku": "IN.332.60.4", "finish": "Chrome", "price": 642 },
+            { "sku": "IN.332.60.5", "finish": "Brushed black", "price": 813 },
+            { "sku": "IN.332.60.6", "finish": "Brushed gold", "price": 813 },
+            { "sku": "IN.332.60.7", "finish": "Brushed stainless steel", "price": 813 }
+          ]
+        },
+        {
+          "slug": "armera-dock",
+          "name": "ARMERA-DOCK first fix housing for concealed valves",
+          "image": "p073_03.png",
+          "variants": [
+            { "sku": "TH.310", "finish": "First fix housing", "price": 177 }
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "maze-index-concealed",
+      "name": "Maze Index",
+      "title": "Maze Index thermostatic valves",
+      "tagline": "Beautifully designed, Index provides an easy push on/off operation with the safety and comfort of thermostatic technology.",
+      "hero": { "img": "p074_01.png", "caption": "Maze Index 2 outlet concealed valve in brushed black." },
+      "products": [
+        {
+          "slug": "maze-index-1-outlet-concealed-valve",
+          "name": "Maze Index 1 outlet concealed thermostatic valve",
+          "image": "p075_02.png",
+          "note": "This valve requires an ARMERA DOCK TH.310 for first-fix installation. Supplied with 3 etched buttons with handset, overhead shower and bath tub graphics.",
+          "variants": [
+            { "sku": "IN.431.60.4", "finish": "Chrome", "price": 567 },
+            { "sku": "IN.431.60.5", "finish": "Brushed black", "price": 749 },
+            { "sku": "IN.431.60.6", "finish": "Brushed gold", "price": 749 },
+            { "sku": "IN.431.60.7", "finish": "Brushed stainless steel", "price": 749 }
+          ]
+        },
+        {
+          "slug": "maze-index-2-outlet-concealed-valve",
+          "name": "Maze Index 2 outlet concealed thermostatic valve",
+          "image": "p075_01.png",
+          "note": "This valve requires an ARMERA DOCK TH.310 for first-fix installation. Supplied with 3 etched buttons with handset, overhead shower and bath tub graphics.",
+          "variants": [
+            { "sku": "IN.432.60.4", "finish": "Chrome", "price": 686 },
+            { "sku": "IN.432.60.5", "finish": "Brushed black", "price": 862 },
+            { "sku": "IN.432.60.6", "finish": "Brushed gold", "price": 862 },
+            { "sku": "IN.432.60.7", "finish": "Brushed stainless steel", "price": 862 }
+          ]
+        },
+        {
+          "slug": "armera-dock",
+          "name": "ARMERA-DOCK first fix housing for concealed valves",
+          "image": "p075_03.png",
+          "variants": [
+            { "sku": "TH.310", "finish": "First fix housing", "price": 177 }
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "landscape-concealed",
+      "name": "Landscape",
+      "title": "Landscape thermostatic valves",
+      "tagline": "Elongate your showering design and functionality with the safety and comfort of thermostatic technology.",
+      "hero": { "img": "p076_01.png", "caption": "Maze Index 3 outlet concealed landscape thermostatic valve in chrome." },
+      "products": [
+        {
+          "slug": "pivot-3-outlet-landscape-valve",
+          "name": "Pivot 3 outlet concealed landscape thermostatic valve",
+          "image": "p077_01.png",
+          "note": "This valve comes complete with built in box containing all parts and trim.",
+          "variants": [
+            { "sku": "PI.383.67.4", "finish": "Chrome", "price": 856 },
+            { "sku": "PI.383.67.5", "finish": "Brushed black", "price": 997 },
+            { "sku": "PI.383.67.6", "finish": "Brushed gold", "price": 997 },
+            { "sku": "PI.383.67.7", "finish": "Brushed stainless steel", "price": 997 }
+          ]
+        },
+        {
+          "slug": "index-3-outlet-landscape-valve",
+          "name": "Index 3 outlet concealed landscape thermostatic valve",
+          "image": "p077_02.png",
+          "note": "This valve comes complete with built in box containing all parts and trim.",
+          "variants": [
+            { "sku": "IN.373.61.4", "finish": "Chrome", "price": 856 },
+            { "sku": "IN.373.61.5", "finish": "Brushed black", "price": 997 },
+            { "sku": "IN.373.61.6", "finish": "Brushed gold", "price": 997 },
+            { "sku": "IN.373.61.7", "finish": "Brushed stainless steel", "price": 997 }
+          ]
+        },
+        {
+          "slug": "maze-index-3-outlet-landscape-valve",
+          "name": "Maze Index 3 outlet concealed landscape thermostatic valve",
+          "image": "p077_03.png",
+          "note": "This valve comes complete with built in box containing all parts and trim.",
+          "variants": [
+            { "sku": "IN.473.61.4", "finish": "Chrome", "price": 893 },
+            { "sku": "IN.473.61.5", "finish": "Brushed black", "price": 1039 },
+            { "sku": "IN.473.61.6", "finish": "Brushed gold", "price": 1039 },
+            { "sku": "IN.473.61.7", "finish": "Brushed stainless steel", "price": 1039 }
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "exposed-valves",
+      "name": "Exposed",
+      "title": "Exposed thermostatic valves",
+      "tagline": "Precision engineered thermostatic showering with the safety and comfort of thermostatic technology.",
+      "hero": { "img": "p083_01.png", "caption": "Rio Round in brushed black. Also shown Maze wall mounted basin mixer in brushed black with round counter top basin and brushed black bottle trap." },
+      "products": [
+        {
+          "slug": "exposed-thermostatic-shower-valve",
+          "name": "Exposed ½” thermostatic shower valve",
+          "image": "p078_01.png",
+          "variants": [
+            { "sku": "TH.365.66.4", "finish": "Chrome", "price": 229 },
+            { "sku": "TH.365.66.5", "finish": "Brushed black", "price": 331 },
+            { "sku": "TH.365.66.6", "finish": "Brushed gold", "price": 331 },
+            { "sku": "TH.365.66.7", "finish": "Brushed stainless steel", "price": 331 }
+          ]
+        },
+        {
+          "slug": "exposed-thermostatic-bath-shower-mixer",
+          "name": "Exposed thermostatic bath shower mixer",
+          "image": "p078_02.png",
+          "note": "Chrome only.",
+          "variants": [
+            { "sku": "TH.325.4", "finish": "Chrome", "price": 356 }
+          ]
+        },
+        {
+          "slug": "solace-set",
+          "name": "Solace set",
+          "image": "p078_05.png",
+          "note": "Includes fast fix brackets.",
+          "variants": [
+            { "sku": "SS.365.468.66.4", "finish": "Chrome", "price": 384 }
+          ]
+        },
+        {
+          "slug": "fast-fix-brackets",
+          "name": "Fast fix brackets (1 pair)",
+          "image": "p078_03.png",
+          "variants": [
+            { "sku": "SH.901.4", "finish": "Chrome", "price": 43 },
+            { "sku": "SH.901.5", "finish": "Brushed black", "price": 60 },
+            { "sku": "SH.901.6", "finish": "Brushed gold", "price": 60 },
+            { "sku": "SH.901.7", "finish": "Brushed stainless steel", "price": 60 }
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "rio",
+      "name": "Rio",
+      "title": "Rio exposed rigid riser shower kits",
+      "tagline": "Exposed 2 outlet shower sets with adjustable height for ultimate flexibility.",
+      "features": [
+        "Metal shower head",
+        "Co-ordinating coloured face plates on shower handsets",
+        "Smoothflex hose",
+        "Thermostatic technology for safety & comfort"
+      ],
+      "hero": { "img": "p083_01.png", "caption": "Rio Round in brushed black. Also shown Maze wall mounted basin mixer in brushed black with round counter top basin and brushed black bottle trap. Scene 600mm mirror." },
+      "products": [
+        {
+          "slug": "rio-round-rigid-riser-kit",
+          "name": "Rio exposed round 2 outlet thermostatic valve with rigid riser shower kit",
+          "image": "p079_02.png",
+          "note": "Adjustable height 730–1170mm. Includes fast-fix brackets.",
+          "variants": [
+            { "sku": "RI.452.66.4", "finish": "Chrome", "price": 642 },
+            { "sku": "RI.452.66.5", "finish": "Brushed black", "price": 900 },
+            { "sku": "RI.452.66.6", "finish": "Brushed gold", "price": 900 },
+            { "sku": "RI.452.66.7", "finish": "Brushed stainless steel", "price": 900 }
+          ]
+        },
+        {
+          "slug": "rio-square-rigid-riser-kit",
+          "name": "Rio exposed square 2 outlet thermostatic valve with rigid riser shower kit",
+          "image": "p079_01.png",
+          "note": "Adjustable height 780–1210mm. Includes fast-fix brackets.",
+          "variants": [
+            { "sku": "RI.452.55.4", "finish": "Chrome", "price": 712 },
+            { "sku": "RI.452.55.5", "finish": "Brushed black", "price": 1000 }
+          ]
+        }
+      ]
+    }
+  ]
+}

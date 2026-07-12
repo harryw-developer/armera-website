@@ -1,0 +1,23 @@
+{
+  "brand": "ARMERA",
+  "strapline": "Designed to Inspire",
+  "straplineSub": "Thoughtful interiors created by striking & beautiful bathroomware",
+  "phone": "01225 251204",
+  "email": "info@armera.co.uk",
+  "address": "Units 1 & 2 Northlands Industrial Estate, Copheap Lane, Warminster, Wiltshire BA12 0BG, UK",
+  "priceNote": "All prices are our Recommended Retail Price (RRP) including VAT.",
+  "guarantee": [
+    { "years": 25, "covers": "Ceramic toilets and basins" },
+    { "years": 15, "covers": "All brassware, including taps, thermostatics, showering, accessories and bath wastes" },
+    { "years": 10, "covers": "Furniture" },
+    { "years": 5, "covers": "Concealed cisterns, mirrors*, flushing mechanisms and WC seats" }
+  ],
+  "guaranteeNote": "2 years guarantee for parts & labour, extended as above for parts only when registered on armera.co.uk. *2 years on electrical components.",
+  "finishNames": {
+    "4": "Chrome",
+    "5": "Brushed black",
+    "6": "Brushed gold",
+    "7": "Brushed stainless steel",
+    "17": "Matt white"
+  }
+}
