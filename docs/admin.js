@@ -293,37 +293,14 @@
     box.appendChild(lbl('Note shown on the product page (optional)')); box.appendChild(note);
     box.appendChild(lbl('Footnote (optional)')); box.appendChild(footnote);
 
-    /* images */
-    var hasCodes = !!p.imagesByCode;
-    if (hasCodes && range.swatches) {
-      box.appendChild(lbl('Product photos per colour (upload to replace)'));
-      range.swatches.forEach(function (s) {
-        var r = el('div', { class: 'adm-row', style: 'margin-bottom:8px' });
-        r.appendChild(el('span', { class: 'small', style: 'width:140px', text: s.name + ' (' + (p.imagesByCode[s.code] || 'none') + ')' }));
-        var f = el('input', { type: 'file', accept: 'image/*' });
-        f.addEventListener('change', function () {
-          if (!f.files[0]) return;
-          uploadTo('products', f.files[0]).then(function (fname) { p.imagesByCode[s.code] = fname; msg(box, s.name + ' photo uploaded.', 'ok'); })
-            .catch(function (e) { msg(box, 'Upload failed: ' + e.message, 'err'); });
-        });
-        r.appendChild(f);
-        box.appendChild(r);
-      });
-    } else {
-      box.appendChild(lbl('Product photo — current: ' + (p.image || 'none') + ' (upload to replace)'));
-      var f = el('input', { type: 'file', accept: 'image/*' });
-      f.addEventListener('change', function () {
-        if (!f.files[0]) return;
-        uploadTo('products', f.files[0]).then(function (fname) { p.image = fname; msg(box, 'Photo uploaded.', 'ok'); })
-          .catch(function (e) { msg(box, 'Upload failed: ' + e.message, 'err'); });
-      });
-      box.appendChild(f);
-    }
-
-    /* variants */
+    /* variants (drawn first — the photo slots below follow the option rows) */
     box.appendChild(lbl('Options & pricing (code · finish/option · colour code · RRP £)'));
     var vWrap = el('div', {});
     var variants = p.variants.map(function (v) { return Object.assign({}, v); });
+    var imagesByCode = Object.assign({}, p.imagesByCode || {});
+    var singleImage = p.image || null;
+
+    var drawImages = function () {}; // redefined below; re-run when option colour codes change
     var drawV = function () {
       vWrap.innerHTML = '';
       variants.forEach(function (v, i) {
@@ -334,17 +311,79 @@
         var price = el('input', { type: 'number', value: v.price || 0, min: '0', step: '1' });
         sku.addEventListener('input', function () { v.sku = sku.value.trim(); });
         fin.addEventListener('input', function () { v.finish = fin.value; });
+        fin.addEventListener('change', function () { drawImages(); });
         code.addEventListener('input', function () { v.code = code.value.trim(); });
+        code.addEventListener('change', function () { drawImages(); });
         price.addEventListener('input', function () { v.price = +price.value; });
         r.appendChild(sku); r.appendChild(fin); r.appendChild(code); r.appendChild(price);
-        r.appendChild(el('button', { class: 'abtn abtn--danger abtn--sm', type: 'button', text: '×', onclick: function () { variants.splice(i, 1); drawV(); } }));
+        r.appendChild(el('button', { class: 'abtn abtn--danger abtn--sm', type: 'button', text: '×', onclick: function () { variants.splice(i, 1); drawV(); drawImages(); } }));
         vWrap.appendChild(r);
       });
     };
     drawV();
     box.appendChild(vWrap);
-    box.appendChild(el('button', { class: 'abtn abtn--ghost abtn--sm', type: 'button', text: 'Add option', onclick: function () { variants.push({ sku: '', finish: '', price: 0 }); drawV(); } }));
-    box.appendChild(el('p', { class: 'hint', text: 'The colour code links an option to a colour swatch and its photo (furniture only) — leave blank for brassware finishes.' }));
+    box.appendChild(el('button', { class: 'abtn abtn--ghost abtn--sm', type: 'button', text: 'Add option', onclick: function () { variants.push({ sku: '', finish: '', price: 0 }); drawV(); drawImages(); } }));
+    box.appendChild(el('p', { class: 'hint', text: 'Give an option a colour code (a short label such as 11 or blue) and a photo slot for that colour appears below. Leave the code blank for finishes that share one photo. Use the same code under Range details → Colours so the colour swatch shows too.' }));
+
+    /* photos — one slot per colour code, or a single slot when no codes are used */
+    box.appendChild(lbl('Photos'));
+    var imgWrap = el('div', {});
+    box.appendChild(imgWrap);
+
+    var thumbFor = function (fname) {
+      var t = el('div', { class: 'thumb' });
+      if (fname) t.appendChild(el('img', { src: cfg.assets + '/products/' + encodeURIComponent(fname), alt: '' }));
+      else t.appendChild(el('span', { text: '—' }));
+      return t;
+    };
+    var codesInUse = function () {
+      var seen = [], out = [];
+      variants.forEach(function (v) {
+        if (v.code && seen.indexOf(v.code) === -1) {
+          seen.push(v.code);
+          out.push({ code: v.code, label: v.finish || 'Code ' + v.code });
+        }
+      });
+      return out;
+    };
+    drawImages = function () {
+      imgWrap.innerHTML = '';
+      var codes = codesInUse();
+      if (codes.length) {
+        codes.forEach(function (c) {
+          var row = el('div', { class: 'imgrow' });
+          row.appendChild(thumbFor(imagesByCode[c.code]));
+          row.appendChild(el('span', { class: 'small', text: c.label + (imagesByCode[c.code] ? '' : ' — needs a photo') }));
+          var f = el('input', { type: 'file', accept: 'image/*' });
+          f.addEventListener('change', function () {
+            if (!f.files[0]) return;
+            uploadTo('products', f.files[0]).then(function (fname) {
+              imagesByCode[c.code] = fname;
+              drawImages();
+              msg(box, c.label + ' photo uploaded — remember to Save product.', 'ok');
+            }).catch(function (e) { msg(box, 'Upload failed: ' + e.message, 'err'); });
+          });
+          row.appendChild(f);
+          imgWrap.appendChild(row);
+        });
+      } else {
+        var row = el('div', { class: 'imgrow' });
+        row.appendChild(thumbFor(singleImage));
+        row.appendChild(el('span', { class: 'small', text: singleImage ? 'Product photo' : 'No photo yet' }));
+        var f = el('input', { type: 'file', accept: 'image/*' });
+        f.addEventListener('change', function () {
+          if (!f.files[0]) return;
+          uploadTo('products', f.files[0]).then(function (fname) {
+            singleImage = fname;
+            drawImages();
+            msg(box, 'Photo uploaded — remember to Save product.', 'ok');
+          }).catch(function (e) { msg(box, 'Upload failed: ' + e.message, 'err'); });
+        });
+        row.appendChild(f);
+        imgWrap.appendChild(row);
+      }
+    };
+    drawImages();
 
     var save = el('button', {
       class: 'abtn', text: 'Save product', type: 'button', style: 'margin-top:22px;display:block',
@@ -359,7 +398,21 @@
           return o;
         });
         if (!p.variants.length) { msg(box, 'A product needs at least one priced option.', 'err'); return; }
-        saveRow(state.catKey, box);
+        // persist photos: keep only images for colour codes still in use
+        var okText;
+        var codes = codesInUse().map(function (c) { return c.code; });
+        if (codes.length) {
+          p.imagesByCode = {};
+          codes.forEach(function (c) { if (imagesByCode[c]) p.imagesByCode[c] = imagesByCode[c]; });
+          if (!Object.keys(p.imagesByCode).length) delete p.imagesByCode;
+          delete p.image;
+          var missing = codesInUse().filter(function (c) { return !imagesByCode[c.code]; });
+          if (missing.length) okText = 'Saved. Note: ' + missing.map(function (c) { return c.label; }).join(', ') + ' still need' + (missing.length === 1 ? 's' : '') + ' a photo — another image will stand in until one is uploaded.';
+        } else {
+          if (singleImage) p.image = singleImage; else delete p.image;
+          delete p.imagesByCode;
+        }
+        saveRow(state.catKey, box, okText);
       }
     });
     box.appendChild(save);

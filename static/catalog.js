@@ -26,6 +26,9 @@
   function mainImage(p) {
     return p.image || (p.imagesByCode ? p.imagesByCode[Object.keys(p.imagesByCode)[0]] : null);
   }
+  var BLANK = 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==';
+  function prodImgSafe(f) { return f ? prodImg(f) : BLANK; }
+  function codeImage(p, code) { return (p.imagesByCode && p.imagesByCode[code]) || mainImage(p); }
 
   // Only water-using products carry the WRAS line.
   function isWaterUsing(cat, range, p) {
@@ -139,7 +142,7 @@
       '<section class="pad--tight"><div class="grid grid--3">' +
       range.products.map(function (p) {
         return '<a class="tile" href="' + u('/products/' + cat.slug + '/' + range.slug + '/' + p.slug + '/') + '">' +
-          '<div class="frame cutout"><img src="' + prodImg(mainImage(p)) + '" alt="' + esc(p.name) + '" loading="lazy"></div>' +
+          '<div class="frame cutout"><img src="' + prodImgSafe(mainImage(p)) + '" alt="' + esc(p.name) + '" loading="lazy"></div>' +
           '<div class="meta"><div class="name">' + esc(p.name) + '</div>' +
           (p.dims ? '<div class="sub">' + esc(p.dims) + (/x/.test(p.dims) ? ' mm' : '') + '</div>' : '') +
           '<div class="pricefrom">' + fromLabel(p) + ' <span class="small">RRP</span></div>' +
@@ -152,7 +155,7 @@
   function productView(cat, range, p) {
     document.title = p.name + ' — ' + range.title + ' — ARMERA';
     var hasColours = !!p.imagesByCode && !!(range.swatches && range.swatches.length);
-    var heroImg = hasColours ? p.imagesByCode[p.variants[0].code] : mainImage(p);
+    var heroImg = hasColours ? codeImage(p, p.variants[0].code) : mainImage(p);
 
     var swatchButtons = '';
     if (hasColours) {
@@ -160,7 +163,7 @@
         p.variants.map(function (v, i) {
           var s = (range.swatches || []).filter(function (x) { return x.code === v.code; })[0];
           var bg = s && s.img ? 'background-image:url(\'' + swatchImg(s.img) + '\')' : 'background:#fff';
-          return '<button type="button" class="' + (i === 0 ? 'on' : '') + '" style="' + bg + '" data-img="' + prodImg(p.imagesByCode[v.code]) + '" data-name="' + esc(v.finish) + '" data-code="' + esc(v.code) + '" aria-label="' + esc(v.finish) + '"></button>';
+          return '<button type="button" class="' + (i === 0 ? 'on' : '') + '" style="' + bg + '" data-img="' + prodImgSafe(codeImage(p, v.code)) + '" data-name="' + esc(v.finish) + '" data-code="' + esc(v.code) + '" aria-label="' + esc(v.finish) + '"></button>';
         }).join('') + '</div></div>';
     }
 
@@ -200,14 +203,14 @@
       '<a class="more" href="' + u('/products/' + cat.slug + '/' + range.slug + '/') + '">View all</a></div>' +
       '<div class="grid grid--4">' + related.map(function (x) {
         return '<a class="tile" href="' + u('/products/' + cat.slug + '/' + range.slug + '/' + x.slug + '/') + '">' +
-          '<div class="frame cutout"><img src="' + prodImg(mainImage(x)) + '" alt="' + esc(x.name) + '" loading="lazy"></div>' +
+          '<div class="frame cutout"><img src="' + prodImgSafe(mainImage(x)) + '" alt="' + esc(x.name) + '" loading="lazy"></div>' +
           '<div class="meta"><div class="name" style="font-size:16px">' + esc(x.name) + '</div>' +
           '<div class="pricefrom">' + fromLabel(x) + '</div></div></a>';
       }).join('') + '</div></section>' : '';
 
     return crumbs([{ label: 'Home', href: '/' }, { label: 'Products', href: '/products/' }, { label: cat.name, href: '/products/' + cat.slug + '/' }, { label: range.name, href: '/products/' + cat.slug + '/' + range.slug + '/' }, { label: p.name }]) +
       '<section class="pad--tight"><div class="pdp">' +
-      '<div class="stage"><div class="inner"><img src="' + prodImg(heroImg) + '" alt="' + esc(range.name) + ' ' + esc(p.name) + '"></div>' + gallery + '</div>' +
+      '<div class="stage"><div class="inner"><img src="' + prodImgSafe(heroImg) + '" alt="' + esc(range.name) + ' ' + esc(p.name) + '"></div>' + gallery + '</div>' +
       '<div class="info"><span class="eyebrow">' + esc(range.title) + '</span>' +
       '<h1>' + esc(p.name) + '</h1>' +
       (p.dims ? '<p class="dims">' + esc(p.dims) + (/x/.test(p.dims) ? ' mm' : '') + '</p>' : '') +

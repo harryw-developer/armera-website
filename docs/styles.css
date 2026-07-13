@@ -366,3 +366,9 @@ footer.site .fine .admin-link:hover { color: #b6ae9e; }
 .adm details summary { cursor: pointer; font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
 .adm hr.rule { margin: 34px 0; }
 @media (max-width: 700px) { .vrow, .srow { grid-template-columns: 1fr 1fr; } }
+
+/* admin photo slots */
+.imgrow { display: grid; grid-template-columns: 72px 1fr 1.4fr; gap: 14px; align-items: center; margin-bottom: 10px; border: 1px solid var(--line); background: var(--paper); padding: 8px 12px 8px 8px; }
+.imgrow .thumb { width: 72px; height: 72px; background: var(--tile); display: flex; align-items: center; justify-content: center; color: var(--line-dark); overflow: hidden; }
+.imgrow .thumb img { max-width: 100%; max-height: 100%; object-fit: contain; mix-blend-mode: multiply; padding: 6px; }
+@media (max-width: 700px) { .imgrow { grid-template-columns: 72px 1fr; } }
