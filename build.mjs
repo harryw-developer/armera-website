@@ -119,6 +119,7 @@ ${body}
           <li><a href="/inspiration/">Inspiration</a></li>
           <li><a href="/support/">Support</a></li>
           <li><a href="/support/instructions/">Instructions</a></li>
+          <li><a href="/support/how-to-videos/">How-to videos</a></li>
           <li><a href="/contact/">Contact us</a></li>
         </ul>
       </div>
@@ -135,7 +136,6 @@ ${body}
       <span>© ${new Date().getFullYear()} ARMERA. All rights reserved.</span>
       <span>Water-using products conform to the Water Regulatory Advisory Scheme (WRAS)</span>
       <span>${esc(site.priceNote)}</span>
-      <a class="admin-link" href="/admin/" rel="nofollow">Sign in</a>
     </div>
   </div>
 </footer>
@@ -181,7 +181,6 @@ function homePage() {
   <div class="veil"></div>
   <div class="content">
     <div class="container">
-      <span class="eyebrow" data-ck="home.eyebrow">Bathroomware, considered</span>
       <h1 data-ck="home.heading">Designed to inspire</h1>
       <p class="lede" data-ck="home.lede">Thoughtful interiors created by striking &amp; beautiful bathroomware — a complete and coordinated collection, finished to the finest detail.</p>
       <a class="btn" href="/products/">Explore the collection</a>
@@ -253,7 +252,6 @@ function homePage() {
   <div class="container">
     <div class="split">
       <div class="copy">
-        <span class="eyebrow">Special finishes</span>
         <h2>Coordinated across the entire range</h2>
         <p>Special finish options include the sleek brushed black, an elegant brushed gold and the smart brushed stainless steel. Match your brassware in your chosen finish to accessories, flush plates, toilet hinge cover caps, basin wastes and overflows.</p>
         <p>We have an array of colour and finish options for our furniture, ranging from our opulent Walnut Noir to the contemporary Cavern Blue.</p>
@@ -429,7 +427,6 @@ ${crumbs([{ label: 'Home', href: '/' }, { label: 'About' }])}
 </section>
 <section class="band-dark pad">
   <div class="container">
-    <span class="eyebrow">Quality, guaranteed</span>
     <h2 style="margin:14px 0 40px">Guarantees you can build on</h2>
     <div class="gband">
       ${site.guarantee.map(g => `
@@ -475,6 +472,12 @@ ${crumbs([{ label: 'Home', href: '/' }, { label: 'Support' }])}
         <h3>Instructions</h3>
         <p>Installation and product instructions for the ARMERA collection, available to view and download as PDF.</p>
         <a class="link" href="/support/instructions/">View instructions</a>
+      </div>
+      <div class="info-card">
+        <span class="eyebrow">Videos</span>
+        <h3>How-to videos</h3>
+        <p>Short films covering valve calibration, temperature and flow adjustments, and everyday maintenance.</p>
+        <a class="link" href="/support/how-to-videos/">Watch the videos</a>
       </div>
       <div class="info-card">
         <span class="eyebrow">Guarantee</span>
@@ -529,6 +532,34 @@ ${crumbs([{ label: 'Home', href: '/' }, { label: 'Support', href: '/support/' },
     path: '/support/',
     body,
     extraBody: `<script src="/instructions.js" type="module"></script>`
+  }));
+}
+
+function videosPage() {
+  const body = `
+${crumbs([{ label: 'Home', href: '/' }, { label: 'Support', href: '/support/' }, { label: 'How-to videos' }])}
+<section class="pad--tight">
+  <div class="container">
+    <span class="eyebrow">Videos</span>
+    <h1 style="margin:14px 0 18px">How-to videos</h1>
+    <p class="lede" style="max-width:56ch">Short films covering valve calibration, temperature and flow adjustments, and everyday maintenance. Each video opens on YouTube.</p>
+  </div>
+</section>
+<section class="pad--tight">
+  <div class="container">
+    <div class="video-grid" id="video-grid"></div>
+    <div class="empty-note" id="video-empty" style="display:none">
+      Videos are being added. In the meantime, please call <a href="tel:01225251204" style="border-bottom:1px solid var(--line-dark)" data-ck="contact.phone">${site.phone}</a> and we will gladly talk you through it.
+    </div>
+  </div>
+</section>`;
+
+  write('support/how-to-videos/index.html', layout({
+    title: 'How-to videos — Support — ARMERA',
+    desc: 'ARMERA how-to videos: valve calibration, temperature and flow adjustments, and everyday maintenance.',
+    path: '/support/',
+    body,
+    extraBody: `<script src="/videos.js" defer></script>`
   }));
 }
 
@@ -601,7 +632,7 @@ writeFileSync(join(DIST, '.nojekyll'), '');
 
 const css = readFileSync(join(ROOT, 'static/styles.css'), 'utf8').replaceAll('ASSETS', ASSETS);
 writeFileSync(join(DIST, 'styles.css'), css);
-for (const f of ['site.js', 'catalog.js', 'instructions.js', 'admin.js']) {
+for (const f of ['site.js', 'catalog.js', 'instructions.js', 'videos.js', 'admin.js']) {
   writeFileSync(join(DIST, f), readFileSync(join(ROOT, 'static', f)));
 }
 
@@ -611,6 +642,7 @@ inspirationPage();
 aboutPage();
 supportPage();
 instructionsPage();
+videosPage();
 contactPage();
 adminPage();
 

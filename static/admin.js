@@ -7,7 +7,7 @@
   if (!root || !cfg || !window.supabase) return;
   var sb = window.supabase.createClient(cfg.supabaseUrl, cfg.anonKey);
 
-  var state = { rows: {}, keys: [], tab: 'catalogue', catKey: null, rangeIdx: 0, editing: null };
+  var state = { rows: {}, keys: [], tab: 'catalogue', catKey: null, rangeIdx: 0, editing: null, user: null };
 
   var el = function (tag, attrs, children) {
     var n = document.createElement(tag);
@@ -51,6 +51,14 @@
         else msg(target, okText || 'Saved. Changes are live on the site.', 'ok');
       });
   }
+  function saveRowUpsert(key, target, okText) {
+    return sb.from('site_content')
+      .upsert({ key: key, data: state.rows[key], updated_at: new Date().toISOString() })
+      .then(function (res) {
+        if (res.error) msg(target, 'Could not save: ' + res.error.message, 'err');
+        else msg(target, okText || 'Saved. Changes are live on the site.', 'ok');
+      });
+  }
   function uploadTo(folder, file) {
     var name = slugify(file.name.replace(/\.[^.]+$/, '')) + file.name.match(/\.[^.]+$/)[0].toLowerCase();
     return sb.storage.from('site-assets').upload(folder + '/' + name, file, { upsert: true, cacheControl: '3600' })
@@ -89,23 +97,55 @@
   }
 
   /* ---------- shell ---------- */
+  function displayName() {
+    var m = (state.user && state.user.user_metadata) || {};
+    return m.display_name || m.full_name || m.name || '';
+  }
+  function greeting() {
+    var name = displayName();
+    if (!name) return 'Welcome';
+    var h = new Date().getHours();
+    return (h < 12 ? 'Good morning' : h < 18 ? 'Good afternoon' : 'Good evening') + ', ' + name;
+  }
+
   function renderShell() {
     root.innerHTML = '';
     var wrap = el('div', { class: 'adm' });
     var head = el('div', { class: 'adm-head' });
-    head.appendChild(el('div', { html: '<span class="eyebrow">ARMERA</span><h1 style="margin-top:10px;font-size:34px">Site admin</h1>' }));
+    var hd = el('div', {});
+    hd.appendChild(el('span', { class: 'eyebrow', text: 'ARMERA — Site admin' }));
+    hd.appendChild(el('h1', { style: 'margin-top:10px;font-size:34px', text: greeting() }));
+    head.appendChild(hd);
     var out = el('button', { class: 'abtn abtn--ghost abtn--sm', text: 'Sign out', onclick: function () { sb.auth.signOut().then(function () { renderLogin(); }); } });
     head.appendChild(out);
     wrap.appendChild(head);
 
     var tabs = el('div', { class: 'adm-tabs' });
-    [['catalogue', 'Catalogue'], ['pages', 'Pages'], ['instructions', 'Instructions'], ['account', 'Account']].forEach(function (t) {
+    [['catalogue', 'Catalogue'], ['pages', 'Pages'], ['instructions', 'Instructions'], ['videos', 'Videos'], ['account', 'Account']].forEach(function (t) {
       tabs.appendChild(el('button', {
         class: state.tab === t[0] ? 'on' : '', text: t[1],
         onclick: function () { state.tab = t[0]; state.editing = null; renderShell(); }
       }));
     });
     wrap.appendChild(tabs);
+
+    if (!displayName()) {
+      var nameBox = el('div', { class: 'adm-panel', style: 'margin-bottom:26px;border:1px solid var(--line);background:var(--paper);padding:18px 22px;max-width:520px' });
+      nameBox.appendChild(el('p', { class: 'small', text: 'What should we call you? Your name is only used for this greeting.' }));
+      var nameIn = el('input', { type: 'text', placeholder: 'Your name', style: 'margin-top:10px' });
+      var nameBtn = el('button', { class: 'abtn abtn--sm', text: 'Save', style: 'margin-top:12px' });
+      nameBtn.addEventListener('click', function () {
+        var v = nameIn.value.trim();
+        if (!v) return;
+        sb.auth.updateUser({ data: { display_name: v } }).then(function (res) {
+          if (!res.error && res.data && res.data.user) state.user = res.data.user;
+          renderShell();
+        });
+      });
+      nameBox.appendChild(nameIn);
+      nameBox.appendChild(el('div', {}, [nameBtn]));
+      wrap.appendChild(nameBox);
+    }
 
     var panel = el('div', { class: 'adm-panel' });
     wrap.appendChild(panel);
@@ -114,6 +154,7 @@
     if (state.tab === 'catalogue') renderCatalogue(panel);
     if (state.tab === 'pages') renderPages(panel);
     if (state.tab === 'instructions') renderInstructions(panel);
+    if (state.tab === 'videos') renderVideos(panel);
     if (state.tab === 'account') renderAccount(panel);
   }
 
@@ -426,10 +467,8 @@
     var lbl = function (t) { return el('label', { text: t }); };
 
     panel.appendChild(el('h3', { text: 'Homepage' }));
-    var hEyebrow = el('input', { type: 'text', value: pages.home.eyebrow || '' });
     var hHeading = el('input', { type: 'text', value: pages.home.heading || '' });
     var hLede = el('textarea', { text: pages.home.lede || '' });
-    panel.appendChild(lbl('Small line above the heading')); panel.appendChild(hEyebrow);
     panel.appendChild(lbl('Main heading')); panel.appendChild(hHeading);
     panel.appendChild(lbl('Intro sentence')); panel.appendChild(hLede);
 
@@ -472,7 +511,7 @@
     panel.appendChild(el('button', {
       class: 'abtn', text: 'Save page text', style: 'margin-top:24px;display:block',
       onclick: function () {
-        pages.home = { eyebrow: hEyebrow.value.trim(), heading: hHeading.value.trim(), lede: hLede.value.trim() };
+        pages.home = { heading: hHeading.value.trim(), lede: hLede.value.trim() };
         pages.about.heading = aHeading.value.trim();
         pages.about.sections = sections.filter(function (s) { return s.side || (s.paras && s.paras.length); });
         pages.support.spares = spares.value.trim();
@@ -536,8 +575,87 @@
     });
   }
 
+  /* ---------- videos tab ---------- */
+  function renderVideos(panel) {
+    var videos = state.rows.videos;
+    if (!Array.isArray(videos)) { videos = []; state.rows.videos = videos; }
+
+    panel.appendChild(el('h3', { text: 'How-to videos' }));
+    panel.appendChild(el('p', { class: 'hint', text: 'These appear on the public How-to videos page in this order. Each card shows the uploaded thumbnail and opens the YouTube link.' }));
+    var list = el('div', { class: 'adm-list' });
+    panel.appendChild(list);
+
+    var persist = function () { return saveRowUpsert('videos', panel); };
+    var draw = function () {
+      list.innerHTML = '';
+      videos.forEach(function (v, i) {
+        var item = el('div', { class: 'item' });
+        var th = el('div', { class: 'thumb', style: 'width:54px;height:54px;background:var(--tile);display:flex;align-items:center;justify-content:center;overflow:hidden;flex:none' });
+        if (v.thumb) th.appendChild(el('img', { src: cfg.assets + '/videos/' + encodeURIComponent(v.thumb), alt: '', style: 'width:100%;height:100%;object-fit:cover' }));
+        item.appendChild(th);
+        item.appendChild(el('span', { class: 'nm', html: '' }));
+        item.querySelector('.nm').appendChild(el('span', { text: v.title }));
+        item.querySelector('.nm').appendChild(el('span', { class: 'dim', style: 'display:block;font-size:11.5px', text: v.url }));
+        item.appendChild(el('button', { class: 'abtn abtn--ghost abtn--sm', text: '↑', onclick: function () { if (i > 0) { videos.splice(i - 1, 0, videos.splice(i, 1)[0]); draw(); persist(); } } }));
+        item.appendChild(el('button', { class: 'abtn abtn--ghost abtn--sm', text: '↓', onclick: function () { if (i < videos.length - 1) { videos.splice(i + 1, 0, videos.splice(i, 1)[0]); draw(); persist(); } } }));
+        item.appendChild(el('button', {
+          class: 'abtn abtn--danger abtn--sm', text: 'Remove',
+          onclick: function () {
+            if (!confirm('Remove "' + v.title + '" from the site?')) return;
+            videos.splice(i, 1);
+            draw();
+            persist();
+          }
+        }));
+        list.appendChild(item);
+      });
+      if (!videos.length) list.appendChild(el('div', { class: 'item', html: '<span class="dim">No videos yet — add the first one below.</span>' }));
+    };
+    draw();
+
+    panel.appendChild(el('hr', { class: 'rule' }));
+    panel.appendChild(el('h3', { text: 'Add a video' }));
+    var lbl = function (t) { return el('label', { text: t }); };
+    var title = el('input', { type: 'text', placeholder: 'How to remove a flow regulator' });
+    var url = el('input', { type: 'text', placeholder: 'https://www.youtube.com/watch?v=…' });
+    var thumbFile = el('input', { type: 'file', accept: 'image/*' });
+    panel.appendChild(lbl('Title')); panel.appendChild(title);
+    panel.appendChild(lbl('YouTube link')); panel.appendChild(url);
+    panel.appendChild(lbl('Thumbnail image')); panel.appendChild(thumbFile);
+    panel.appendChild(el('button', {
+      class: 'abtn', text: 'Add video', style: 'margin-top:20px;display:block',
+      onclick: function () {
+        var t = title.value.trim(), u = url.value.trim();
+        if (!t) return msg(panel, 'Please give the video a title.', 'err');
+        if (!/^https?:\/\//.test(u)) return msg(panel, 'Please paste the full YouTube link (starting https://).', 'err');
+        if (!thumbFile.files[0]) return msg(panel, 'Please choose a thumbnail image.', 'err');
+        uploadTo('videos', thumbFile.files[0]).then(function (fname) {
+          videos.push({ title: t, url: u, thumb: fname });
+          title.value = url.value = ''; thumbFile.value = '';
+          draw();
+          return persist();
+        }).catch(function (e) { msg(panel, 'Thumbnail upload failed: ' + e.message, 'err'); });
+      }
+    }));
+  }
+
   /* ---------- account tab ---------- */
   function renderAccount(panel) {
+    panel.appendChild(el('h3', { text: 'Your name' }));
+    var nm = el('input', { type: 'text', value: displayName() });
+    panel.appendChild(el('label', { text: 'Display name (used for the greeting)' }));
+    panel.appendChild(nm);
+    panel.appendChild(el('button', {
+      class: 'abtn abtn--ghost abtn--sm', text: 'Update name', style: 'margin-top:14px;display:block',
+      onclick: function () {
+        sb.auth.updateUser({ data: { display_name: nm.value.trim() } }).then(function (res) {
+          if (res.error) return msg(panel, res.error.message, 'err');
+          if (res.data && res.data.user) state.user = res.data.user;
+          renderShell();
+        });
+      }
+    }));
+    panel.appendChild(el('hr', { class: 'rule' }));
     panel.appendChild(el('h3', { text: 'Change password' }));
     var lbl = function (t) { return el('label', { text: t }); };
     var p1 = el('input', { type: 'password', autocomplete: 'new-password' });
@@ -560,7 +678,10 @@
   /* ---------- boot ---------- */
   function boot() {
     root.innerHTML = '<p class="small">Loading…</p>';
-    loadContent().then(renderShell).catch(function (e) {
+    Promise.all([loadContent(), sb.auth.getUser()]).then(function (res) {
+      state.user = res[1] && res[1].data && res[1].data.user;
+      renderShell();
+    }).catch(function (e) {
       renderLogin('Could not load content: ' + (e.message || e));
     });
   }

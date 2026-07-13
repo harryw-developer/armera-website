@@ -13,8 +13,10 @@ files are served from Supabase Storage.
   `docs/404.html` renders any product page added after the last build, so new URLs work too.
 - **Editable text blocks** on the static pages (home hero, About sections, spares line, contact
   details) carry `data-ck` attributes; `static/site.js` overlays the latest values from Supabase.
-- **The admin area** at `/admin/` (discreet "Sign in" link in the footer) uses Supabase Auth.
-  It edits the catalogue (ranges, products, prices, photos), page text, and instruction PDFs.
+- **The admin area** at `/admin/` (unlisted — bookmark the URL, there is no link on the site) uses
+  Supabase Auth. It edits the catalogue (ranges, products, prices, photos), page text, instruction
+  PDFs and the how-to videos (title + YouTube link + uploaded thumbnail, stored in the `videos`
+  content row with thumbnails in `site-assets/videos/`).
 
 ## Building
 
