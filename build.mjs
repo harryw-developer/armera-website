@@ -556,7 +556,7 @@ ${crumbs([{ label: 'Home', href: '/' }, { label: 'Support', href: '/support/' },
 
   write('support/how-to-videos/index.html', layout({
     title: 'How-to videos — Support — ARMERA',
-    desc: 'ARMERA how-to videos: valve calibration, temperature and flow adjustments, and everyday maintenance.',
+    desc: 'ARMERA how-to videos.',
     path: '/support/',
     body,
     extraBody: `<script src="/videos.js" defer></script>`
