@@ -1,7 +1,7 @@
 // Lists instruction PDFs from Supabase storage and renders first-page thumbnails.
 // PDFs uploaded to the "instructions" bucket appear here automatically, ordered by filename.
 (async function () {
-  var cfg = window.ARMERA_CFG;
+  var cfg = window.ARMERA;
   var grid = document.getElementById('pdf-grid');
   var empty = document.getElementById('pdf-empty');
   if (!grid || !cfg) return;
@@ -44,7 +44,7 @@
   var cards = files.map(function (f) {
     var url = cfg.supabaseUrl + '/storage/v1/object/public/' + cfg.instructionsBucket + '/' + encodeURIComponent(f.name);
     var a = document.createElement('a');
-    a.className = 'pdf-card rv in';
+    a.className = 'pdf-card';
     a.href = url;
     a.target = '_blank';
     a.rel = 'noopener';
@@ -59,8 +59,8 @@
 
   // Render first-page thumbnails with pdf.js (hosted on Supabase storage)
   try {
-    var pdfjs = await import(cfg.assetsBase + '/vendor/pdfjs/pdf.min.mjs');
-    pdfjs.GlobalWorkerOptions.workerSrc = cfg.assetsBase + '/vendor/pdfjs/pdf.worker.min.mjs';
+    var pdfjs = await import(cfg.assets + '/vendor/pdfjs/pdf.min.mjs');
+    pdfjs.GlobalWorkerOptions.workerSrc = cfg.assets + '/vendor/pdfjs/pdf.worker.min.mjs';
     for (var i = 0; i < cards.length; i++) {
       (function (card) {
         pdfjs.getDocument({ url: card.url }).promise.then(function (doc) {

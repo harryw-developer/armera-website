@@ -244,7 +244,7 @@ table.pricing tr.hl td { background: #f6f2ea; }
 /* ---------- inspiration ---------- */
 .masonry { columns: 3 340px; column-gap: 22px; }
 .masonry figure { break-inside: avoid; margin: 0 0 22px; overflow: hidden; cursor: zoom-in; position: relative; }
-.masonry img { width: 100%; transition: transform 1s cubic-bezier(.22,.61,.36,1); }
+.masonry img { width: 100%; height: auto; transition: transform 1s cubic-bezier(.22,.61,.36,1); }
 .masonry figure:hover img { transform: scale(1.03); }
 
 .lightbox { position: fixed; inset: 0; z-index: 200; background: rgba(16,15,12,.94); display: none; align-items: center; justify-content: center; padding: 4vmin; }
@@ -326,3 +326,43 @@ footer.site .fine { border-top: 1px solid #2a2820; padding: 26px 0 34px; display
   .addon-card { grid-template-columns: 1fr; }
   body { font-size: 15.5px; }
 }
+
+/* ---------- admin ---------- */
+footer.site .fine .admin-link { color: #4d483d; font-size: 11px; letter-spacing: .18em; text-transform: uppercase; }
+footer.site .fine .admin-link:hover { color: #b6ae9e; }
+
+.adm-head { display: flex; justify-content: space-between; align-items: baseline; gap: 20px; flex-wrap: wrap; margin-bottom: 26px; }
+.adm-tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--line); margin-bottom: 30px; flex-wrap: wrap; }
+.adm-tabs button { background: none; border: 0; border-bottom: 1px solid transparent; margin-bottom: -1px; padding: 12px 18px; font-family: var(--sans); font-size: 12px; letter-spacing: .18em; text-transform: uppercase; color: var(--muted); cursor: pointer; }
+.adm-tabs button.on { color: var(--ink); border-color: var(--ink); }
+
+.adm form, .adm-panel { max-width: 860px; }
+.adm label { display: block; font-size: 11px; letter-spacing: .16em; text-transform: uppercase; color: var(--label); margin: 18px 0 6px; }
+.adm input[type="text"], .adm input[type="password"], .adm input[type="email"], .adm input[type="number"], .adm textarea, .adm select {
+  width: 100%; padding: 10px 12px; border: 1px solid var(--line-dark); background: var(--paper);
+  font-family: var(--sans); font-size: 14.5px; color: var(--ink); border-radius: 0;
+}
+.adm textarea { min-height: 110px; line-height: 1.6; }
+.adm input:focus, .adm textarea:focus, .adm select:focus { outline: none; border-color: var(--ink-soft); }
+.abtn { display: inline-block; padding: 10px 22px; border: 1px solid var(--ink); background: var(--ink); color: #f4f1e9; font-family: var(--sans); font-size: 11.5px; letter-spacing: .2em; text-transform: uppercase; cursor: pointer; }
+.abtn:hover { background: transparent; color: var(--ink); }
+.abtn--ghost { background: transparent; color: var(--ink-soft); border-color: var(--line-dark); }
+.abtn--ghost:hover { border-color: var(--ink); color: var(--ink); }
+.abtn--danger { background: transparent; color: #8a3d2e; border-color: #cfa79c; }
+.abtn--danger:hover { border-color: #8a3d2e; background: transparent; color: #8a3d2e; }
+.abtn--sm { padding: 6px 14px; font-size: 10.5px; }
+.adm-row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+.adm-msg { margin: 18px 0 0; font-size: 13.5px; padding: 12px 16px; border: 1px solid var(--line); background: var(--paper); }
+.adm-msg.err { border-color: #cfa79c; color: #8a3d2e; }
+.adm-msg.ok { border-color: #b5c4a8; color: #4c6440; }
+.adm-list { border-top: 1px solid var(--line); margin-top: 10px; }
+.adm-list .item { display: flex; justify-content: space-between; align-items: center; gap: 14px; padding: 13px 2px; border-bottom: 1px solid var(--line); font-size: 14.5px; flex-wrap: wrap; }
+.adm-list .item .nm { flex: 1; min-width: 200px; }
+.adm-list .item .dim { color: var(--muted); font-size: 12.5px; }
+.vrow { display: grid; grid-template-columns: 1.2fr 1.6fr .6fr .7fr auto; gap: 8px; margin-bottom: 8px; align-items: center; }
+.srow { display: grid; grid-template-columns: .5fr 1.2fr 1.6fr auto; gap: 8px; margin-bottom: 8px; align-items: center; }
+.adm .hint { font-size: 12.5px; color: var(--muted); margin-top: 6px; }
+.adm details { margin-top: 22px; border: 1px solid var(--line); padding: 14px 18px; background: var(--paper); }
+.adm details summary { cursor: pointer; font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+.adm hr.rule { margin: 34px 0; }
+@media (max-width: 700px) { .vrow, .srow { grid-template-columns: 1fr 1fr; } }
