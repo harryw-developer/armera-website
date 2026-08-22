@@ -7,7 +7,7 @@
   if (!root || !cfg || !window.supabase) return;
   var sb = window.supabase.createClient(cfg.supabaseUrl, cfg.anonKey);
 
-  var state = { rows: {}, keys: [], tab: 'catalogue', catKey: null, rangeIdx: 0, editing: null, user: null };
+  var state = { rows: {}, keys: [], tab: 'dashboard', catKey: null, rangeIdx: 0, editing: null, user: null };
 
   var el = function (tag, attrs, children) {
     var n = document.createElement(tag);
@@ -134,7 +134,7 @@
     wrap.appendChild(head);
 
     var tabs = el('div', { class: 'adm-tabs' });
-    [['catalogue', 'Products'], ['pages', 'Pages'], ['retailers', 'Retailers'], ['instructions', 'Instructions'], ['videos', 'Videos'], ['brochure', 'Catalogue'], ['account', 'Account']].forEach(function (t) {
+    [['dashboard', 'Dashboard'], ['catalogue', 'Products'], ['pages', 'Pages'], ['retailers', 'Retailers'], ['instructions', 'Instructions'], ['videos', 'Videos'], ['brochure', 'Catalogue'], ['account', 'Account']].forEach(function (t) {
       tabs.appendChild(el('button', {
         class: state.tab === t[0] ? 'on' : '', text: t[1],
         onclick: function () { state.tab = t[0]; state.editing = null; renderShell(); }
@@ -164,6 +164,7 @@
     wrap.appendChild(panel);
     root.appendChild(wrap);
 
+    if (state.tab === 'dashboard') renderDashboard(panel);
     if (state.tab === 'catalogue') renderCatalogue(panel);
     if (state.tab === 'pages') renderPages(panel);
     if (state.tab === 'instructions') renderInstructions(panel);
@@ -171,6 +172,386 @@
     if (state.tab === 'retailers') renderRetailers(panel);
     if (state.tab === 'brochure') renderBrochure(panel);
     if (state.tab === 'account') renderAccount(panel);
+  }
+
+  // One-time setup for visitor recording (paste into Supabase → SQL Editor).
+  var SETUP_SQL = [
+    'create table if not exists public.page_views (',
+    '  id bigserial primary key,',
+    '  ts timestamptz not null default now(),',
+    '  path text not null check (length(path) between 1 and 300),',
+    '  page_type text check (length(page_type) <= 30),',
+    '  item_name text check (length(item_name) <= 160),',
+    '  item_ref text check (length(item_ref) <= 160),',
+    '  referrer_host text check (length(referrer_host) <= 120),',
+    "  device text check (device in ('mobile','tablet','desktop')),",
+    '  session_id text not null check (length(session_id) between 6 and 40)',
+    ');',
+    '',
+    'create index if not exists page_views_ts_idx on public.page_views (ts desc);',
+    'create index if not exists page_views_type_idx on public.page_views (page_type, ts desc);',
+    'create index if not exists page_views_item_idx on public.page_views (item_name, ts desc);',
+    '',
+    'alter table public.page_views enable row level security;',
+    '',
+    '-- visitors may record a view, but can never read them back',
+    'create policy "anon can record a view" on public.page_views',
+    '  for insert to anon with check (true);',
+    '',
+    '-- only the signed-in admin can read the figures',
+    'create policy "admin reads analytics" on public.page_views',
+    '  for select to authenticated using (true);'
+  ].join('\n');
+
+  /* ---------- dashboard tab ---------- */
+  var DASH = { days: 30, rows: null, err: null };
+
+  function renderDashboard(panel) {
+    panel.appendChild(el('p', { class: 'tab-intro', html:
+      'A live check of the site and what visitors are looking at. ' +
+      'Figures are gathered by the site itself — no cookies, no personal data.' }));
+
+    // --- status card with the animated tick ---
+    var status = el('div', { class: 'dash-status checking' });
+    var tick = el('div', { class: 'tick-wrap', html:
+      '<svg viewBox="0 0 52 52" class="tick"><circle class="tick-ring" cx="26" cy="26" r="24"/>' +
+      '<path class="tick-mark" fill="none" d="M14 27 l8 8 l16 -17"/></svg>' });
+    var statusText = el('div', { class: 'dash-status-text' });
+    statusText.appendChild(el('span', { class: 'eyebrow', text: 'Site health' }));
+    var statusHead = el('h2', { text: 'Checking…' });
+    statusText.appendChild(statusHead);
+    var statusSub = el('p', { class: 'small', text: 'Testing the website, the content store and the files behind it.' });
+    statusText.appendChild(statusSub);
+    status.appendChild(tick);
+    status.appendChild(statusText);
+    panel.appendChild(status);
+
+    var problems = el('div', { class: 'dash-problems' });
+    panel.appendChild(problems);
+
+    // --- visitor stats ---
+    var statsWrap = el('div', {});
+    panel.appendChild(statsWrap);
+
+    runChecks(status, statusHead, statusSub, problems);
+    renderStats(statsWrap);
+  }
+
+  /* ---------- health checks ---------- */
+  function runChecks(status, head, sub, out) {
+    var checks = [];
+    var add = function (level, title, detail, fix) {
+      checks.push({ level: level, title: title, detail: detail, fix: fix });
+    };
+
+    var probe = function (url) {
+      return fetch(url, { method: 'GET', cache: 'no-store' })
+        .then(function (r) { return r.ok; }).catch(function () { return false; });
+    };
+
+    var pages = state.rows.pages || {};
+    var cat = pages.catalogue || {};
+    var jobs = [];
+
+    // content store
+    jobs.push(sb.from('site_content').select('key').limit(1).then(function (r) {
+      if (r.error) add('bad', 'Content store unreachable', r.error.message, 'The website falls back to the pages built into it. Try again shortly.');
+    }));
+
+    // storage + catalogue file
+    jobs.push(probe(cfg.assets + '/brand/logo.png').then(function (ok) {
+      if (!ok) add('bad', 'Image store unreachable', 'The logo could not be loaded from storage.', 'Product photos may not appear. Check the Supabase project is running.');
+    }));
+    if (cat.file) {
+      jobs.push(probe(cfg.assets + '/documents/' + encodeURIComponent(cat.file)).then(function (ok) {
+        if (!ok) add('bad', 'Catalogue PDF missing', cat.file + ' could not be found.', 'Upload the catalogue again on the Catalogue tab.');
+      }));
+    } else {
+      add('warn', 'No catalogue set', 'Catalogue links have nothing to open.', 'Upload one on the Catalogue tab.');
+    }
+
+    // instructions
+    jobs.push(sb.storage.from(cfg.instructionsBucket).list('', { limit: 500 }).then(function (r) {
+      var n = ((r.data) || []).filter(function (f) { return /\.pdf$/i.test(f.name); }).length;
+      if (!n) add('warn', 'No instruction documents', 'The Instructions page has nothing to show.', 'Add PDFs on the Instructions tab.');
+    }));
+
+    // videos
+    var vids = state.rows.videos;
+    if (!Array.isArray(vids) || !vids.length) add('warn', 'No how-to videos', 'The How-to videos page is empty.', 'Add videos on the Videos tab.');
+
+    // retailers
+    var rets = state.rows.retailers;
+    if (!Array.isArray(rets) || !rets.length) {
+      add('warn', 'No retailers listed', 'The Find a retailer map has no pins.', 'Add retailers on the Retailers tab.');
+    } else {
+      var noPos = rets.filter(function (r) { return typeof r.lat !== 'number' || typeof r.lng !== 'number'; });
+      if (noPos.length) add('bad', noPos.length + ' retailer(s) missing a map position',
+        noPos.slice(0, 4).map(function (r) { return r.name; }).join(', ') + (noPos.length > 4 ? '…' : ''),
+        'Open each on the Retailers tab and press “Locate from postcode”.');
+    }
+
+    // catalogue data quality
+    var emptyRanges = [], badPrice = [], noSku = [], noPhoto = [];
+    state.keys.forEach(function (k) {
+      (state.rows[k].ranges || []).forEach(function (rg) {
+        if (!rg.products || !rg.products.length) emptyRanges.push(rg.title);
+        (rg.products || []).forEach(function (p) {
+          (p.variants || []).forEach(function (v) {
+            if (!v.price) badPrice.push(p.name + ' — ' + (v.finish || v.sku));
+            if (!v.sku) noSku.push(p.name);
+            if (!v.image && !p.image) noPhoto.push(p.name + ' — ' + (v.finish || v.sku));
+          });
+        });
+      });
+    });
+    if (emptyRanges.length) add('warn', emptyRanges.length + ' range(s) with no products',
+      emptyRanges.slice(0, 4).join(', '), 'Add products, or delete the range on the Products tab.');
+    if (badPrice.length) add('bad', badPrice.length + ' option(s) with no price',
+      badPrice.slice(0, 4).join('; '), 'Set a price on the Products tab — options at £0 look broken to customers.');
+    if (noSku.length) add('warn', noSku.length + ' option(s) with no order code', noSku.slice(0, 4).join(', '), 'Add the code on the Products tab.');
+    if (noPhoto.length) add('warn', noPhoto.length + ' option(s) with no photo at all',
+      noPhoto.slice(0, 4).join('; '), 'Upload photos on the Products tab.');
+
+    Promise.all(jobs).then(function () {
+      out.innerHTML = '';
+      var bad = checks.filter(function (c) { return c.level === 'bad'; });
+      var warn = checks.filter(function (c) { return c.level === 'warn'; });
+
+      status.classList.remove('checking');
+      if (bad.length) {
+        status.classList.add('bad');
+        head.textContent = 'Status: Needs attention';
+        sub.textContent = bad.length + ' problem' + (bad.length === 1 ? '' : 's') + ' to look at' + (warn.length ? ', plus ' + warn.length + ' suggestion' + (warn.length === 1 ? '' : 's') : '') + '.';
+      } else {
+        status.classList.add('ok');
+        head.textContent = 'Status: Online';
+        sub.textContent = warn.length
+          ? 'The website and everything behind it is working. ' + warn.length + ' suggestion' + (warn.length === 1 ? '' : 's') + ' below.'
+          : 'The website and everything behind it is working normally.';
+      }
+
+      if (!checks.length) {
+        out.appendChild(el('div', { class: 'dash-note ok', text: 'No problems found — nothing needs your attention.' }));
+        return;
+      }
+      out.appendChild(el('h3', { text: 'Things to look at', style: 'margin-top:30px' }));
+      bad.concat(warn).forEach(function (c) {
+        var row = el('div', { class: 'dash-issue ' + c.level });
+        row.appendChild(el('span', { class: 'dot' }));
+        var body = el('div', {});
+        body.appendChild(el('p', { class: 'ttl', text: c.title }));
+        if (c.detail) body.appendChild(el('p', { class: 'det', text: c.detail }));
+        if (c.fix) body.appendChild(el('p', { class: 'fix', text: c.fix }));
+        row.appendChild(body);
+        out.appendChild(row);
+      });
+    });
+  }
+
+  /* ---------- visitor statistics ---------- */
+  function renderStats(wrap) {
+    wrap.innerHTML = '';
+    var head = el('div', { class: 'section-head', style: 'margin:44px 0 20px;align-items:center' });
+    var hd = el('div', {});
+    hd.appendChild(el('h3', { text: 'Visitors' }));
+    head.appendChild(hd);
+    var ranges = el('div', { class: 'dash-range' });
+    [[7, '7 days'], [30, '30 days'], [90, '90 days']].forEach(function (r) {
+      var btn = el('button', { type: 'button', class: 'abtn abtn--ghost abtn--sm' + (DASH.days === r[0] ? ' on' : ''), text: r[1] });
+      btn.addEventListener('click', function () { DASH.days = r[0]; renderStats(wrap); });
+      ranges.appendChild(btn);
+    });
+    head.appendChild(ranges);
+    wrap.appendChild(head);
+
+    var body = el('div', {});
+    wrap.appendChild(body);
+    body.appendChild(el('p', { class: 'small', text: 'Loading visitor figures…' }));
+
+    var since = new Date(Date.now() - DASH.days * 864e5).toISOString();
+    sb.from('page_views')
+      .select('ts,page_type,item_name,item_ref,referrer_host,device,session_id')
+      .gte('ts', since).order('ts', { ascending: false }).limit(20000)
+      .then(function (res) {
+        body.innerHTML = '';
+        if (res.error) return statsUnavailable(body, res.error);
+        drawStats(body, res.data || []);
+      });
+  }
+
+  function statsUnavailable(body, error) {
+    var missing = /page_views/i.test(error.message || '') || error.code === '42P01' || error.code === 'PGRST205';
+    var card = el('div', { class: 'dash-note warn' });
+    if (missing) {
+      card.appendChild(el('p', { html: '<b>Visitor recording is not switched on yet.</b>' }));
+      card.appendChild(el('p', { class: 'small', style: 'margin-top:8px', text:
+        'The website is ready to record visits, but the table that stores them has not been created. ' +
+        'Open your Supabase project → SQL Editor, paste the block below and run it once. Figures will start appearing straight away.' }));
+      var sql = el('pre', { class: 'dash-sql', text: SETUP_SQL });
+      card.appendChild(sql);
+      var copy = el('button', { class: 'abtn abtn--sm', text: 'Copy the SQL', onclick: function () {
+        navigator.clipboard.writeText(SETUP_SQL).then(function () { copy.textContent = 'Copied'; setTimeout(function () { copy.textContent = 'Copy the SQL'; }, 2000); });
+      } });
+      card.appendChild(copy);
+    } else {
+      card.appendChild(el('p', { text: 'Visitor figures could not be loaded: ' + (error.message || 'unknown error') }));
+    }
+    body.appendChild(card);
+  }
+
+  function drawStats(body, rows) {
+    if (!rows.length) {
+      body.appendChild(el('div', { class: 'dash-note', html:
+        '<b>No visits recorded in this period yet.</b>' +
+        '<p class="small" style="margin-top:8px">Recording starts the moment someone opens the site. ' +
+        'Your own visits to this admin area are never counted.</p>' }));
+      return;
+    }
+
+    var sessions = {}, devices = {}, refs = {}, products = {}, ranges = {}, paths = {}, daily = {};
+    var productViews = 0;
+    for (var i = 0; i < DASH.days; i++) {
+      var d = new Date(Date.now() - i * 864e5).toISOString().slice(0, 10);
+      daily[d] = 0;
+    }
+    rows.forEach(function (r) {
+      sessions[r.session_id] = 1;
+      devices[r.device || 'unknown'] = (devices[r.device || 'unknown'] || 0) + 1;
+      if (r.referrer_host) refs[r.referrer_host] = (refs[r.referrer_host] || 0) + 1;
+      var day = String(r.ts).slice(0, 10);
+      if (day in daily) daily[day]++;
+      paths[r.path] = (paths[r.path] || 0) + 1;
+      if (r.page_type === 'product') {
+        productViews++;
+        var nm = r.item_name || r.item_ref || 'Unnamed product';
+        products[nm] = (products[nm] || 0) + 1;
+      }
+      if (r.page_type === 'range') {
+        var rn = r.item_name || r.item_ref || 'Unnamed range';
+        ranges[rn] = (ranges[rn] || 0) + 1;
+      }
+    });
+
+    var uniq = Object.keys(sessions).length;
+    var tiles = el('div', { class: 'dash-tiles' });
+    var tile = function (n, label, note) {
+      var t = el('div', { class: 'dash-tile' });
+      var str = String(n);
+      // long text values (a domain name) need a smaller size than a count
+      t.appendChild(el('span', { class: 'n' + (str.length > 7 ? ' n--text' : ''), text: str }));
+      t.appendChild(el('span', { class: 'l', text: label }));
+      if (note) t.appendChild(el('span', { class: 'sub', text: note }));
+      return t;
+    };
+    var topRef = Object.keys(refs).sort(function (a, b) { return refs[b] - refs[a]; })[0];
+    tiles.appendChild(tile(rows.length.toLocaleString('en-GB'), 'Page views', 'last ' + DASH.days + ' days'));
+    tiles.appendChild(tile(uniq.toLocaleString('en-GB'), 'Visits', 'separate browsing sessions'));
+    tiles.appendChild(tile(productViews.toLocaleString('en-GB'), 'Product views', Object.keys(products).length + ' different products'));
+    tiles.appendChild(tile(topRef || '—', 'Top source', topRef ? refs[topRef] + ' views' : 'mostly direct visits'));
+    body.appendChild(tiles);
+
+    body.appendChild(dailyChart(daily));
+
+    var grid = el('div', { class: 'dash-grid' });
+    grid.appendChild(rankTable('Most viewed products', products, 'product', 10));
+    grid.appendChild(rankTable('Most viewed ranges', ranges, 'range', 10));
+    body.appendChild(grid);
+
+    var grid2 = el('div', { class: 'dash-grid' });
+    grid2.appendChild(rankTable('Most viewed pages', paths, 'page', 10));
+    var side = el('div', {});
+    side.appendChild(rankTable('Where visitors came from', refs, 'source', 6, 'No referrals yet — visitors are arriving directly.'));
+    side.appendChild(rankTable('Devices', devices, 'device', 4));
+    grid2.appendChild(side);
+    body.appendChild(grid2);
+
+    body.appendChild(el('p', { class: 'small', style: 'margin-top:26px', text:
+      'Counted on this site only, without cookies or personal data. A “visit” is one browsing session. ' +
+      'Visits to this admin area are not recorded.' + (rows.length >= 20000 ? ' Showing the most recent 20,000 views.' : '') }));
+  }
+
+  function rankTable(title, obj, kind, limit, emptyText) {
+    var box = el('div', { class: 'dash-card' });
+    box.appendChild(el('h4', { text: title }));
+    var keys = Object.keys(obj).sort(function (a, b) { return obj[b] - obj[a]; }).slice(0, limit);
+    if (!keys.length) {
+      box.appendChild(el('p', { class: 'small', text: emptyText || 'Nothing recorded yet.' }));
+      return box;
+    }
+    var max = obj[keys[0]] || 1;
+    var list = el('div', { class: 'rank' });
+    keys.forEach(function (k) {
+      var row = el('div', { class: 'rank-row' });
+      row.appendChild(el('span', { class: 'rk-name', title: k, text: k }));
+      var barWrap = el('span', { class: 'rk-bar' });
+      barWrap.appendChild(el('span', { class: 'rk-fill', style: 'width:' + Math.max(3, Math.round(obj[k] / max * 100)) + '%' }));
+      row.appendChild(barWrap);
+      row.appendChild(el('span', { class: 'rk-n', text: String(obj[k]) }));
+      list.appendChild(row);
+    });
+    box.appendChild(list);
+    return box;
+  }
+
+  // Single-series daily views. One muted brand hue, recessive axes,
+  // per-bar hover readout, 2px gaps, rounded data-ends.
+  function dailyChart(daily) {
+    var days = Object.keys(daily).sort();
+    var vals = days.map(function (d) { return daily[d]; });
+    var max = Math.max.apply(null, vals.concat([1]));
+    var W = 980, H = 190, padL = 34, padB = 26, padT = 12;
+    var innerW = W - padL - 8, innerH = H - padB - padT;
+    var slot = innerW / days.length;
+    var barW = Math.max(3, slot - 2);            // 2px surface gap between bars
+
+    var box = el('div', { class: 'dash-card', style: 'margin-top:22px' });
+    var hd = el('div', { class: 'chart-head' });
+    hd.appendChild(el('h4', { text: 'Page views per day' }));
+    var readout = el('span', { class: 'chart-readout', text: '' });
+    hd.appendChild(readout);
+    box.appendChild(hd);
+
+    var ticks = [0, Math.round(max / 2), max].filter(function (t, i, a) { return a.indexOf(t) === i; });
+    var svg = '<svg viewBox="0 0 ' + W + ' ' + H + '" class="chart" role="img" aria-label="Page views per day over the last ' + days.length + ' days">';
+    ticks.forEach(function (t) {
+      var y = padT + innerH - (t / max) * innerH;
+      svg += '<line x1="' + padL + '" x2="' + (W - 8) + '" y1="' + y + '" y2="' + y + '" class="grid"/>';
+      svg += '<text x="' + (padL - 8) + '" y="' + (y + 4) + '" class="ax" text-anchor="end">' + t + '</text>';
+    });
+    days.forEach(function (d, i) {
+      var v = daily[d];
+      var h = v ? Math.max(2, (v / max) * innerH) : 0;
+      var x = padL + i * slot;
+      var y = padT + innerH - h;
+      if (h) svg += '<rect x="' + x + '" y="' + y + '" width="' + barW + '" height="' + h + '" rx="2" class="bar" data-d="' + d + '" data-v="' + v + '"/>';
+      svg += '<rect x="' + x + '" y="' + padT + '" width="' + barW + '" height="' + innerH + '" class="hit" data-d="' + d + '" data-v="' + v + '"/>';
+    });
+    var first = days[0], last = days[days.length - 1];
+    svg += '<text x="' + padL + '" y="' + (H - 6) + '" class="ax">' + niceDate(first) + '</text>';
+    svg += '<text x="' + (W - 8) + '" y="' + (H - 6) + '" class="ax" text-anchor="end">' + niceDate(last) + '</text>';
+    svg += '</svg>';
+    var holder = el('div', { html: svg });
+    box.appendChild(holder);
+
+    Array.prototype.forEach.call(holder.querySelectorAll('.hit'), function (r) {
+      r.addEventListener('mouseenter', function () {
+        readout.textContent = niceDate(r.getAttribute('data-d')) + ' — ' + r.getAttribute('data-v') + ' view' + (r.getAttribute('data-v') === '1' ? '' : 's');
+        var bar = holder.querySelector('.bar[data-d="' + r.getAttribute('data-d') + '"]');
+        if (bar) bar.classList.add('on');
+      });
+      r.addEventListener('mouseleave', function () {
+        readout.textContent = '';
+        Array.prototype.forEach.call(holder.querySelectorAll('.bar.on'), function (b) { b.classList.remove('on'); });
+      });
+    });
+    return box;
+  }
+
+  function niceDate(d) {
+    var p = String(d).split('-');
+    var m = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][+p[1] - 1];
+    return +p[2] + ' ' + m;
   }
 
   /* ---------- catalogue tab ---------- */

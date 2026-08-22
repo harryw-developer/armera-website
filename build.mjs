@@ -23,7 +23,7 @@ const INSTRUCTIONS_BUCKET = 'instructions';
 
 // Short content hashes for cache-busting: a changed file gets a new URL, so a
 // browser can never pair a stale stylesheet with fresh scripts.
-const STATIC_FILES = ['styles.css', 'site.js', 'catalog.js', 'instructions.js', 'videos.js', 'retailers.js', 'admin.js'];
+const STATIC_FILES = ['styles.css', 'site.js', 'track.js', 'catalog.js', 'instructions.js', 'videos.js', 'retailers.js', 'admin.js'];
 const assetVersions = Object.fromEntries(STATIC_FILES.map(f => [
   f, createHash('sha1').update(readFileSync(join(ROOT, 'static', f))).digest('hex').slice(0, 8)
 ]));
@@ -176,6 +176,7 @@ ${body}
 </footer>
 <script>window.ARMERA=${JSON.stringify(CFG)}</script>
 <script src="${v('site.js')}" defer></script>
+<script src="${v('track.js')}" defer></script>
 ${extraBody}
 </body>
 </html>`;
@@ -729,7 +730,7 @@ writeFileSync(join(DIST, '.nojekyll'), '');
 
 const css = readFileSync(join(ROOT, 'static/styles.css'), 'utf8').replaceAll('ASSETS', ASSETS);
 writeFileSync(join(DIST, 'styles.css'), css);
-for (const f of ['site.js', 'catalog.js', 'instructions.js', 'videos.js', 'retailers.js', 'admin.js']) {
+for (const f of ['site.js', 'track.js', 'catalog.js', 'instructions.js', 'videos.js', 'retailers.js', 'admin.js']) {
   writeFileSync(join(DIST, f), readFileSync(join(ROOT, 'static', f)));
 }
 

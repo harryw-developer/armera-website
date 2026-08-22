@@ -294,17 +294,19 @@
     if (cfg.base && path.indexOf(cfg.base) === 0) path = path.slice(cfg.base.length);
     var segs = path.replace(/\/+$/, '').split('/').filter(Boolean); // e.g. ['products','taps','aeres','slug']
 
-    var html, bound = null;
+    var html, bound = null, catSeen = null, rangeSeen = null;
     if (segs[0] !== 'products') {
       html = notFound();
     } else if (segs.length === 1) {
       html = productsIndex(cats);
     } else {
       var cat = cats.filter(function (c) { return c.slug === segs[1]; })[0];
+      catSeen = cat || null;
       if (!cat) html = notFound();
       else if (segs.length === 2) html = categoryView(cat);
       else {
         var range = cat.ranges.filter(function (r) { return r.slug === segs[2]; })[0];
+        rangeSeen = range || null;
         if (!range) html = notFound();
         else if (segs.length === 3) html = rangeView(cat, range);
         else {
@@ -316,6 +318,12 @@
     }
     root.innerHTML = html;
     bind(bound);
+    if (window.armeraTrack) {
+      if (bound) window.armeraTrack({ page_type: 'product', item_ref: bound.slug, item_name: bound.name });
+      else if (segs.length === 3) window.armeraTrack({ page_type: 'range', item_ref: segs[2], item_name: (rangeSeen && rangeSeen.title) || segs[2] });
+      else if (segs.length === 2) window.armeraTrack({ page_type: 'category', item_ref: segs[1], item_name: (catSeen && catSeen.name) || segs[1] });
+      else window.armeraTrack();
+    }
   }).catch(function () {
     root.innerHTML = '<section class="pad--tight"><p class="small">The collection could not be loaded. Please refresh, or call 01225 251204.</p></section>';
   });
