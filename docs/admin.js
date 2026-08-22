@@ -121,7 +121,7 @@
     wrap.appendChild(head);
 
     var tabs = el('div', { class: 'adm-tabs' });
-    [['catalogue', 'Catalogue'], ['pages', 'Pages'], ['instructions', 'Instructions'], ['videos', 'Videos'], ['account', 'Account']].forEach(function (t) {
+    [['catalogue', 'Products'], ['pages', 'Pages'], ['retailers', 'Retailers'], ['instructions', 'Instructions'], ['videos', 'Videos'], ['brochure', 'Catalogue'], ['account', 'Account']].forEach(function (t) {
       tabs.appendChild(el('button', {
         class: state.tab === t[0] ? 'on' : '', text: t[1],
         onclick: function () { state.tab = t[0]; state.editing = null; renderShell(); }
@@ -155,6 +155,8 @@
     if (state.tab === 'pages') renderPages(panel);
     if (state.tab === 'instructions') renderInstructions(panel);
     if (state.tab === 'videos') renderVideos(panel);
+    if (state.tab === 'retailers') renderRetailers(panel);
+    if (state.tab === 'brochure') renderBrochure(panel);
     if (state.tab === 'account') renderAccount(panel);
   }
 
@@ -635,6 +637,239 @@
           draw();
           return persist();
         }).catch(function (e) { msg(panel, 'Thumbnail upload failed: ' + e.message, 'err'); });
+      }
+    }));
+  }
+
+  /* ---------- retailers tab ---------- */
+  function renderRetailers(panel) {
+    var retailers = state.rows.retailers;
+    if (!Array.isArray(retailers)) { retailers = []; state.rows.retailers = retailers; }
+    var lbl = function (t) { return el('label', { text: t }); };
+    var persist = function (okText) { return saveRowUpsert('retailers', panel, okText); };
+
+    panel.appendChild(el('h3', { text: 'Retailers' }));
+    panel.appendChild(el('p', { class: 'hint', text: 'These appear as pins on the Find a retailer map. Postcodes are turned into map positions automatically — press “Locate” after typing one.' }));
+
+    var filter = el('input', { type: 'text', placeholder: 'Filter by name, town or postcode', style: 'max-width:420px' });
+    panel.appendChild(filter);
+    var list = el('div', { class: 'adm-list' });
+    panel.appendChild(list);
+
+    // Geocode a UK postcode with postcodes.io (free, no key).
+    function locate(pc) {
+      var q = String(pc || '').trim();
+      if (!q) return Promise.resolve(null);
+      return fetch('https://api.postcodes.io/postcodes/' + encodeURIComponent(q))
+        .then(function (r) { return r.json(); })
+        .then(function (j) {
+          if (j.status === 200 && j.result) return { lat: j.result.latitude, lng: j.result.longitude };
+          return fetch('https://api.postcodes.io/outcodes/' + encodeURIComponent(q.split(' ')[0]))
+            .then(function (r) { return r.json(); })
+            .then(function (o) { return (o.status === 200 && o.result) ? { lat: o.result.latitude, lng: o.result.longitude } : null; });
+        }).catch(function () { return null; });
+    }
+
+    function editor(r, isNew, onDone) {
+      var box = el('div', { style: 'border:1px solid var(--line);background:var(--paper);padding:18px 22px;margin:10px 0' });
+      var name = el('input', { type: 'text', value: r.name || '' });
+      var address = el('input', { type: 'text', value: r.address || '' });
+      var town = el('input', { type: 'text', value: r.town || '' });
+      var county = el('input', { type: 'text', value: r.county || '' });
+      var postcode = el('input', { type: 'text', value: r.postcode || '' });
+      var phone = el('input', { type: 'text', value: r.phone || '' });
+      var website = el('input', { type: 'text', value: r.website || '' });
+      var lat = el('input', { type: 'text', value: r.lat != null ? r.lat : '' });
+      var lng = el('input', { type: 'text', value: r.lng != null ? r.lng : '' });
+      box.appendChild(lbl('Retailer name')); box.appendChild(name);
+      box.appendChild(lbl('Street address')); box.appendChild(address);
+      box.appendChild(lbl('Town')); box.appendChild(town);
+      box.appendChild(lbl('County')); box.appendChild(county);
+      box.appendChild(lbl('Postcode')); box.appendChild(postcode);
+      box.appendChild(lbl('Phone')); box.appendChild(phone);
+      box.appendChild(lbl('Website')); box.appendChild(website);
+      box.appendChild(lbl('Map position'));
+      var geo = el('div', { class: 'adm-row' });
+      lat.style.maxWidth = '150px'; lng.style.maxWidth = '150px';
+      geo.appendChild(lat); geo.appendChild(lng);
+      var status = el('span', { class: 'small' });
+      geo.appendChild(el('button', {
+        class: 'abtn abtn--ghost abtn--sm', type: 'button', text: 'Locate from postcode',
+        onclick: function () {
+          status.textContent = 'Looking up…';
+          locate(postcode.value).then(function (pt) {
+            if (!pt) { status.textContent = 'Postcode not recognised — enter the position by hand.'; return; }
+            lat.value = pt.lat; lng.value = pt.lng;
+            status.textContent = 'Found.';
+          });
+        }
+      }));
+      geo.appendChild(status);
+      box.appendChild(geo);
+
+      box.appendChild(el('button', {
+        class: 'abtn', type: 'button', text: isNew ? 'Add retailer' : 'Save retailer', style: 'margin-top:20px',
+        onclick: function () {
+          if (!name.value.trim()) return msg(box, 'Please give the retailer a name.', 'err');
+          var la = parseFloat(lat.value), ln = parseFloat(lng.value);
+          var apply = function (pt) {
+            if (pt) { la = pt.lat; ln = pt.lng; }
+            if (isNaN(la) || isNaN(ln)) return msg(box, 'This retailer needs a map position — press “Locate from postcode”, or type the position by hand.', 'err');
+            r.name = name.value.trim(); r.address = address.value.trim();
+            r.town = town.value.trim(); r.county = county.value.trim();
+            r.postcode = postcode.value.trim(); r.phone = phone.value.trim();
+            r.website = website.value.trim(); r.lat = la; r.lng = ln;
+            if (isNew) retailers.push(r);
+            retailers.sort(function (a, b) { return (a.town || '').toLowerCase().localeCompare((b.town || '').toLowerCase()) || (a.name || '').toLowerCase().localeCompare((b.name || '').toLowerCase()); });
+            persist(isNew ? 'Retailer added — live on the map.' : 'Retailer saved — live on the map.').then(onDone);
+          };
+          if ((isNaN(la) || isNaN(ln)) && postcode.value.trim()) locate(postcode.value).then(apply);
+          else apply(null);
+        }
+      }));
+      box.appendChild(el('button', { class: 'abtn abtn--ghost abtn--sm', type: 'button', text: 'Cancel', style: 'margin-top:10px', onclick: onDone }));
+      return box;
+    }
+
+    var draw = function () {
+      list.innerHTML = '';
+      var q = filter.value.trim().toLowerCase();
+      var matched = 0;
+      retailers.forEach(function (r, i) {
+        var hay = (r.name + ' ' + (r.town || '') + ' ' + (r.postcode || '') + ' ' + (r.county || '')).toLowerCase();
+        if (q && hay.indexOf(q) === -1) return;
+        matched++;
+        if (matched > 60 && q === '') return;
+        var item = el('div', { class: 'item' });
+        var nm = el('span', { class: 'nm' });
+        nm.appendChild(el('span', { text: r.name }));
+        nm.appendChild(el('span', { class: 'dim', style: 'display:block;font-size:11.5px', text: [r.town, r.postcode].filter(Boolean).join(', ') + (r.lat == null ? '  ⚠ no map position' : '') }));
+        item.appendChild(nm);
+        item.appendChild(el('button', {
+          class: 'abtn abtn--ghost abtn--sm', text: 'Edit',
+          onclick: function () {
+            var ed = editor(r, false, function () { draw(); });
+            item.parentNode.insertBefore(ed, item.nextSibling);
+            item.style.display = 'none';
+          }
+        }));
+        item.appendChild(el('button', {
+          class: 'abtn abtn--danger abtn--sm', text: 'Remove',
+          onclick: function () {
+            if (!confirm('Remove "' + r.name + '" from the retailer map?')) return;
+            retailers.splice(i, 1);
+            draw();
+            persist('Retailer removed.');
+          }
+        }));
+        list.appendChild(item);
+      });
+      if (!matched) list.appendChild(el('div', { class: 'item', html: '<span class="dim">' + (retailers.length ? 'No retailers match that filter.' : 'No retailers yet — add the first one below.') + '</span>' }));
+      else if (!q && matched > 60) list.appendChild(el('div', { class: 'item', html: '<span class="dim">Showing the first 60 of ' + retailers.length + ' — use the filter to find a specific retailer.</span>' }));
+    };
+    filter.addEventListener('input', draw);
+    draw();
+
+    panel.appendChild(el('hr', { class: 'rule' }));
+    panel.appendChild(el('h3', { text: 'Add a retailer' }));
+    var addSlot = el('div', {});
+    panel.appendChild(addSlot);
+    panel.appendChild(el('button', {
+      class: 'abtn', text: 'New retailer', style: 'margin-top:14px',
+      onclick: function () {
+        addSlot.innerHTML = '';
+        addSlot.appendChild(editor({}, true, function () { addSlot.innerHTML = ''; draw(); }));
+      }
+    }));
+  }
+
+  /* ---------- brochure (catalogue) tab ---------- */
+  function renderBrochure(panel) {
+    var pages = state.rows.pages || {};
+    state.rows.pages = pages;
+    var cat = pages.catalogue || {};
+    var lbl = function (t) { return el('label', { text: t }); };
+
+    panel.appendChild(el('h3', { text: 'Catalogue' }));
+    panel.appendChild(el('p', { class: 'hint', text: 'Upload a new edition and every “View the catalogue” link across the site — homepage, products, about, support, contact, footer and top bar — points at it straight away. The cover image is taken from the PDF’s first page automatically.' }));
+
+    var current = el('div', { class: 'imgrow', style: 'grid-template-columns:110px 1fr;align-items:start' });
+    var cover = el('div', { class: 'thumb', style: 'width:110px;height:150px' });
+    if (cat.cover) cover.appendChild(el('img', { src: cfg.assets + '/documents/' + encodeURIComponent(cat.cover), alt: '', style: 'width:100%;height:100%;object-fit:cover' }));
+    else cover.appendChild(el('span', { text: '—' }));
+    current.appendChild(cover);
+    var info = el('div', {});
+    info.appendChild(el('p', { text: cat.label || 'No catalogue set' }));
+    info.appendChild(el('p', { class: 'small', text: cat.file || '' }));
+    if (cat.file) {
+      info.appendChild(el('a', {
+        class: 'abtn abtn--ghost abtn--sm', style: 'margin-top:10px;display:inline-block',
+        href: cfg.assets + '/documents/' + encodeURIComponent(cat.file), target: '_blank', rel: 'noopener', text: 'View current catalogue'
+      }));
+    }
+    current.appendChild(info);
+    panel.appendChild(current);
+
+    panel.appendChild(el('hr', { class: 'rule' }));
+    panel.appendChild(el('h3', { text: 'Upload a new edition' }));
+    var label = el('input', { type: 'text', value: cat.label || '', placeholder: 'e.g. September 2026 Collection' });
+    var file = el('input', { type: 'file', accept: 'application/pdf' });
+    panel.appendChild(lbl('Edition name (shown beside the catalogue)')); panel.appendChild(label);
+    panel.appendChild(lbl('Catalogue PDF')); panel.appendChild(file);
+
+    var status = el('p', { class: 'small', style: 'margin-top:12px' });
+    panel.appendChild(status);
+
+    // Render page 1 of the uploaded PDF to a JPEG cover using the vendored pdf.js.
+    function makeCover(fileObj) {
+      return import(cfg.assets + '/vendor/pdfjs/pdf.min.mjs').then(function (pdfjs) {
+        pdfjs.GlobalWorkerOptions.workerSrc = cfg.assets + '/vendor/pdfjs/pdf.worker.min.mjs';
+        return fileObj.arrayBuffer().then(function (buf) {
+          return pdfjs.getDocument({ data: buf }).promise;
+        }).then(function (doc) { return doc.getPage(1); }).then(function (page) {
+          var vp = page.getViewport({ scale: 1 });
+          vp = page.getViewport({ scale: 900 / vp.width });
+          var canvas = document.createElement('canvas');
+          canvas.width = vp.width; canvas.height = vp.height;
+          return page.render({ canvasContext: canvas.getContext('2d'), viewport: vp }).promise
+            .then(function () {
+              return new Promise(function (resolve) { canvas.toBlob(resolve, 'image/jpeg', 0.88); });
+            });
+        });
+      });
+    }
+
+    panel.appendChild(el('button', {
+      class: 'abtn', text: 'Upload catalogue', style: 'margin-top:20px;display:block',
+      onclick: function () {
+        var f = file.files[0];
+        if (!f) return msg(panel, 'Please choose the catalogue PDF.', 'err');
+        if (!label.value.trim()) return msg(panel, 'Please name this edition.', 'err');
+        var pdfName = slugify(f.name.replace(/\.pdf$/i, '')) + '.pdf';
+        var coverName = pdfName.replace(/\.pdf$/, '') + '.cover.jpg';
+        status.textContent = 'Uploading the PDF…';
+        msg(panel, '');
+        sb.storage.from('site-assets').upload('documents/' + pdfName, f, { upsert: true, cacheControl: '3600', contentType: 'application/pdf' })
+          .then(function (res) {
+            if (res.error) throw res.error;
+            status.textContent = 'Making the cover image…';
+            return makeCover(f).catch(function () { return null; });
+          })
+          .then(function (blob) {
+            if (!blob) return null;
+            return sb.storage.from('site-assets').upload('documents/' + coverName, blob, { upsert: true, cacheControl: '3600', contentType: 'image/jpeg' })
+              .then(function (res) { return res.error ? null : coverName; });
+          })
+          .then(function (savedCover) {
+            pages.catalogue = { file: pdfName, label: label.value.trim(), cover: savedCover || cat.cover || null };
+            status.textContent = '';
+            return saveRow('pages', panel, 'Catalogue updated — every catalogue link on the site now points at this edition.');
+          })
+          .then(function () { renderShell(); })
+          .catch(function (e) {
+            status.textContent = '';
+            msg(panel, 'Upload failed: ' + (e.message || e), 'err');
+          });
       }
     }));
   }

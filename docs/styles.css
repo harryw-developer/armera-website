@@ -382,3 +382,80 @@ footer.site .fine { border-top: 1px solid #2a2820; padding: 26px 0 34px; display
 .video-card .play { position: absolute; top: 50%; left: 50%; width: 62px; height: 62px; transform: translate(-50%, -50%); border-radius: 50%; background: rgba(20,19,16,.45); border: 1px solid rgba(246,243,236,.55); transition: background .3s; }
 .video-card .play::after { content: ''; position: absolute; top: 50%; left: 53%; transform: translate(-50%, -50%); border-style: solid; border-width: 10px 0 10px 16px; border-color: transparent transparent transparent #f6f3ec; }
 .video-card:hover .play { background: rgba(20,19,16,.7); }
+
+/* ---------- find a retailer ---------- */
+.retailer-tools { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; margin-bottom: 26px; }
+.retailer-tools input {
+  flex: 1 1 260px; max-width: 380px; padding: 13px 16px; border: 1px solid var(--line-dark);
+  background: var(--paper); font-family: var(--sans); font-size: 15px; color: var(--ink); border-radius: 0;
+}
+.retailer-tools input:focus { outline: none; border-color: var(--ink-soft); }
+.retailer-tools .btn { margin-top: 0; padding: 13px 30px; }
+.retailer-tools .count { font-size: 12.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-left: auto; }
+.retailer-tools .clear { background: none; border: 0; font-family: var(--sans); font-size: 12px; letter-spacing: .16em; text-transform: uppercase; color: var(--muted); cursor: pointer; border-bottom: 1px solid var(--line-dark); padding: 0 0 4px; }
+.retailer-tools .clear:hover { color: var(--ink); border-color: var(--ink); }
+
+.retailer-layout { display: grid; grid-template-columns: minmax(0, 1fr) 380px; gap: clamp(20px, 2.6vw, 34px); align-items: start; }
+#retailer-map { height: 620px; background: var(--tile); border: 1px solid var(--line); }
+.retailer-list { height: 620px; overflow-y: auto; border: 1px solid var(--line); background: var(--paper); }
+.retailer-card {
+  display: block; width: 100%; text-align: left; background: none; border: 0;
+  border-bottom: 1px solid var(--line); padding: 18px 20px; cursor: pointer;
+  font-family: var(--sans); transition: background .2s;
+}
+.retailer-card:hover { background: #f6f4ef; }
+.retailer-card.on { background: #f2efe8; box-shadow: inset 3px 0 0 var(--ink); }
+.retailer-card .rname { display: block; font-size: 15.5px; color: var(--ink); letter-spacing: .01em; }
+.retailer-card .raddr { display: block; font-size: 13px; color: var(--muted); margin-top: 5px; line-height: 1.55; }
+.retailer-card .rdist { display: block; font-size: 11.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--label); margin-top: 7px; }
+.retailer-card .rlinks { display: flex; flex-wrap: wrap; gap: 6px 18px; margin-top: 9px; }
+.retailer-card .rlink { font-size: 12.5px; color: var(--ink-soft); border-bottom: 1px solid var(--line-dark); }
+.retailer-card .rlink:hover { border-color: var(--ink); }
+
+/* ARMERA "A" map pin */
+.armera-pin-wrap { background: none; border: 0; }
+.armera-pin {
+  display: block; width: 34px; height: 34px; border-radius: 50% 50% 50% 0;
+  transform: rotate(-45deg); background: var(--ink); border: 1px solid #3c3934;
+  box-shadow: 0 4px 12px -4px rgba(20, 19, 16, .6); position: relative; transition: all .2s ease;
+}
+.armera-pin img { position: absolute; top: 50%; left: 50%; width: 17px; height: 17px; transform: translate(-50%, -50%) rotate(45deg); }
+.armera-pin.on { background: #6a5a3d; border-color: #6a5a3d; width: 40px; height: 40px; margin: -3px 0 0 -3px; }
+.armera-pin.on img { width: 20px; height: 20px; }
+.leaflet-container { font-family: var(--sans); }
+.retailer-popup strong { display: block; font-size: 15px; font-weight: 400; color: var(--ink); margin-bottom: 6px; }
+.retailer-popup .addr { display: block; font-size: 13px; color: var(--muted); line-height: 1.55; margin-bottom: 8px; }
+.retailer-popup a { display: block; font-size: 12.5px; color: var(--ink-soft); border-bottom: 1px solid var(--line-dark); width: fit-content; margin-top: 4px; }
+.leaflet-popup-content-wrapper { border-radius: 0; box-shadow: 0 18px 40px -18px rgba(20,19,16,.4); }
+.leaflet-popup-content { margin: 16px 18px; }
+
+@media (max-width: 900px) {
+  .retailer-layout { grid-template-columns: 1fr; }
+  #retailer-map { height: 380px; }
+  .retailer-list { height: 460px; }
+  .retailer-tools .count { margin-left: 0; width: 100%; }
+}
+
+/* ---------- catalogue call-to-action ---------- */
+.cat-band { display: grid; grid-template-columns: 300px 1fr; gap: clamp(24px, 4vw, 60px); align-items: center; }
+.cat-band .cover { background: var(--tile); border: 1px solid var(--line); aspect-ratio: 3 / 4; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+.cat-band .cover canvas, .cat-band .cover img { width: 100%; height: 100%; object-fit: cover; }
+.cat-band .cover .ph { font-size: 12px; letter-spacing: .22em; text-transform: uppercase; color: var(--line-dark); }
+.band-dark .cat-band .cover { background: #201e1a; border-color: #35322b; }
+.cat-band .copy h2 { margin: 14px 0 18px; }
+.cat-band .copy p { max-width: 52ch; }
+@media (max-width: 700px) { .cat-band { grid-template-columns: 1fr; } .cat-band .cover { max-width: 240px; } }
+
+.cat-inline { display: inline-flex; align-items: center; gap: 10px; font-size: 12px; letter-spacing: .2em; text-transform: uppercase; color: var(--ink-soft); border-bottom: 1px solid var(--line-dark); padding-bottom: 6px; }
+.cat-inline:hover { color: var(--ink); border-color: var(--ink); }
+
+/* map clusters */
+.armera-cluster-wrap { background: none; border: 0; }
+.armera-cluster {
+  display: flex; align-items: center; justify-content: center; border-radius: 50%;
+  background: rgba(35, 34, 32, .92); color: #f6f3ec; font-family: var(--sans);
+  font-size: 14px; letter-spacing: .04em; border: 2px solid rgba(246, 243, 236, .55);
+  box-shadow: 0 6px 18px -6px rgba(20, 19, 16, .55); transition: transform .2s;
+}
+.armera-cluster-wrap:hover .armera-cluster { transform: scale(1.06); }
+.leaflet-cluster-anim .leaflet-marker-icon { transition: transform .28s ease-out, opacity .28s ease-in; }

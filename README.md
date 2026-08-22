@@ -14,9 +14,17 @@ files are served from Supabase Storage.
 - **Editable text blocks** on the static pages (home hero, About sections, spares line, contact
   details) carry `data-ck` attributes; `static/site.js` overlays the latest values from Supabase.
 - **The admin area** at `/admin/` (unlisted — bookmark the URL, there is no link on the site) uses
-  Supabase Auth. It edits the catalogue (ranges, products, prices, photos), page text, instruction
-  PDFs and the how-to videos (title + YouTube link + uploaded thumbnail, stored in the `videos`
-  content row with thumbnails in `site-assets/videos/`).
+  Supabase Auth. Tabs: Products (ranges, products, prices, photos), Pages (editable text),
+  Retailers, Instructions, Videos, Catalogue and Account.
+- **Find a retailer** (`/retailers/`) draws pins on a Leaflet map from the `retailers` content row.
+  Pins use the ARMERA "A" (`brand/mark-a-light.png`); 100+ pins are clustered. Postcode search uses
+  postcodes.io, as does the admin's "Locate from postcode" button. Tiles come from CARTO/OSM — the
+  only third-party requests the site makes.
+- **The catalogue PDF** is pointed to by `pages.catalogue` (`{file, label, cover}`). Every link on
+  the site carries `data-catalogue` (and `data-catalogue-title` / `data-catalogue-cover`), and
+  `site.js` rewrites them all from that one record — so uploading a new edition in the admin's
+  Catalogue tab updates every link, title and cover image at once. The cover is rendered from the
+  PDF's first page with pdf.js at upload time.
 
 ## Building
 

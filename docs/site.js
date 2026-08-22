@@ -34,9 +34,9 @@
     });
   }
 
-  // editable text blocks (managed in the admin area, stored in Supabase site_content 'pages')
+  // editable text blocks + catalogue links (stored in Supabase site_content 'pages')
   var cfg = window.ARMERA;
-  var marked = document.querySelectorAll('[data-ck], [data-ck-sections]');
+  var marked = document.querySelectorAll('[data-ck], [data-ck-sections], [data-catalogue], [data-catalogue-title], [data-catalogue-cover]');
   if (!cfg || !marked.length) return;
 
   fetch(cfg.supabaseUrl + '/rest/v1/site_content?key=eq.pages&select=data', {
@@ -44,6 +44,29 @@
   }).then(function (r) { return r.json(); }).then(function (rows) {
     var pages = rows && rows[0] && rows[0].data;
     if (!pages) return;
+
+    // Catalogue: one upload in the admin re-points every link, title and cover.
+    var cat = pages.catalogue;
+    if (cat && cat.file) {
+      var href = cfg.assets + '/documents/' + encodeURIComponent(cat.file);
+      Array.prototype.forEach.call(document.querySelectorAll('[data-catalogue]'), function (a) {
+        a.setAttribute('href', href);
+      });
+      if (cat.label) {
+        Array.prototype.forEach.call(document.querySelectorAll('[data-catalogue-title]'), function (t) {
+          t.textContent = cat.label;
+        });
+      }
+      if (cat.cover) {
+        Array.prototype.forEach.call(document.querySelectorAll('[data-catalogue-cover]'), function (ph) {
+          var img = document.createElement('img');
+          img.src = cfg.assets + '/documents/' + encodeURIComponent(cat.cover);
+          img.alt = (cat.label || 'ARMERA') + ' catalogue cover';
+          img.loading = 'lazy';
+          ph.parentNode.replaceChild(img, ph);
+        });
+      }
+    }
     var get = function (key) {
       return key.split('.').reduce(function (o, k) { return o && o[k]; }, pages);
     };

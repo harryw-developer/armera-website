@@ -37,6 +37,28 @@ const CFG = {
   instructionsBucket: INSTRUCTIONS_BUCKET
 };
 
+// Catalogue: the filename lives in the Supabase `pages` row so the admin can
+// swap in a new edition; every link below is tagged data-catalogue and gets
+// its href rewritten at runtime by site.js.
+const CATALOGUE_FILE = 'ARMERA-Catalogue-March-2026.pdf';
+const catHref = `${ASSETS}/documents/${CATALOGUE_FILE}`;
+const catLink = (text, cls = 'cat-inline') =>
+  `<a class="${cls}" data-catalogue href="${catHref}" target="_blank" rel="noopener">${esc(text)}</a>`;
+const catBand = ({ dark = false } = {}) => `
+<section class="pad${dark ? '' : '--tight'}${dark ? ' band-dark' : ''}">
+  <div class="container">
+    <div class="cat-band">
+      <div class="cover"><span class="ph" data-catalogue-cover>Catalogue</span></div>
+      <div class="copy">
+        <span class="eyebrow">The catalogue</span>
+        <h2 data-catalogue-title>March 2026 Collection</h2>
+        <p>The complete ARMERA collection in one volume — every range, finish and dimension, with recommended retail pricing throughout.</p>
+        <a class="btn${dark ? '' : ' btn--solid'}" data-catalogue href="${catHref}" target="_blank" rel="noopener">View the catalogue</a>
+      </div>
+    </div>
+  </div>
+</section>`;
+
 /* ---------------- layout ---------------- */
 const FAVICON = `data:image/svg+xml,${encodeURIComponent(
   `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" fill="#232220"/><text x="32" y="44" font-family="Georgia,serif" font-size="36" fill="#f4efe4" text-anchor="middle">A</text></svg>`
@@ -46,6 +68,7 @@ const navModel = [
   { href: '/products/', label: 'Products', children: categories.map(c => ({ href: `/products/${c.slug}/`, label: c.name })) },
   { href: '/inspiration/', label: 'Inspiration' },
   { href: '/about/', label: 'About' },
+  { href: '/retailers/', label: 'Find a retailer' },
   { href: '/support/', label: 'Support' },
   { href: '/contact/', label: 'Contact' }
 ];
@@ -78,6 +101,7 @@ ${extraHead}
 <div class="topline">
   <div class="container">
     <span class="hide-m">Considered design in form &amp; function</span>
+    <span class="hide-m"><a data-catalogue href="${catHref}" target="_blank" rel="noopener">View the catalogue</a><span style="margin:0 12px;color:#4c463b">|</span><a href="/retailers/">Find a retailer</a></span>
     <span><a class="tel" href="tel:01225251204" data-ck="contact.phone">${site.phone}</a><span style="margin:0 12px;color:#4c463b">|</span><a href="mailto:${site.email}" data-ck="contact.email">${site.email}</a></span>
   </div>
 </div>
@@ -117,10 +141,12 @@ ${body}
         <ul>
           <li><a href="/about/">About ARMERA</a></li>
           <li><a href="/inspiration/">Inspiration</a></li>
+          <li><a href="/retailers/">Find a retailer</a></li>
           <li><a href="/support/">Support</a></li>
           <li><a href="/support/instructions/">Instructions</a></li>
           <li><a href="/support/how-to-videos/">How-to videos</a></li>
           <li><a href="/contact/">Contact us</a></li>
+          <li><a data-catalogue href="${catHref}" target="_blank" rel="noopener">Download the catalogue</a></li>
         </ul>
       </div>
       <div>
@@ -270,6 +296,8 @@ function homePage() {
   </div>
 </section>
 
+${catBand()}
+
 <section class="pad">
   <div class="container">
     <div class="section-head">
@@ -302,7 +330,8 @@ function catalogShell(path, title, desc, crumbLabels) {
 ${crumbLabels ? crumbs(crumbLabels) : ''}
 <div id="catalog" class="container" data-shell>
   <section class="pad--tight"><p class="small">Loading the collection…</p></section>
-</div>`;
+</div>
+${catBand()}`;
   write(path, layout({
     title, desc, path: '/products/', body,
     extraBody: `<script src="/catalog.js" defer></script>`
@@ -425,6 +454,7 @@ ${crumbs([{ label: 'Home', href: '/' }, { label: 'About' }])}
     ${aboutBodySections(aboutSections)}
   </div>
 </section>
+${catBand()}
 <section class="band-dark pad">
   <div class="container">
     <h2 style="margin:14px 0 40px">Guarantees you can build on</h2>
@@ -490,10 +520,10 @@ ${crumbs([{ label: 'Home', href: '/' }, { label: 'Support' }])}
       <div class="info-card" style="min-height:0;flex-direction:row;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap">
         <div>
           <span class="eyebrow">Brochure</span>
-          <h3 style="margin-bottom:6px">March 2026 Collection catalogue</h3>
+          <h3 style="margin-bottom:6px" data-catalogue-title>March 2026 Collection</h3>
           <p style="flex-grow:0">The complete ARMERA collection with pricing, finishes and dimensions.</p>
         </div>
-        <a class="btn btn--solid" style="margin-top:0" href="${ASSETS}/documents/ARMERA-Catalogue-March-2026.pdf" target="_blank" rel="noopener">Download catalogue</a>
+        <a class="btn btn--solid" style="margin-top:0" data-catalogue href="${catHref}" target="_blank" rel="noopener">Download catalogue</a>
       </div>
     </div>
   </div>
@@ -563,6 +593,47 @@ ${crumbs([{ label: 'Home', href: '/' }, { label: 'Support', href: '/support/' },
   }));
 }
 
+
+/* ---------------- find a retailer ---------------- */
+function retailersPage() {
+  const body = `
+${crumbs([{ label: 'Home', href: '/' }, { label: 'Find a retailer' }])}
+<section class="pad--tight">
+  <div class="container">
+    <span class="eyebrow">Stockists</span>
+    <h1 style="margin:14px 0 18px">Find a retailer</h1>
+    <p class="lede" style="max-width:60ch">ARMERA is sold through a network of trusted retail partners, so you can see and feel the products, and get expert advice on your bathroom. Search by town or postcode, or explore the map.</p>
+  </div>
+</section>
+<section class="pad--tight" style="padding-top:0">
+  <div class="container">
+    <div class="retailer-tools">
+      <input id="retailer-search" type="text" placeholder="Town, city or postcode" aria-label="Search retailers by town, city or postcode" autocomplete="postal-code">
+      <button class="btn" id="retailer-go" type="button">Search</button>
+      <button class="clear" id="retailer-clear" type="button" style="display:none">Clear</button>
+      <span class="count" id="retailer-count"></span>
+    </div>
+    <div class="retailer-layout">
+      <div id="retailer-map"></div>
+      <div class="retailer-list" id="retailer-list"></div>
+    </div>
+    <div class="empty-note" id="retailer-empty" style="display:none;margin-top:22px">
+      No retailers found for that search. Try a nearby town or a wider area, or call <a href="tel:01225251204" style="border-bottom:1px solid var(--line-dark)" data-ck="contact.phone">${site.phone}</a> and we will help you find your nearest stockist.
+    </div>
+    <p class="small" style="margin-top:22px">Are you a retailer interested in stocking ARMERA? We would love to hear from you — call <a href="tel:01225251204" style="border-bottom:1px solid var(--line-dark)" data-ck="contact.phone">${site.phone}</a> or email <a href="mailto:${site.email}" style="border-bottom:1px solid var(--line-dark)" data-ck="contact.email">${site.email}</a>.</p>
+  </div>
+</section>
+${catBand()}`;
+
+  write('retailers/index.html', layout({
+    title: 'Find a retailer — ARMERA',
+    desc: 'Find your nearest ARMERA stockist. Search by town or postcode and view our retail partners on the map.',
+    path: '/retailers/',
+    body,
+    extraBody: `<script src="/retailers.js" defer></script>`
+  }));
+}
+
 /* ---------------- contact ---------------- */
 function contactPage() {
   const body = `
@@ -589,6 +660,14 @@ ${crumbs([{ label: 'Home', href: '/' }, { label: 'Contact' }])}
       <div class="row">
         <div class="k">Spares</div>
         <div data-ck="support.spares">For spares, please contact us on 01225 251204 for advice on spares.</div>
+      </div>
+      <div class="row">
+        <div class="k">Where to buy</div>
+        <div>ARMERA is sold through retail partners across the UK. <a href="/retailers/" style="border-bottom:1px solid var(--line-dark)">Find your nearest retailer</a>.</div>
+      </div>
+      <div class="row">
+        <div class="k">Catalogue</div>
+        <div><a data-catalogue href="${catHref}" target="_blank" rel="noopener" style="border-bottom:1px solid var(--line-dark)" data-catalogue-title>March 2026 Collection</a></div>
       </div>
     </div>
   </div>
@@ -632,7 +711,7 @@ writeFileSync(join(DIST, '.nojekyll'), '');
 
 const css = readFileSync(join(ROOT, 'static/styles.css'), 'utf8').replaceAll('ASSETS', ASSETS);
 writeFileSync(join(DIST, 'styles.css'), css);
-for (const f of ['site.js', 'catalog.js', 'instructions.js', 'videos.js', 'admin.js']) {
+for (const f of ['site.js', 'catalog.js', 'instructions.js', 'videos.js', 'retailers.js', 'admin.js']) {
   writeFileSync(join(DIST, f), readFileSync(join(ROOT, 'static', f)));
 }
 
@@ -643,6 +722,7 @@ aboutPage();
 supportPage();
 instructionsPage();
 videosPage();
+retailersPage();
 contactPage();
 adminPage();
 
