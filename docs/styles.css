@@ -459,3 +459,13 @@ footer.site .fine { border-top: 1px solid #2a2820; padding: 26px 0 34px; display
 }
 .armera-cluster-wrap:hover .armera-cluster { transform: scale(1.06); }
 .leaflet-cluster-anim .leaflet-marker-icon { transition: transform .28s ease-out, opacity .28s ease-in; }
+
+/* retailer search radius */
+.retailer-tools .radius-pick { display: inline-flex; align-items: center; gap: 10px; font-size: 12px; letter-spacing: .16em; text-transform: uppercase; color: var(--muted); }
+.retailer-tools .radius-pick select {
+  padding: 12px 14px; border: 1px solid var(--line-dark); background: var(--paper);
+  font-family: var(--sans); font-size: 14px; letter-spacing: 0; text-transform: none;
+  color: var(--ink); border-radius: 0; cursor: pointer;
+}
+.retailer-tools .radius-pick select:focus { outline: none; border-color: var(--ink-soft); }
+.leaflet-interactive.radius-ring { pointer-events: none; }

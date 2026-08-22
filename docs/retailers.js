@@ -1,5 +1,7 @@
 // Find a retailer — map + searchable list, rendered from the Supabase
 // site_content 'retailers' row (managed in the admin area).
+// Every retailer stays pinned on the map at all times; searching moves and
+// zooms the map to the place typed in and draws the chosen search radius.
 (function () {
   var cfg = window.ARMERA;
   var mapEl = document.getElementById('retailer-map');
@@ -8,10 +10,14 @@
 
   var countEl = document.getElementById('retailer-count');
   var searchEl = document.getElementById('retailer-search');
+  var radiusEl = document.getElementById('retailer-radius');
   var clearEl = document.getElementById('retailer-clear');
   var emptyEl = document.getElementById('retailer-empty');
 
-  var all = [], shown = [], markers = [], map = null, layer = null, active = null;
+  var all = [];            // every retailer, each tagged with a stable index _i
+  var shown = [];          // what the list is currently showing
+  var byIndex = {};        // _i -> leaflet marker
+  var map = null, layer = null, circle = null, centreMark = null, active = null;
 
   /* ---------- helpers ---------- */
   function esc(s) {
@@ -24,13 +30,14 @@
   function fullAddress(r) {
     return [r.address, r.town, r.county, r.postcode].filter(Boolean).join(', ');
   }
-  function haversine(a, b, c, d) {
+  function milesBetween(aLat, aLng, bLat, bLng) {
     var R = 3958.8, p = Math.PI / 180;
-    var dLat = (c - a) * p, dLng = (d - b) * p;
+    var dLat = (bLat - aLat) * p, dLng = (bLng - aLng) * p;
     var x = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-      Math.cos(a * p) * Math.cos(c * p) * Math.sin(dLng / 2) * Math.sin(dLng / 2);
+      Math.cos(aLat * p) * Math.cos(bLat * p) * Math.sin(dLng / 2) * Math.sin(dLng / 2);
     return R * 2 * Math.atan2(Math.sqrt(x), Math.sqrt(1 - x));
   }
+  function radiusMiles() { return parseInt(radiusEl.value, 10) || 30; }
 
   /* ---------- map ---------- */
   function armeraPin(isActive) {
@@ -79,56 +86,80 @@
     map.on('click', function () { setActive(null); });
   }
 
-  function drawMarkers() {
+  // Drawn once — every retailer stays on the map for the whole session.
+  function drawAllMarkers() {
     layer.clearLayers();
-    markers = [];
-    shown.forEach(function (r, i) {
+    byIndex = {};
+    all.forEach(function (r) {
       if (typeof r.lat !== 'number' || typeof r.lng !== 'number') return;
       var m = L.marker([r.lat, r.lng], { icon: armeraPin(false), title: r.name })
         .bindPopup(popupHtml(r), { closeButton: true, maxWidth: 280 });
-      m.on('click', function () { setActive(i, true); });
+      m.on('click', function () { setActive(r._i, true); });
       layer.addLayer(m);
-      markers.push({ idx: i, marker: m });
+      byIndex[r._i] = m;
     });
-    fitToMarkers();
   }
 
-  function fitToMarkers() {
-    if (!markers.length) return;
-    var pts = markers.map(function (m) { return m.marker.getLatLng(); });
-    if (pts.length === 1) map.setView(pts[0], 12);
-    else map.fitBounds(L.latLngBounds(pts), { padding: [30, 30] });
+  function clearCircle() {
+    if (circle) { map.removeLayer(circle); circle = null; }
+    if (centreMark) { map.removeLayer(centreMark); centreMark = null; }
   }
 
-  function setActive(i, fromMap) {
-    active = i;
-    Array.prototype.forEach.call(listEl.children, function (card, n) {
-      card.classList.toggle('on', n === i);
+  // Centre and zoom tight on the place typed in, showing the chosen radius.
+  function focusArea(pt, miles) {
+    clearCircle();
+    circle = L.circle([pt.lat, pt.lng], {
+      radius: miles * 1609.34,
+      className: 'radius-ring',
+      color: '#232220', weight: 1, opacity: .55,
+      fillColor: '#232220', fillOpacity: .05,
+      interactive: false
+    }).addTo(map);
+    centreMark = L.circleMarker([pt.lat, pt.lng], {
+      radius: 5, color: '#232220', weight: 2, opacity: .9,
+      fillColor: '#f6f3ec', fillOpacity: 1, interactive: false
+    }).addTo(map);
+    // fitBounds on the circle zooms exactly to the searched area
+    map.fitBounds(circle.getBounds(), { padding: [24, 24], animate: true });
+  }
+
+  function resetView() {
+    clearCircle();
+    var pts = Object.keys(byIndex).map(function (k) { return byIndex[k].getLatLng(); });
+    if (pts.length) map.fitBounds(L.latLngBounds(pts), { padding: [30, 30] });
+  }
+
+  function setActive(idx, fromMap) {
+    active = idx;
+    Array.prototype.forEach.call(listEl.children, function (card) {
+      card.classList.toggle('on', card.dataset && +card.dataset.i === idx);
     });
-    markers.forEach(function (m) {
-      m.marker.setIcon(armeraPin(m.idx === i));
-      if (m.idx === i && !fromMap) {
-        map.setView(m.marker.getLatLng(), Math.max(map.getZoom(), 12), { animate: true });
-        if (layer.zoomToShowLayer) layer.zoomToShowLayer(m.marker, function () { m.marker.openPopup(); });
-        else m.marker.openPopup();
-      }
+    Object.keys(byIndex).forEach(function (k) {
+      byIndex[k].setIcon(armeraPin(+k === idx));
     });
-    if (i !== null && !fromMap) {
-      var card = listEl.children[i];
+    var m = byIndex[idx];
+    if (m && !fromMap) {
+      map.setView(m.getLatLng(), Math.max(map.getZoom(), 13), { animate: true });
+      if (layer.zoomToShowLayer) layer.zoomToShowLayer(m, function () { m.openPopup(); });
+      else m.openPopup();
+    }
+    if (idx != null && !fromMap) {
+      var card = listEl.querySelector('[data-i="' + idx + '"]');
       if (card && card.scrollIntoView) card.scrollIntoView({ block: 'nearest' });
     }
   }
 
   /* ---------- list ---------- */
-  function drawList() {
+  function drawList(summary) {
     listEl.innerHTML = '';
-    shown.forEach(function (r, i) {
+    shown.forEach(function (r) {
       var card = document.createElement('button');
       card.type = 'button';
       card.className = 'retailer-card';
+      card.dataset.i = r._i;
       var bits = '<span class="rname">' + esc(r.name) + '</span>' +
         '<span class="raddr">' + esc(fullAddress(r)) + '</span>';
-      if (r.distance != null) bits += '<span class="rdist">' + r.distance.toFixed(1) + ' miles away</span>';
+      if (r._distance != null) bits += '<span class="rdist">' + r._distance.toFixed(1) + ' miles away</span>';
       var links = '';
       if (r.phone) links += '<a href="tel:' + esc(r.phone.replace(/\s+/g, '')) + '" class="rlink">' + esc(r.phone) + '</a>';
       if (r.website) links += '<a href="' + esc(r.website) + '" target="_blank" rel="noopener" class="rlink">' + esc(tidyUrl(r.website)) + '</a>';
@@ -136,75 +167,90 @@
       card.innerHTML = bits;
       card.addEventListener('click', function (e) {
         if (e.target.classList.contains('rlink')) return; // let phone/website links work
-        setActive(i);
+        setActive(+card.dataset.i);
       });
       listEl.appendChild(card);
     });
-    countEl.textContent = shown.length + (shown.length === 1 ? ' retailer' : ' retailers');
+    countEl.textContent = summary || (shown.length + (shown.length === 1 ? ' retailer' : ' retailers'));
     emptyEl.style.display = shown.length ? 'none' : 'block';
   }
 
   /* ---------- search ---------- */
-  function applySearch(q) {
-    q = (q || '').trim().toLowerCase();
-    if (!q) {
-      shown = all.slice();
-      shown.forEach(function (r) { r.distance = null; });
-      clearEl.style.display = 'none';
-    } else {
-      clearEl.style.display = 'inline-block';
-      var terms = q.replace(/\s+/g, ' ');
-      shown = all.filter(function (r) {
-        return (r.name + ' ' + fullAddress(r)).toLowerCase().indexOf(terms) !== -1;
-      });
-      shown.forEach(function (r) { r.distance = null; });
-    }
+  // Resolve a UK postcode, outward code or place name via postcodes.io.
+  function resolvePlace(q) {
+    q = String(q || '').trim();
+    if (!q) return Promise.resolve(null);
+    var asPostcode = fetch('https://api.postcodes.io/postcodes/' + encodeURIComponent(q))
+      .then(function (r) { return r.json(); })
+      .then(function (j) {
+        if (j.status === 200 && j.result) {
+          return { lat: j.result.latitude, lng: j.result.longitude, label: j.result.postcode };
+        }
+        return null;
+      }).catch(function () { return null; });
+
+    return asPostcode.then(function (hit) {
+      if (hit) return hit;
+      var out = q.split(/\s+/)[0];
+      return fetch('https://api.postcodes.io/outcodes/' + encodeURIComponent(out))
+        .then(function (r) { return r.json(); })
+        .then(function (o) {
+          if (o.status === 200 && o.result) {
+            return { lat: o.result.latitude, lng: o.result.longitude, label: o.result.outcode };
+          }
+          return null;
+        }).catch(function () { return null; });
+    }).then(function (hit) {
+      if (hit) return hit;
+      return fetch('https://api.postcodes.io/places?q=' + encodeURIComponent(q) + '&limit=1')
+        .then(function (r) { return r.json(); })
+        .then(function (p) {
+          var res = p && p.result && p.result[0];
+          if (!res) return null;
+          return { lat: res.latitude, lng: res.longitude, label: res.name_1 };
+        }).catch(function () { return null; });
+    });
+  }
+
+  function showAll() {
+    all.forEach(function (r) { r._distance = null; });
+    shown = all.slice();
+    clearEl.style.display = 'none';
     drawList();
-    drawMarkers();
+    resetView();
     setActive(null);
   }
 
-  function searchByPostcode(q) {
-    // UK postcode (full or outward) → centre the map and sort by distance
-    return fetch('https://api.postcodes.io/postcodes/' + encodeURIComponent(q))
-      .then(function (r) { return r.json(); })
-      .then(function (j) {
-        if (j.status === 200 && j.result) return { lat: j.result.latitude, lng: j.result.longitude };
-        return fetch('https://api.postcodes.io/outcodes/' + encodeURIComponent(q.split(' ')[0]))
-          .then(function (r) { return r.json(); })
-          .then(function (o) {
-            if (o.status === 200 && o.result) return { lat: o.result.latitude, lng: o.result.longitude };
-            return null;
-          });
-      }).catch(function () { return null; });
+  function textFilter(q) {
+    var needle = q.toLowerCase();
+    all.forEach(function (r) { r._distance = null; });
+    shown = all.filter(function (r) {
+      return (r.name + ' ' + fullAddress(r)).toLowerCase().indexOf(needle) !== -1;
+    });
+    clearEl.style.display = 'inline-block';
+    clearCircle();
+    drawList(shown.length + ' matching');
+    var pts = shown.map(function (r) { return byIndex[r._i] && byIndex[r._i].getLatLng(); }).filter(Boolean);
+    if (pts.length) map.fitBounds(L.latLngBounds(pts), { padding: [40, 40], maxZoom: 14 });
+    setActive(null);
   }
 
   function doSearch() {
     var q = searchEl.value.trim();
-    if (!q) return applySearch('');
-    var looksPostcode = /^[A-Za-z]{1,2}\d[A-Za-z\d]?(\s*\d[A-Za-z]{2})?$/.test(q);
-    if (!looksPostcode) return applySearch(q);
+    if (!q) return showAll();
+    var miles = radiusMiles();
     searchEl.disabled = true;
-    searchByPostcode(q).then(function (pt) {
+    resolvePlace(q).then(function (pt) {
       searchEl.disabled = false;
-      searchEl.focus();
-      if (!pt) return applySearch(q);
-      shown = all.map(function (r) {
-        var c = Object.create(r);
-        c.distance = haversine(pt.lat, pt.lng, r.lat, r.lng);
-        return c;
-      }).filter(function (r) { return r.distance <= 100; })
-        .sort(function (a, b) { return a.distance - b.distance; });
+      if (!pt) return textFilter(q);
+
+      all.forEach(function (r) { r._distance = milesBetween(pt.lat, pt.lng, r.lat, r.lng); });
+      shown = all.filter(function (r) { return r._distance <= miles; })
+                 .sort(function (a, b) { return a._distance - b._distance; });
+
       clearEl.style.display = 'inline-block';
-      drawList();
-      drawMarkers();
-      if (shown.length) {
-        var pts = markers.slice(0, 8).map(function (m) { return m.marker.getLatLng(); });
-        pts.push(L.latLng(pt.lat, pt.lng));
-        map.fitBounds(L.latLngBounds(pts).pad(0.15));
-      } else {
-        map.setView([pt.lat, pt.lng], 9);
-      }
+      drawList(shown.length + ' within ' + miles + ' miles of ' + pt.label);
+      focusArea(pt, miles);   // zoom right in on the area typed in
       setActive(null);
     });
   }
@@ -239,8 +285,8 @@
     loadLeaflet()
   ]).then(function (res) {
     var rows = res[0];
-    all = (rows && rows[0] && rows[0].data) || [];
-    all = all.filter(function (r) { return r && r.name; });
+    all = ((rows && rows[0] && rows[0].data) || []).filter(function (r) { return r && r.name; });
+    all.forEach(function (r, i) { r._i = i; });
     if (!all.length) {
       mapEl.style.display = 'none';
       emptyEl.style.display = 'block';
@@ -248,10 +294,21 @@
       return;
     }
     buildMap();
-    applySearch('');
-    searchEl.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); doSearch(); } });
+    drawAllMarkers();
+    showAll();
+
+    searchEl.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') { e.preventDefault(); doSearch(); }
+    });
     document.getElementById('retailer-go').addEventListener('click', doSearch);
-    clearEl.addEventListener('click', function () { searchEl.value = ''; applySearch(''); searchEl.focus(); });
+    radiusEl.addEventListener('change', function () {
+      if (searchEl.value.trim()) doSearch();
+    });
+    clearEl.addEventListener('click', function () {
+      searchEl.value = '';
+      showAll();
+      searchEl.focus();
+    });
   }).catch(function () {
     mapEl.style.display = 'none';
     emptyEl.style.display = 'block';

@@ -49,6 +49,15 @@
   <div class="container">
     <div class="retailer-tools">
       <input id="retailer-search" type="text" placeholder="Town, city or postcode" aria-label="Search retailers by town, city or postcode" autocomplete="postal-code">
+      <label class="radius-pick" for="retailer-radius">Within
+        <select id="retailer-radius" aria-label="Search radius in miles">
+          <option value="5">5 miles</option>
+          <option value="15">15 miles</option>
+          <option value="30" selected>30 miles</option>
+          <option value="50">50 miles</option>
+          <option value="100">100 miles</option>
+        </select>
+      </label>
       <button class="btn" id="retailer-go" type="button">Search</button>
       <button class="clear" id="retailer-clear" type="button" style="display:none">Clear</button>
       <span class="count" id="retailer-count"></span>
