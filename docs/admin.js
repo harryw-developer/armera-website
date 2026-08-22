@@ -339,11 +339,11 @@
     /* variants (drawn first — the photo slots below follow the option rows) */
     box.appendChild(lbl('Options & pricing (code · finish/option · colour code · RRP £)'));
     var vWrap = el('div', {});
+    var imgWrap = el('div', {});
     var variants = p.variants.map(function (v) { return Object.assign({}, v); });
-    var imagesByCode = Object.assign({}, p.imagesByCode || {});
     var singleImage = p.image || null;
 
-    var drawImages = function () {}; // redefined below; re-run when option colour codes change
+    var drawImages = function () {}; // redefined below; re-run when the option rows change
     var drawV = function () {
       vWrap.innerHTML = '';
       variants.forEach(function (v, i) {
@@ -353,25 +353,16 @@
         var code = el('input', { type: 'text', value: v.code || '', placeholder: 'colour' });
         var price = el('input', { type: 'number', value: v.price || 0, min: '0', step: '1' });
         sku.addEventListener('input', function () { v.sku = sku.value.trim(); });
+        sku.addEventListener('change', function () { drawImages(); });
         fin.addEventListener('input', function () { v.finish = fin.value; });
         fin.addEventListener('change', function () { drawImages(); });
         code.addEventListener('input', function () { v.code = code.value.trim(); });
-        code.addEventListener('change', function () { drawImages(); });
         price.addEventListener('input', function () { v.price = +price.value; });
         r.appendChild(sku); r.appendChild(fin); r.appendChild(code); r.appendChild(price);
         r.appendChild(el('button', { class: 'abtn abtn--danger abtn--sm', type: 'button', text: '×', onclick: function () { variants.splice(i, 1); drawV(); drawImages(); } }));
         vWrap.appendChild(r);
       });
     };
-    drawV();
-    box.appendChild(vWrap);
-    box.appendChild(el('button', { class: 'abtn abtn--ghost abtn--sm', type: 'button', text: 'Add option', onclick: function () { variants.push({ sku: '', finish: '', price: 0 }); drawV(); drawImages(); } }));
-    box.appendChild(el('p', { class: 'hint', text: 'Give an option a colour code (a short label such as 11 or blue) and a photo slot for that colour appears below. Leave the code blank for finishes that share one photo. Use the same code under Range details → Colours so the colour swatch shows too.' }));
-
-    /* photos — one slot per colour code, or a single slot when no codes are used */
-    box.appendChild(lbl('Photos'));
-    var imgWrap = el('div', {});
-    box.appendChild(imgWrap);
 
     var thumbFor = function (fname) {
       var t = el('div', { class: 'thumb' });
@@ -379,53 +370,42 @@
       else t.appendChild(el('span', { text: '—' }));
       return t;
     };
-    var codesInUse = function () {
-      var seen = [], out = [];
-      variants.forEach(function (v) {
-        if (v.code && seen.indexOf(v.code) === -1) {
-          seen.push(v.code);
-          out.push({ code: v.code, label: v.finish || 'Code ' + v.code });
-        }
-      });
-      return out;
-    };
+
+    // One photo slot per option, so every variation can have its own preview.
     drawImages = function () {
       imgWrap.innerHTML = '';
-      var codes = codesInUse();
-      if (codes.length) {
-        codes.forEach(function (c) {
-          var row = el('div', { class: 'imgrow' });
-          row.appendChild(thumbFor(imagesByCode[c.code]));
-          row.appendChild(el('span', { class: 'small', text: c.label + (imagesByCode[c.code] ? '' : ' — needs a photo') }));
-          var f = el('input', { type: 'file', accept: 'image/*' });
-          f.addEventListener('change', function () {
-            if (!f.files[0]) return;
-            uploadTo('products', f.files[0]).then(function (fname) {
-              imagesByCode[c.code] = fname;
-              drawImages();
-              msg(box, c.label + ' photo uploaded — remember to Save product.', 'ok');
-            }).catch(function (e) { msg(box, 'Upload failed: ' + e.message, 'err'); });
-          });
-          row.appendChild(f);
-          imgWrap.appendChild(row);
-        });
-      } else {
+      if (!variants.length) {
+        imgWrap.appendChild(el('p', { class: 'hint', text: 'Add an option above to give it a photo.' }));
+        return;
+      }
+      variants.forEach(function (v, i) {
         var row = el('div', { class: 'imgrow' });
-        row.appendChild(thumbFor(singleImage));
-        row.appendChild(el('span', { class: 'small', text: singleImage ? 'Product photo' : 'No photo yet' }));
+        row.appendChild(thumbFor(v.image || singleImage));
+        var label = (v.finish || v.sku || 'Option ' + (i + 1));
+        row.appendChild(el('span', { class: 'small', text: label + (v.image ? '' : ' — using the shared product photo') }));
         var f = el('input', { type: 'file', accept: 'image/*' });
         f.addEventListener('change', function () {
           if (!f.files[0]) return;
           uploadTo('products', f.files[0]).then(function (fname) {
-            singleImage = fname;
+            v.image = fname;
             drawImages();
-            msg(box, 'Photo uploaded — remember to Save product.', 'ok');
+            msg(box, label + ' photo uploaded — remember to Save product.', 'ok');
           }).catch(function (e) { msg(box, 'Upload failed: ' + e.message, 'err'); });
         });
         row.appendChild(f);
         imgWrap.appendChild(row);
-      }
+      });
     };
+    drawV();
+    box.appendChild(vWrap);
+    box.appendChild(el('button', {
+      class: 'abtn abtn--ghost abtn--sm', type: 'button', text: 'Add option',
+      onclick: function () { variants.push({ sku: '', finish: '', price: 0 }); drawV(); drawImages(); }
+    }));
+    box.appendChild(el('p', { class: 'hint', text: 'Each option gets its own photo slot below, so every variation can show its own preview. The colour code links a furniture option to its colour swatch under Range details → Colours.' }));
+
+    box.appendChild(lbl('Photos — one per option'));
+    box.appendChild(imgWrap);
     drawImages();
 
     var save = el('button', {
@@ -441,19 +421,15 @@
           return o;
         });
         if (!p.variants.length) { msg(box, 'A product needs at least one priced option.', 'err'); return; }
-        // persist photos: keep only images for colour codes still in use
+        // persist photos: each option keeps its own, with a shared fallback
         var okText;
-        var codes = codesInUse().map(function (c) { return c.code; });
-        if (codes.length) {
-          p.imagesByCode = {};
-          codes.forEach(function (c) { if (imagesByCode[c]) p.imagesByCode[c] = imagesByCode[c]; });
-          if (!Object.keys(p.imagesByCode).length) delete p.imagesByCode;
-          delete p.image;
-          var missing = codesInUse().filter(function (c) { return !imagesByCode[c.code]; });
-          if (missing.length) okText = 'Saved. Note: ' + missing.map(function (c) { return c.label; }).join(', ') + ' still need' + (missing.length === 1 ? 's' : '') + ' a photo — another image will stand in until one is uploaded.';
-        } else {
-          if (singleImage) p.image = singleImage; else delete p.image;
-          delete p.imagesByCode;
+        p.variants.forEach(function (nv, i) {
+          if (variants[i] && variants[i].image) nv.image = variants[i].image;
+        });
+        if (singleImage) p.image = singleImage;
+        var missing = p.variants.filter(function (v) { return !v.image; });
+        if (missing.length && !p.image) {
+          okText = 'Saved. Note: ' + missing.length + ' option(s) still need a photo.';
         }
         saveRow(state.catKey, box, okText);
       }

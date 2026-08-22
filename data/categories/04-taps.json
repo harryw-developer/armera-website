@@ -1,24 +1,50 @@
 {
   "slug": "taps",
   "name": "Taps",
-  "hero": { "img": "p054_01.png", "caption": "Aeres single lever monobasin mixer in brushed black with 400mm cloakroom basin." },
+  "hero": {
+    "img": "p054_01.png",
+    "caption": "Aeres single lever monobasin mixer in brushed black with 400mm cloakroom basin."
+  },
   "ranges": [
     {
       "slug": "aeres",
       "name": "Aeres",
       "title": "Aeres",
       "tagline": "Aeres is the latest contemporary design flaunting a super sleek profile for a modern simple feel.",
-      "hero": { "img": "p054_01.png", "caption": "Aeres single lever monobasin mixer in brushed black with 400mm cloakroom basin." },
+      "hero": {
+        "img": "p054_01.png",
+        "caption": "Aeres single lever monobasin mixer in brushed black with 400mm cloakroom basin."
+      },
       "products": [
         {
           "slug": "single-lever-monobasin-mixer",
           "name": "Single lever monobasin mixer with waste",
           "image": "p055_03.png",
           "variants": [
-            { "sku": "AE.110.4", "finish": "Chrome", "price": 214 },
-            { "sku": "AE.110.5", "finish": "Brushed black", "price": 290 },
-            { "sku": "AE.110.6", "finish": "Brushed gold", "price": 290 },
-            { "sku": "AE.110.7", "finish": "Brushed stainless steel", "price": 290 }
+            {
+              "sku": "AE.110.4",
+              "finish": "Chrome",
+              "price": 214,
+              "image": "sku-ae-110-4.jpg"
+            },
+            {
+              "sku": "AE.110.5",
+              "finish": "Brushed black",
+              "price": 290,
+              "image": "sku-ae-110-5.jpg"
+            },
+            {
+              "sku": "AE.110.6",
+              "finish": "Brushed gold",
+              "price": 290,
+              "image": "sku-ae-110-6.jpg"
+            },
+            {
+              "sku": "AE.110.7",
+              "finish": "Brushed stainless steel",
+              "price": 290,
+              "image": "sku-ae-110-7.jpg"
+            }
           ]
         },
         {
@@ -26,10 +52,30 @@
           "name": "Extended single lever monobasin mixer with waste",
           "image": "p055_02.png",
           "variants": [
-            { "sku": "AE.111.4", "finish": "Chrome", "price": 290 },
-            { "sku": "AE.111.5", "finish": "Brushed black", "price": 400 },
-            { "sku": "AE.111.6", "finish": "Brushed gold", "price": 400 },
-            { "sku": "AE.111.7", "finish": "Brushed stainless steel", "price": 400 }
+            {
+              "sku": "AE.111.4",
+              "finish": "Chrome",
+              "price": 290,
+              "image": "sku-ae-111-4.jpg"
+            },
+            {
+              "sku": "AE.111.5",
+              "finish": "Brushed black",
+              "price": 400,
+              "image": "sku-ae-111-5.jpg"
+            },
+            {
+              "sku": "AE.111.6",
+              "finish": "Brushed gold",
+              "price": 400,
+              "image": "sku-ae-111-6.jpg"
+            },
+            {
+              "sku": "AE.111.7",
+              "finish": "Brushed stainless steel",
+              "price": 400,
+              "image": "sku-ae-111-7.jpg"
+            }
           ]
         },
         {
@@ -37,10 +83,30 @@
           "name": "Deck mounted bath filler",
           "image": "p055_05.png",
           "variants": [
-            { "sku": "AE.122.4", "finish": "Chrome", "price": 271 },
-            { "sku": "AE.122.5", "finish": "Brushed black", "price": 387 },
-            { "sku": "AE.122.6", "finish": "Brushed gold", "price": 387 },
-            { "sku": "AE.122.7", "finish": "Brushed stainless steel", "price": 387 }
+            {
+              "sku": "AE.122.4",
+              "finish": "Chrome",
+              "price": 271,
+              "image": "sku-ae-122-4.jpg"
+            },
+            {
+              "sku": "AE.122.5",
+              "finish": "Brushed black",
+              "price": 387,
+              "image": "sku-ae-122-5.jpg"
+            },
+            {
+              "sku": "AE.122.6",
+              "finish": "Brushed gold",
+              "price": 387,
+              "image": "sku-ae-122-6.jpg"
+            },
+            {
+              "sku": "AE.122.7",
+              "finish": "Brushed stainless steel",
+              "price": 387,
+              "image": "sku-ae-122-7.jpg"
+            }
           ]
         },
         {
@@ -49,7 +115,12 @@
           "image": "p055_04.png",
           "note": "Chrome only.",
           "variants": [
-            { "sku": "AE.132.4", "finish": "Chrome", "price": 356 }
+            {
+              "sku": "AE.132.4",
+              "finish": "Chrome",
+              "price": 356,
+              "image": "sku-ae-132-4.jpg"
+            }
           ]
         }
       ],
@@ -60,16 +131,34 @@
       "name": "Latitude",
       "title": "Latitude",
       "tagline": "Soft square corners and design detailing perfect the slimline square profile.",
-      "hero": { "img": "p056_01.png", "caption": "Latitude single lever monobasin mixer in chrome with 600mm ceramic basin." },
+      "hero": {
+        "img": "p056_01.png",
+        "caption": "Latitude single lever monobasin mixer in chrome with 600mm ceramic basin."
+      },
       "products": [
         {
           "slug": "single-lever-monobasin-mixer",
           "name": "Single lever monobasin mixer with waste",
           "image": "p057_06.png",
           "variants": [
-            { "sku": "LA.110.4", "finish": "Chrome", "price": 258 },
-            { "sku": "LA.110.5", "finish": "Brushed black", "price": 356 },
-            { "sku": "LA.110.6", "finish": "Brushed gold", "price": 356 }
+            {
+              "sku": "LA.110.4",
+              "finish": "Chrome",
+              "price": 258,
+              "image": "sku-la-110-4.jpg"
+            },
+            {
+              "sku": "LA.110.5",
+              "finish": "Brushed black",
+              "price": 356,
+              "image": "sku-la-110-5.jpg"
+            },
+            {
+              "sku": "LA.110.6",
+              "finish": "Brushed gold",
+              "price": 356,
+              "image": "sku-la-110-6.jpg"
+            }
           ]
         },
         {
@@ -77,9 +166,24 @@
           "name": "Extended single lever monobasin mixer with waste",
           "image": "p057_02.png",
           "variants": [
-            { "sku": "LA.111.4", "finish": "Chrome", "price": 356 },
-            { "sku": "LA.111.5", "finish": "Brushed black", "price": 500 },
-            { "sku": "LA.111.6", "finish": "Brushed gold", "price": 500 }
+            {
+              "sku": "LA.111.4",
+              "finish": "Chrome",
+              "price": 356,
+              "image": "sku-la-111-4.jpg"
+            },
+            {
+              "sku": "LA.111.5",
+              "finish": "Brushed black",
+              "price": 500,
+              "image": "sku-la-111-5.jpg"
+            },
+            {
+              "sku": "LA.111.6",
+              "finish": "Brushed gold",
+              "price": 500,
+              "image": "sku-la-111-6.jpg"
+            }
           ]
         },
         {
@@ -88,9 +192,24 @@
           "image": "p057_07.png",
           "note": "Wall mounted basin mixers do not include wastes.",
           "variants": [
-            { "sku": "LA.113.4", "finish": "Chrome", "price": 429 },
-            { "sku": "LA.113.5", "finish": "Brushed black", "price": 601 },
-            { "sku": "LA.113.6", "finish": "Brushed gold", "price": 601 }
+            {
+              "sku": "LA.113.4",
+              "finish": "Chrome",
+              "price": 429,
+              "image": "sku-la-113-4.jpg"
+            },
+            {
+              "sku": "LA.113.5",
+              "finish": "Brushed black",
+              "price": 601,
+              "image": "sku-la-113-5.jpg"
+            },
+            {
+              "sku": "LA.113.6",
+              "finish": "Brushed gold",
+              "price": 601,
+              "image": "sku-la-113-6.jpg"
+            }
           ]
         },
         {
@@ -98,9 +217,24 @@
           "name": "Deck mounted bath filler",
           "image": "p057_09.png",
           "variants": [
-            { "sku": "LA.122.4", "finish": "Chrome", "price": 300 },
-            { "sku": "LA.122.5", "finish": "Brushed black", "price": 429 },
-            { "sku": "LA.122.6", "finish": "Brushed gold", "price": 429 }
+            {
+              "sku": "LA.122.4",
+              "finish": "Chrome",
+              "price": 300,
+              "image": "sku-la-122-4.jpg"
+            },
+            {
+              "sku": "LA.122.5",
+              "finish": "Brushed black",
+              "price": 429,
+              "image": "sku-la-122-5.jpg"
+            },
+            {
+              "sku": "LA.122.6",
+              "finish": "Brushed gold",
+              "price": 429,
+              "image": "sku-la-122-6.jpg"
+            }
           ]
         },
         {
@@ -109,7 +243,12 @@
           "image": "p057_01.png",
           "note": "Chrome only.",
           "variants": [
-            { "sku": "LA.132.4", "finish": "Chrome", "price": 416 }
+            {
+              "sku": "LA.132.4",
+              "finish": "Chrome",
+              "price": 416,
+              "image": "sku-la-132-4.jpg"
+            }
           ]
         }
       ],
@@ -120,17 +259,40 @@
       "name": "Oculus",
       "title": "Oculus",
       "tagline": "Eye-for-detail design reinvents this classic contemporary tap, with exacting sleek proportions.",
-      "hero": { "img": "p058_01.png", "caption": "Oculus single lever monobasin mixer in brushed gold with co-ordinating overflow in brushed gold." },
+      "hero": {
+        "img": "p058_01.png",
+        "caption": "Oculus single lever monobasin mixer in brushed gold with co-ordinating overflow in brushed gold."
+      },
       "products": [
         {
           "slug": "single-lever-monobasin-mixer",
           "name": "Single lever monobasin mixer with waste",
           "image": "p059_02.png",
           "variants": [
-            { "sku": "OC.110.4", "finish": "Chrome", "price": 243 },
-            { "sku": "OC.110.5", "finish": "Brushed black", "price": 344 },
-            { "sku": "OC.110.6", "finish": "Brushed gold", "price": 344 },
-            { "sku": "OC.110.7", "finish": "Brushed stainless steel", "price": 344 }
+            {
+              "sku": "OC.110.4",
+              "finish": "Chrome",
+              "price": 243,
+              "image": "sku-oc-110-4.jpg"
+            },
+            {
+              "sku": "OC.110.5",
+              "finish": "Brushed black",
+              "price": 344,
+              "image": "sku-oc-110-5.jpg"
+            },
+            {
+              "sku": "OC.110.6",
+              "finish": "Brushed gold",
+              "price": 344,
+              "image": "sku-oc-110-6.jpg"
+            },
+            {
+              "sku": "OC.110.7",
+              "finish": "Brushed stainless steel",
+              "price": 344,
+              "image": "sku-oc-110-7.jpg"
+            }
           ]
         },
         {
@@ -138,10 +300,30 @@
           "name": "Extended single lever monobasin mixer with waste",
           "image": "p059_01.png",
           "variants": [
-            { "sku": "OC.111.4", "finish": "Chrome", "price": 356 },
-            { "sku": "OC.111.5", "finish": "Brushed black", "price": 500 },
-            { "sku": "OC.111.6", "finish": "Brushed gold", "price": 500 },
-            { "sku": "OC.111.7", "finish": "Brushed stainless steel", "price": 500 }
+            {
+              "sku": "OC.111.4",
+              "finish": "Chrome",
+              "price": 356,
+              "image": "sku-oc-111-4.jpg"
+            },
+            {
+              "sku": "OC.111.5",
+              "finish": "Brushed black",
+              "price": 500,
+              "image": "sku-oc-111-5.jpg"
+            },
+            {
+              "sku": "OC.111.6",
+              "finish": "Brushed gold",
+              "price": 500,
+              "image": "sku-oc-111-6.jpg"
+            },
+            {
+              "sku": "OC.111.7",
+              "finish": "Brushed stainless steel",
+              "price": 500,
+              "image": "sku-oc-111-7.jpg"
+            }
           ]
         },
         {
@@ -150,10 +332,30 @@
           "image": "p059_03.png",
           "note": "Wall mounted basin mixers do not include wastes.",
           "variants": [
-            { "sku": "OC.113.4", "finish": "Chrome", "price": 385 },
-            { "sku": "OC.113.5", "finish": "Brushed black", "price": 543 },
-            { "sku": "OC.113.6", "finish": "Brushed gold", "price": 543 },
-            { "sku": "OC.113.7", "finish": "Brushed stainless steel", "price": 543 }
+            {
+              "sku": "OC.113.4",
+              "finish": "Chrome",
+              "price": 385,
+              "image": "sku-oc-113-4.jpg"
+            },
+            {
+              "sku": "OC.113.5",
+              "finish": "Brushed black",
+              "price": 543,
+              "image": "sku-oc-113-5.jpg"
+            },
+            {
+              "sku": "OC.113.6",
+              "finish": "Brushed gold",
+              "price": 543,
+              "image": "sku-oc-113-6.jpg"
+            },
+            {
+              "sku": "OC.113.7",
+              "finish": "Brushed stainless steel",
+              "price": 543,
+              "image": "sku-oc-113-7.jpg"
+            }
           ]
         },
         {
@@ -161,10 +363,30 @@
           "name": "Deck mounted bath filler",
           "image": "p059_05.png",
           "variants": [
-            { "sku": "OC.122.4", "finish": "Chrome", "price": 271 },
-            { "sku": "OC.122.5", "finish": "Brushed black", "price": 385 },
-            { "sku": "OC.122.6", "finish": "Brushed gold", "price": 385 },
-            { "sku": "OC.122.7", "finish": "Brushed stainless steel", "price": 385 }
+            {
+              "sku": "OC.122.4",
+              "finish": "Chrome",
+              "price": 271,
+              "image": "sku-oc-122-4.jpg"
+            },
+            {
+              "sku": "OC.122.5",
+              "finish": "Brushed black",
+              "price": 385,
+              "image": "sku-oc-122-5.jpg"
+            },
+            {
+              "sku": "OC.122.6",
+              "finish": "Brushed gold",
+              "price": 385,
+              "image": "sku-oc-122-6.jpg"
+            },
+            {
+              "sku": "OC.122.7",
+              "finish": "Brushed stainless steel",
+              "price": 385,
+              "image": "sku-oc-122-7.jpg"
+            }
           ]
         },
         {
@@ -173,7 +395,12 @@
           "image": "p059_10.png",
           "note": "Chrome only.",
           "variants": [
-            { "sku": "OC.132.4", "finish": "Chrome", "price": 356 }
+            {
+              "sku": "OC.132.4",
+              "finish": "Chrome",
+              "price": 356,
+              "image": "sku-oc-132-4.jpg"
+            }
           ]
         },
         {
@@ -181,10 +408,30 @@
           "name": "Wall mounted bath spout",
           "image": "p059_08.png",
           "variants": [
-            { "sku": "OC.120.4", "finish": "Chrome", "price": 186 },
-            { "sku": "OC.120.5", "finish": "Brushed black", "price": 258 },
-            { "sku": "OC.120.6", "finish": "Brushed gold", "price": 258 },
-            { "sku": "OC.120.7", "finish": "Brushed stainless steel", "price": 258 }
+            {
+              "sku": "OC.120.4",
+              "finish": "Chrome",
+              "price": 186,
+              "image": "sku-oc-120-4.jpg"
+            },
+            {
+              "sku": "OC.120.5",
+              "finish": "Brushed black",
+              "price": 258,
+              "image": "sku-oc-120-5.jpg"
+            },
+            {
+              "sku": "OC.120.6",
+              "finish": "Brushed gold",
+              "price": 258,
+              "image": "sku-oc-120-6.jpg"
+            },
+            {
+              "sku": "OC.120.7",
+              "finish": "Brushed stainless steel",
+              "price": 258,
+              "image": "sku-oc-120-7.jpg"
+            }
           ]
         },
         {
@@ -192,10 +439,30 @@
           "name": "Floor standing bath shower mixer with shower kit",
           "image": "p059_06.png",
           "variants": [
-            { "sku": "OC.134.4", "finish": "Chrome", "price": 1038 },
-            { "sku": "OC.134.5", "finish": "Brushed black", "price": 1454 },
-            { "sku": "OC.134.6", "finish": "Brushed gold", "price": 1454 },
-            { "sku": "OC.134.7", "finish": "Brushed stainless steel", "price": 1454 }
+            {
+              "sku": "OC.134.4",
+              "finish": "Chrome",
+              "price": 1038,
+              "image": "sku-oc-134-4.jpg"
+            },
+            {
+              "sku": "OC.134.5",
+              "finish": "Brushed black",
+              "price": 1454,
+              "image": "sku-oc-134-5.jpg"
+            },
+            {
+              "sku": "OC.134.6",
+              "finish": "Brushed gold",
+              "price": 1454,
+              "image": "sku-oc-134-6.jpg"
+            },
+            {
+              "sku": "OC.134.7",
+              "finish": "Brushed stainless steel",
+              "price": 1454,
+              "image": "sku-oc-134-7.jpg"
+            }
           ]
         },
         {
@@ -204,10 +471,30 @@
           "image": "p059_07.png",
           "note": "When using for shower, 0.2 bar minimum pressure is recommended. When using for filling a bath, 1 bar minimum pressure is recommended.",
           "variants": [
-            { "sku": "OC.471.4", "finish": "Chrome", "price": 210 },
-            { "sku": "OC.471.5", "finish": "Brushed black", "price": 296 },
-            { "sku": "OC.471.6", "finish": "Brushed gold", "price": 296 },
-            { "sku": "OC.471.7", "finish": "Brushed stainless steel", "price": 296 }
+            {
+              "sku": "OC.471.4",
+              "finish": "Chrome",
+              "price": 210,
+              "image": "sku-oc-471-4.jpg"
+            },
+            {
+              "sku": "OC.471.5",
+              "finish": "Brushed black",
+              "price": 296,
+              "image": "sku-oc-471-5.jpg"
+            },
+            {
+              "sku": "OC.471.6",
+              "finish": "Brushed gold",
+              "price": 296,
+              "image": "sku-oc-471-6.jpg"
+            },
+            {
+              "sku": "OC.471.7",
+              "finish": "Brushed stainless steel",
+              "price": 296,
+              "image": "sku-oc-471-7.jpg"
+            }
           ]
         }
       ],
@@ -218,17 +505,40 @@
       "name": "Maze",
       "title": "Maze",
       "tagline": "Subtle knurled detailing adds an industrial twist to this contemporary designer range.",
-      "hero": { "img": "p060_01.png", "caption": "Maze wall mounted basin mixer in brushed stainless steel." },
+      "hero": {
+        "img": "p060_01.png",
+        "caption": "Maze wall mounted basin mixer in brushed stainless steel."
+      },
       "products": [
         {
           "slug": "single-lever-monobasin-mixer",
           "name": "Single lever monobasin mixer with waste",
           "image": "p061_02.png",
           "variants": [
-            { "sku": "MA.110.4", "finish": "Chrome", "price": 271 },
-            { "sku": "MA.110.5", "finish": "Brushed black", "price": 385 },
-            { "sku": "MA.110.6", "finish": "Brushed gold", "price": 385 },
-            { "sku": "MA.110.7", "finish": "Brushed stainless steel", "price": 385 }
+            {
+              "sku": "MA.110.4",
+              "finish": "Chrome",
+              "price": 271,
+              "image": "sku-ma-110-4.jpg"
+            },
+            {
+              "sku": "MA.110.5",
+              "finish": "Brushed black",
+              "price": 385,
+              "image": "sku-ma-110-5.jpg"
+            },
+            {
+              "sku": "MA.110.6",
+              "finish": "Brushed gold",
+              "price": 385,
+              "image": "sku-ma-110-6.jpg"
+            },
+            {
+              "sku": "MA.110.7",
+              "finish": "Brushed stainless steel",
+              "price": 385,
+              "image": "sku-ma-110-7.jpg"
+            }
           ]
         },
         {
@@ -236,10 +546,30 @@
           "name": "Extended single lever monobasin mixer with waste",
           "image": "p061_01.png",
           "variants": [
-            { "sku": "MA.111.4", "finish": "Chrome", "price": 385 },
-            { "sku": "MA.111.5", "finish": "Brushed black", "price": 543 },
-            { "sku": "MA.111.6", "finish": "Brushed gold", "price": 543 },
-            { "sku": "MA.111.7", "finish": "Brushed stainless steel", "price": 543 }
+            {
+              "sku": "MA.111.4",
+              "finish": "Chrome",
+              "price": 385,
+              "image": "sku-ma-111-4.jpg"
+            },
+            {
+              "sku": "MA.111.5",
+              "finish": "Brushed black",
+              "price": 543,
+              "image": "sku-ma-111-5.jpg"
+            },
+            {
+              "sku": "MA.111.6",
+              "finish": "Brushed gold",
+              "price": 543,
+              "image": "sku-ma-111-6.jpg"
+            },
+            {
+              "sku": "MA.111.7",
+              "finish": "Brushed stainless steel",
+              "price": 543,
+              "image": "sku-ma-111-7.jpg"
+            }
           ]
         },
         {
@@ -248,10 +578,30 @@
           "image": "p061_03.png",
           "note": "Wall mounted basin mixers do not include wastes.",
           "variants": [
-            { "sku": "MA.113.4", "finish": "Chrome", "price": 415 },
-            { "sku": "MA.113.5", "finish": "Brushed black", "price": 571 },
-            { "sku": "MA.113.6", "finish": "Brushed gold", "price": 571 },
-            { "sku": "MA.113.7", "finish": "Brushed stainless steel", "price": 571 }
+            {
+              "sku": "MA.113.4",
+              "finish": "Chrome",
+              "price": 415,
+              "image": "sku-ma-113-4.jpg"
+            },
+            {
+              "sku": "MA.113.5",
+              "finish": "Brushed black",
+              "price": 571,
+              "image": "sku-ma-113-5.jpg"
+            },
+            {
+              "sku": "MA.113.6",
+              "finish": "Brushed gold",
+              "price": 571,
+              "image": "sku-ma-113-6.jpg"
+            },
+            {
+              "sku": "MA.113.7",
+              "finish": "Brushed stainless steel",
+              "price": 571,
+              "image": "sku-ma-113-7.jpg"
+            }
           ]
         },
         {
@@ -259,10 +609,30 @@
           "name": "Deck mounted bath filler",
           "image": "p061_04.png",
           "variants": [
-            { "sku": "MA.122.4", "finish": "Chrome", "price": 300 },
-            { "sku": "MA.122.5", "finish": "Brushed black", "price": 429 },
-            { "sku": "MA.122.6", "finish": "Brushed gold", "price": 429 },
-            { "sku": "MA.122.7", "finish": "Brushed stainless steel", "price": 429 }
+            {
+              "sku": "MA.122.4",
+              "finish": "Chrome",
+              "price": 300,
+              "image": "sku-ma-122-4.jpg"
+            },
+            {
+              "sku": "MA.122.5",
+              "finish": "Brushed black",
+              "price": 429,
+              "image": "sku-ma-122-5.jpg"
+            },
+            {
+              "sku": "MA.122.6",
+              "finish": "Brushed gold",
+              "price": 429,
+              "image": "sku-ma-122-6.jpg"
+            },
+            {
+              "sku": "MA.122.7",
+              "finish": "Brushed stainless steel",
+              "price": 429,
+              "image": "sku-ma-122-7.jpg"
+            }
           ]
         },
         {
@@ -271,7 +641,12 @@
           "image": "p061_05.png",
           "note": "Chrome only.",
           "variants": [
-            { "sku": "MA.132.4", "finish": "Chrome", "price": 385 }
+            {
+              "sku": "MA.132.4",
+              "finish": "Chrome",
+              "price": 385,
+              "image": "sku-ma-132-4.jpg"
+            }
           ]
         },
         {
@@ -279,10 +654,30 @@
           "name": "Wall mounted bath spout",
           "image": "p061_08.png",
           "variants": [
-            { "sku": "OC.120.4", "finish": "Chrome", "price": 186 },
-            { "sku": "OC.120.5", "finish": "Brushed black", "price": 258 },
-            { "sku": "OC.120.6", "finish": "Brushed gold", "price": 258 },
-            { "sku": "OC.120.7", "finish": "Brushed stainless steel", "price": 258 }
+            {
+              "sku": "OC.120.4",
+              "finish": "Chrome",
+              "price": 186,
+              "image": "sku-oc-120-4.jpg"
+            },
+            {
+              "sku": "OC.120.5",
+              "finish": "Brushed black",
+              "price": 258,
+              "image": "sku-oc-120-5.jpg"
+            },
+            {
+              "sku": "OC.120.6",
+              "finish": "Brushed gold",
+              "price": 258,
+              "image": "sku-oc-120-6.jpg"
+            },
+            {
+              "sku": "OC.120.7",
+              "finish": "Brushed stainless steel",
+              "price": 258,
+              "image": "sku-oc-120-7.jpg"
+            }
           ]
         },
         {
@@ -290,10 +685,30 @@
           "name": "Floor standing bath shower mixer with shower kit",
           "image": "p061_11.png",
           "variants": [
-            { "sku": "MA.134.4", "finish": "Chrome", "price": 1080 },
-            { "sku": "MA.134.5", "finish": "Brushed black", "price": 1496 },
-            { "sku": "MA.134.6", "finish": "Brushed gold", "price": 1496 },
-            { "sku": "MA.134.7", "finish": "Brushed stainless steel", "price": 1496 }
+            {
+              "sku": "MA.134.4",
+              "finish": "Chrome",
+              "price": 1080,
+              "image": "sku-ma-134-4.jpg"
+            },
+            {
+              "sku": "MA.134.5",
+              "finish": "Brushed black",
+              "price": 1496,
+              "image": "sku-ma-134-5.jpg"
+            },
+            {
+              "sku": "MA.134.6",
+              "finish": "Brushed gold",
+              "price": 1496,
+              "image": "sku-ma-134-6.jpg"
+            },
+            {
+              "sku": "MA.134.7",
+              "finish": "Brushed stainless steel",
+              "price": 1496,
+              "image": "sku-ma-134-7.jpg"
+            }
           ]
         },
         {
@@ -302,10 +717,30 @@
           "image": "p061_10.png",
           "note": "When using for shower, 0.2 bar minimum pressure is recommended. When using for filling a bath, 1 bar minimum pressure is recommended.",
           "variants": [
-            { "sku": "MA.471.4", "finish": "Chrome", "price": 238 },
-            { "sku": "MA.471.5", "finish": "Brushed black", "price": 337 },
-            { "sku": "MA.471.6", "finish": "Brushed gold", "price": 337 },
-            { "sku": "MA.471.7", "finish": "Brushed stainless steel", "price": 337 }
+            {
+              "sku": "MA.471.4",
+              "finish": "Chrome",
+              "price": 238,
+              "image": "sku-ma-471-4.jpg"
+            },
+            {
+              "sku": "MA.471.5",
+              "finish": "Brushed black",
+              "price": 337,
+              "image": "sku-ma-471-5.jpg"
+            },
+            {
+              "sku": "MA.471.6",
+              "finish": "Brushed gold",
+              "price": 337,
+              "image": "sku-ma-471-6.jpg"
+            },
+            {
+              "sku": "MA.471.7",
+              "finish": "Brushed stainless steel",
+              "price": 337,
+              "image": "sku-ma-471-7.jpg"
+            }
           ]
         }
       ],
@@ -316,17 +751,40 @@
       "name": "Vaere",
       "title": "Vaere",
       "tagline": "Inspired by design styles from the car industry and architectural forms of beautiful buildings, Vaere boasts pleasing symmetry, subtle oval profiles and beautifully executed curves.",
-      "hero": { "img": "p062_01.png", "caption": "Round bowl on tempest black counter-top, Vaere extended single lever monobasin mixer and click clack waste in brushed gold." },
+      "hero": {
+        "img": "p062_01.png",
+        "caption": "Round bowl on tempest black counter-top, Vaere extended single lever monobasin mixer and click clack waste in brushed gold."
+      },
       "products": [
         {
           "slug": "single-lever-monobasin-mixer",
           "name": "Single lever monobasin mixer with waste",
           "image": "p063_06.png",
           "variants": [
-            { "sku": "VA.110.4", "finish": "Chrome", "price": 290 },
-            { "sku": "VA.110.5", "finish": "Brushed black", "price": 400 },
-            { "sku": "VA.110.6", "finish": "Brushed gold", "price": 400 },
-            { "sku": "VA.110.7", "finish": "Brushed stainless steel", "price": 400 }
+            {
+              "sku": "VA.110.4",
+              "finish": "Chrome",
+              "price": 290,
+              "image": "sku-va-110-4.jpg"
+            },
+            {
+              "sku": "VA.110.5",
+              "finish": "Brushed black",
+              "price": 400,
+              "image": "sku-va-110-5.jpg"
+            },
+            {
+              "sku": "VA.110.6",
+              "finish": "Brushed gold",
+              "price": 400,
+              "image": "sku-va-110-6.jpg"
+            },
+            {
+              "sku": "VA.110.7",
+              "finish": "Brushed stainless steel",
+              "price": 400,
+              "image": "sku-va-110-7.jpg"
+            }
           ]
         },
         {
@@ -334,10 +792,30 @@
           "name": "Extended single lever monobasin mixer with waste",
           "image": "p063_07.png",
           "variants": [
-            { "sku": "VA.111.4", "finish": "Chrome", "price": 400 },
-            { "sku": "VA.111.5", "finish": "Brushed black", "price": 571 },
-            { "sku": "VA.111.6", "finish": "Brushed gold", "price": 571 },
-            { "sku": "VA.111.7", "finish": "Brushed stainless steel", "price": 571 }
+            {
+              "sku": "VA.111.4",
+              "finish": "Chrome",
+              "price": 400,
+              "image": "sku-va-111-4.jpg"
+            },
+            {
+              "sku": "VA.111.5",
+              "finish": "Brushed black",
+              "price": 571,
+              "image": "sku-va-111-5.jpg"
+            },
+            {
+              "sku": "VA.111.6",
+              "finish": "Brushed gold",
+              "price": 571,
+              "image": "sku-va-111-6.jpg"
+            },
+            {
+              "sku": "VA.111.7",
+              "finish": "Brushed stainless steel",
+              "price": 571,
+              "image": "sku-va-111-7.jpg"
+            }
           ]
         },
         {
@@ -346,10 +824,30 @@
           "image": "p063_09.png",
           "note": "Wall mounted basin mixers do not include wastes.",
           "variants": [
-            { "sku": "VA.113.4", "finish": "Chrome", "price": 429 },
-            { "sku": "VA.113.5", "finish": "Brushed black", "price": 601 },
-            { "sku": "VA.113.6", "finish": "Brushed gold", "price": 601 },
-            { "sku": "VA.113.7", "finish": "Brushed stainless steel", "price": 601 }
+            {
+              "sku": "VA.113.4",
+              "finish": "Chrome",
+              "price": 429,
+              "image": "sku-va-113-4.jpg"
+            },
+            {
+              "sku": "VA.113.5",
+              "finish": "Brushed black",
+              "price": 601,
+              "image": "sku-va-113-5.jpg"
+            },
+            {
+              "sku": "VA.113.6",
+              "finish": "Brushed gold",
+              "price": 601,
+              "image": "sku-va-113-6.jpg"
+            },
+            {
+              "sku": "VA.113.7",
+              "finish": "Brushed stainless steel",
+              "price": 601,
+              "image": "sku-va-113-7.jpg"
+            }
           ]
         },
         {
@@ -357,10 +855,30 @@
           "name": "Floor standing bath shower mixer with shower kit",
           "image": "p063_01.png",
           "variants": [
-            { "sku": "VA.134.4", "finish": "Chrome", "price": 1075 },
-            { "sku": "VA.134.5", "finish": "Brushed black", "price": 1502 },
-            { "sku": "VA.134.6", "finish": "Brushed gold", "price": 1502 },
-            { "sku": "VA.134.7", "finish": "Brushed stainless steel", "price": 1502 }
+            {
+              "sku": "VA.134.4",
+              "finish": "Chrome",
+              "price": 1075,
+              "image": "sku-va-134-4.jpg"
+            },
+            {
+              "sku": "VA.134.5",
+              "finish": "Brushed black",
+              "price": 1502,
+              "image": "sku-va-134-5.jpg"
+            },
+            {
+              "sku": "VA.134.6",
+              "finish": "Brushed gold",
+              "price": 1502,
+              "image": "sku-va-134-6.jpg"
+            },
+            {
+              "sku": "VA.134.7",
+              "finish": "Brushed stainless steel",
+              "price": 1502,
+              "image": "sku-va-134-7.jpg"
+            }
           ]
         },
         {
@@ -369,7 +887,12 @@
           "image": "p063_08.png",
           "note": "Set includes single lever flow/temperature control, diverter, shower handset and hose. To complete the set please add either deck mounted spout VA.918, or bath filler waste BW.232 or BW.233 (see Wastes).",
           "variants": [
-            { "sku": "VA.135.4", "finish": "Chrome", "price": 571 }
+            {
+              "sku": "VA.135.4",
+              "finish": "Chrome",
+              "price": 571,
+              "image": "sku-va-135-4.jpg"
+            }
           ]
         },
         {
@@ -378,7 +901,12 @@
           "image": "p063_10.png",
           "note": "Or choose a bath filler waste (see Wastes).",
           "variants": [
-            { "sku": "VA.918.4", "finish": "Chrome", "price": 283 }
+            {
+              "sku": "VA.918.4",
+              "finish": "Chrome",
+              "price": 283,
+              "image": "sku-va-918-4.jpg"
+            }
           ]
         }
       ],
@@ -389,17 +917,40 @@
       "name": "Lantic",
       "title": "Lantic",
       "tagline": "A striking design defined by its sleek, minimalist aesthetic.",
-      "hero": { "img": "p064_01.png", "caption": "Organic counter-top bowl on arctic white slab, Lantic extended single lever monobasin mixer and click clack waste in brushed stainless steel." },
+      "hero": {
+        "img": "p064_01.png",
+        "caption": "Organic counter-top bowl on arctic white slab, Lantic extended single lever monobasin mixer and click clack waste in brushed stainless steel."
+      },
       "products": [
         {
           "slug": "single-lever-monobasin-mixer",
           "name": "Single lever monobasin mixer with waste",
           "image": "p065_07.png",
           "variants": [
-            { "sku": "LN.110.4", "finish": "Chrome", "price": 280 },
-            { "sku": "LN.110.5", "finish": "Brushed black", "price": 390 },
-            { "sku": "LN.110.6", "finish": "Brushed gold", "price": 390 },
-            { "sku": "LN.110.7", "finish": "Brushed stainless steel", "price": 390 }
+            {
+              "sku": "LN.110.4",
+              "finish": "Chrome",
+              "price": 280,
+              "image": "sku-ln-110-4.jpg"
+            },
+            {
+              "sku": "LN.110.5",
+              "finish": "Brushed black",
+              "price": 390,
+              "image": "sku-ln-110-5.jpg"
+            },
+            {
+              "sku": "LN.110.6",
+              "finish": "Brushed gold",
+              "price": 390,
+              "image": "sku-ln-110-6.jpg"
+            },
+            {
+              "sku": "LN.110.7",
+              "finish": "Brushed stainless steel",
+              "price": 390,
+              "image": "sku-ln-110-7.jpg"
+            }
           ]
         },
         {
@@ -407,10 +958,30 @@
           "name": "Extended single lever monobasin mixer with waste",
           "image": "p065_08.png",
           "variants": [
-            { "sku": "LN.111.4", "finish": "Chrome", "price": 390 },
-            { "sku": "LN.111.5", "finish": "Brushed black", "price": 557 },
-            { "sku": "LN.111.6", "finish": "Brushed gold", "price": 557 },
-            { "sku": "LN.111.7", "finish": "Brushed stainless steel", "price": 557 }
+            {
+              "sku": "LN.111.4",
+              "finish": "Chrome",
+              "price": 390,
+              "image": "sku-ln-111-4.jpg"
+            },
+            {
+              "sku": "LN.111.5",
+              "finish": "Brushed black",
+              "price": 557,
+              "image": "sku-ln-111-5.jpg"
+            },
+            {
+              "sku": "LN.111.6",
+              "finish": "Brushed gold",
+              "price": 557,
+              "image": "sku-ln-111-6.jpg"
+            },
+            {
+              "sku": "LN.111.7",
+              "finish": "Brushed stainless steel",
+              "price": 557,
+              "image": "sku-ln-111-7.jpg"
+            }
           ]
         },
         {
@@ -419,10 +990,30 @@
           "image": "p065_09.png",
           "note": "Wall mounted basin mixers do not include wastes.",
           "variants": [
-            { "sku": "LN.113.4", "finish": "Chrome", "price": 426 },
-            { "sku": "LN.113.5", "finish": "Brushed black", "price": 582 },
-            { "sku": "LN.113.6", "finish": "Brushed gold", "price": 582 },
-            { "sku": "LN.113.7", "finish": "Brushed stainless steel", "price": 582 }
+            {
+              "sku": "LN.113.4",
+              "finish": "Chrome",
+              "price": 426,
+              "image": "sku-ln-113-4.jpg"
+            },
+            {
+              "sku": "LN.113.5",
+              "finish": "Brushed black",
+              "price": 582,
+              "image": "sku-ln-113-5.jpg"
+            },
+            {
+              "sku": "LN.113.6",
+              "finish": "Brushed gold",
+              "price": 582,
+              "image": "sku-ln-113-6.jpg"
+            },
+            {
+              "sku": "LN.113.7",
+              "finish": "Brushed stainless steel",
+              "price": 582,
+              "image": "sku-ln-113-7.jpg"
+            }
           ]
         },
         {
@@ -430,10 +1021,30 @@
           "name": "Floor standing bath shower mixer with shower kit",
           "image": "p065_13.png",
           "variants": [
-            { "sku": "LN.134.4", "finish": "Chrome", "price": 1080 },
-            { "sku": "LN.134.5", "finish": "Brushed black", "price": 1496 },
-            { "sku": "LN.134.6", "finish": "Brushed gold", "price": 1496 },
-            { "sku": "LN.134.7", "finish": "Brushed stainless steel", "price": 1496 }
+            {
+              "sku": "LN.134.4",
+              "finish": "Chrome",
+              "price": 1080,
+              "image": "sku-ln-134-4.jpg"
+            },
+            {
+              "sku": "LN.134.5",
+              "finish": "Brushed black",
+              "price": 1496,
+              "image": "sku-ln-134-5.jpg"
+            },
+            {
+              "sku": "LN.134.6",
+              "finish": "Brushed gold",
+              "price": 1496,
+              "image": "sku-ln-134-6.jpg"
+            },
+            {
+              "sku": "LN.134.7",
+              "finish": "Brushed stainless steel",
+              "price": 1496,
+              "image": "sku-ln-134-7.jpg"
+            }
           ]
         },
         {
@@ -441,10 +1052,30 @@
           "name": "Wall mounted bath spout",
           "image": "p065_14.png",
           "variants": [
-            { "sku": "LN.120.4", "finish": "Chrome", "price": 197 },
-            { "sku": "LN.120.5", "finish": "Brushed black", "price": 270 },
-            { "sku": "LN.120.6", "finish": "Brushed gold", "price": 270 },
-            { "sku": "LN.120.7", "finish": "Brushed stainless steel", "price": 270 }
+            {
+              "sku": "LN.120.4",
+              "finish": "Chrome",
+              "price": 197,
+              "image": "sku-ln-120-4.jpg"
+            },
+            {
+              "sku": "LN.120.5",
+              "finish": "Brushed black",
+              "price": 270,
+              "image": "sku-ln-120-5.jpg"
+            },
+            {
+              "sku": "LN.120.6",
+              "finish": "Brushed gold",
+              "price": 270,
+              "image": "sku-ln-120-6.jpg"
+            },
+            {
+              "sku": "LN.120.7",
+              "finish": "Brushed stainless steel",
+              "price": 270,
+              "image": "sku-ln-120-7.jpg"
+            }
           ]
         }
       ],

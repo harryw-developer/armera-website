@@ -1,14 +1,20 @@
 {
   "slug": "thermostatic-valves",
   "name": "Thermostatic Valves",
-  "hero": { "img": "p068_01.png", "caption": "Pivot round 2 outlet concealed valve in brushed gold." },
+  "hero": {
+    "img": "p068_01.png",
+    "caption": "Pivot round 2 outlet concealed valve in brushed gold."
+  },
   "ranges": [
     {
       "slug": "pivot-concealed",
       "name": "Pivot",
       "title": "Pivot thermostatic valves",
       "tagline": "Pivot provides smooth-glide rotational on/off operation with the safety and comfort of thermostatic technology.",
-      "hero": { "img": "p068_01.png", "caption": "Pivot round 2 outlet concealed valve in brushed gold." },
+      "hero": {
+        "img": "p068_01.png",
+        "caption": "Pivot round 2 outlet concealed valve in brushed gold."
+      },
       "products": [
         {
           "slug": "pivot-round-concealed-valve",
@@ -16,18 +22,78 @@
           "image": "p069_02.png",
           "note": "This valve requires an ARMERA DOCK TH.310 for first-fix installation. When using for shower, 0.2 bar minimum pressure is recommended; for filling a bath, 1 bar minimum.",
           "variants": [
-            { "sku": "PI.341.66.4", "finish": "Chrome — 1 outlet", "price": 525 },
-            { "sku": "PI.341.66.5", "finish": "Brushed black — 1 outlet", "price": 701 },
-            { "sku": "PI.341.66.6", "finish": "Brushed gold — 1 outlet", "price": 701 },
-            { "sku": "PI.341.66.7", "finish": "Brushed stainless steel — 1 outlet", "price": 701 },
-            { "sku": "PI.342.66.4", "finish": "Chrome — 2 outlet", "price": 642 },
-            { "sku": "PI.342.66.5", "finish": "Brushed black — 2 outlet", "price": 813 },
-            { "sku": "PI.342.66.6", "finish": "Brushed gold — 2 outlet", "price": 813 },
-            { "sku": "PI.342.66.7", "finish": "Brushed stainless steel — 2 outlet", "price": 813 },
-            { "sku": "PI.343.66.4", "finish": "Chrome — 3 outlet", "price": 642 },
-            { "sku": "PI.343.66.5", "finish": "Brushed black — 3 outlet", "price": 813 },
-            { "sku": "PI.343.66.6", "finish": "Brushed gold — 3 outlet", "price": 813 },
-            { "sku": "PI.343.66.7", "finish": "Brushed stainless steel — 3 outlet", "price": 813 }
+            {
+              "sku": "PI.341.66.4",
+              "finish": "Chrome — 1 outlet",
+              "price": 525,
+              "image": "sku-pi-341-66-4.jpg"
+            },
+            {
+              "sku": "PI.341.66.5",
+              "finish": "Brushed black — 1 outlet",
+              "price": 701,
+              "image": "sku-pi-341-66-5.jpg"
+            },
+            {
+              "sku": "PI.341.66.6",
+              "finish": "Brushed gold — 1 outlet",
+              "price": 701,
+              "image": "sku-pi-341-66-6.jpg"
+            },
+            {
+              "sku": "PI.341.66.7",
+              "finish": "Brushed stainless steel — 1 outlet",
+              "price": 701,
+              "image": "sku-pi-341-66-7.jpg"
+            },
+            {
+              "sku": "PI.342.66.4",
+              "finish": "Chrome — 2 outlet",
+              "price": 642,
+              "image": "sku-pi-342-66-4.jpg"
+            },
+            {
+              "sku": "PI.342.66.5",
+              "finish": "Brushed black — 2 outlet",
+              "price": 813,
+              "image": "sku-pi-342-66-5.jpg"
+            },
+            {
+              "sku": "PI.342.66.6",
+              "finish": "Brushed gold — 2 outlet",
+              "price": 813,
+              "image": "sku-pi-342-66-6.jpg"
+            },
+            {
+              "sku": "PI.342.66.7",
+              "finish": "Brushed stainless steel — 2 outlet",
+              "price": 813,
+              "image": "sku-pi-342-66-7.jpg"
+            },
+            {
+              "sku": "PI.343.66.4",
+              "finish": "Chrome — 3 outlet",
+              "price": 642,
+              "image": "sku-pi-343-66-4.jpg"
+            },
+            {
+              "sku": "PI.343.66.5",
+              "finish": "Brushed black — 3 outlet",
+              "price": 813,
+              "image": "sku-pi-343-66-5.jpg"
+            },
+            {
+              "sku": "PI.343.66.6",
+              "finish": "Brushed gold — 3 outlet",
+              "price": 813,
+              "image": "sku-pi-343-66-6.jpg"
+            },
+            {
+              "sku": "PI.343.66.7",
+              "finish": "Brushed stainless steel — 3 outlet",
+              "price": 813,
+              "image": "sku-pi-343-66-7.jpg"
+            }
           ]
         },
         {
@@ -36,10 +102,30 @@
           "image": "p069_04.png",
           "note": "This valve requires an ARMERA DOCK TH.310 for first-fix installation.",
           "variants": [
-            { "sku": "PI.342.66H.4", "finish": "Chrome — 2 outlet", "price": 642 },
-            { "sku": "PI.342.66H.5", "finish": "Brushed black — 2 outlet", "price": 813 },
-            { "sku": "PI.342.66H.6", "finish": "Brushed gold — 2 outlet", "price": 813 },
-            { "sku": "PI.342.66H.7", "finish": "Brushed stainless steel — 2 outlet", "price": 813 }
+            {
+              "sku": "PI.342.66H.4",
+              "finish": "Chrome — 2 outlet",
+              "price": 642,
+              "image": "sku-pi-342-66h-4.jpg"
+            },
+            {
+              "sku": "PI.342.66H.5",
+              "finish": "Brushed black — 2 outlet",
+              "price": 813,
+              "image": "sku-pi-342-66h-5.jpg"
+            },
+            {
+              "sku": "PI.342.66H.6",
+              "finish": "Brushed gold — 2 outlet",
+              "price": 813,
+              "image": "sku-pi-342-66h-6.jpg"
+            },
+            {
+              "sku": "PI.342.66H.7",
+              "finish": "Brushed stainless steel — 2 outlet",
+              "price": 813,
+              "image": "sku-pi-342-66h-7.jpg"
+            }
           ]
         },
         {
@@ -48,11 +134,36 @@
           "image": "p069_03.png",
           "note": "This valve requires an ARMERA DOCK TH.310 for first-fix installation. 1 and 3 outlet available in chrome only.",
           "variants": [
-            { "sku": "PI.341.55.4", "finish": "Chrome — 1 outlet", "price": 525 },
-            { "sku": "PI.342.55.4", "finish": "Chrome — 2 outlet", "price": 642 },
-            { "sku": "PI.342.55.5", "finish": "Brushed black — 2 outlet", "price": 813 },
-            { "sku": "PI.342.55.6", "finish": "Brushed gold — 2 outlet", "price": 813 },
-            { "sku": "PI.343.55.4", "finish": "Chrome — 3 outlet", "price": 642 }
+            {
+              "sku": "PI.341.55.4",
+              "finish": "Chrome — 1 outlet",
+              "price": 525,
+              "image": "sku-pi-341-55-4.jpg"
+            },
+            {
+              "sku": "PI.342.55.4",
+              "finish": "Chrome — 2 outlet",
+              "price": 642,
+              "image": "sku-pi-342-55-4.jpg"
+            },
+            {
+              "sku": "PI.342.55.5",
+              "finish": "Brushed black — 2 outlet",
+              "price": 813,
+              "image": "sku-pi-342-55-5.jpg"
+            },
+            {
+              "sku": "PI.342.55.6",
+              "finish": "Brushed gold — 2 outlet",
+              "price": 813,
+              "image": "sku-pi-342-55-6.jpg"
+            },
+            {
+              "sku": "PI.343.55.4",
+              "finish": "Chrome — 3 outlet",
+              "price": 642,
+              "image": "sku-pi-343-55-4.jpg"
+            }
           ]
         },
         {
@@ -60,7 +171,12 @@
           "name": "ARMERA-DOCK first fix housing for concealed valves",
           "image": "p069_01.png",
           "variants": [
-            { "sku": "TH.310", "finish": "First fix housing", "price": 177 }
+            {
+              "sku": "TH.310",
+              "finish": "First fix housing",
+              "price": 177,
+              "image": "sku-th-310.jpg"
+            }
           ]
         }
       ]
@@ -70,7 +186,10 @@
       "name": "Criterion",
       "title": "Criterion thermostatic valves",
       "tagline": "The distinctive fluting brings both elegance and intention. Its design-led form is complemented by smooth, intuitive operation, ensuring both beauty & function are always in sync.",
-      "hero": { "img": "p070_01.png", "caption": "Criterion round 2 outlet concealed valve in brushed black." },
+      "hero": {
+        "img": "p070_01.png",
+        "caption": "Criterion round 2 outlet concealed valve in brushed black."
+      },
       "products": [
         {
           "slug": "criterion-concealed-valve",
@@ -78,18 +197,78 @@
           "image": "p071_01.png",
           "note": "This valve requires an ARMERA DOCK TH.310 for first-fix installation. When using for shower, 0.2 bar minimum pressure is recommended; for filling a bath, 1 bar minimum.",
           "variants": [
-            { "sku": "CR.341.66.4", "finish": "Chrome — 1 outlet", "price": 567 },
-            { "sku": "CR.341.66.5", "finish": "Brushed black — 1 outlet", "price": 749 },
-            { "sku": "CR.341.66.6", "finish": "Brushed gold — 1 outlet", "price": 749 },
-            { "sku": "CR.341.66.7", "finish": "Brushed stainless steel — 1 outlet", "price": 749 },
-            { "sku": "CR.342.66.4", "finish": "Chrome — 2 outlet", "price": 686 },
-            { "sku": "CR.342.66.5", "finish": "Brushed black — 2 outlet", "price": 862 },
-            { "sku": "CR.342.66.6", "finish": "Brushed gold — 2 outlet", "price": 862 },
-            { "sku": "CR.342.66.7", "finish": "Brushed stainless steel — 2 outlet", "price": 862 },
-            { "sku": "CR.343.66.4", "finish": "Chrome — 3 outlet", "price": 686 },
-            { "sku": "CR.343.66.5", "finish": "Brushed black — 3 outlet", "price": 862 },
-            { "sku": "CR.343.66.6", "finish": "Brushed gold — 3 outlet", "price": 862 },
-            { "sku": "CR.343.66.7", "finish": "Brushed stainless steel — 3 outlet", "price": 862 }
+            {
+              "sku": "CR.341.66.4",
+              "finish": "Chrome — 1 outlet",
+              "price": 567,
+              "image": "p071_01.png"
+            },
+            {
+              "sku": "CR.341.66.5",
+              "finish": "Brushed black — 1 outlet",
+              "price": 749,
+              "image": "p071_01.png"
+            },
+            {
+              "sku": "CR.341.66.6",
+              "finish": "Brushed gold — 1 outlet",
+              "price": 749,
+              "image": "p071_01.png"
+            },
+            {
+              "sku": "CR.341.66.7",
+              "finish": "Brushed stainless steel — 1 outlet",
+              "price": 749,
+              "image": "p071_01.png"
+            },
+            {
+              "sku": "CR.342.66.4",
+              "finish": "Chrome — 2 outlet",
+              "price": 686,
+              "image": "p071_01.png"
+            },
+            {
+              "sku": "CR.342.66.5",
+              "finish": "Brushed black — 2 outlet",
+              "price": 862,
+              "image": "p071_01.png"
+            },
+            {
+              "sku": "CR.342.66.6",
+              "finish": "Brushed gold — 2 outlet",
+              "price": 862,
+              "image": "p071_01.png"
+            },
+            {
+              "sku": "CR.342.66.7",
+              "finish": "Brushed stainless steel — 2 outlet",
+              "price": 862,
+              "image": "p071_01.png"
+            },
+            {
+              "sku": "CR.343.66.4",
+              "finish": "Chrome — 3 outlet",
+              "price": 686,
+              "image": "p071_01.png"
+            },
+            {
+              "sku": "CR.343.66.5",
+              "finish": "Brushed black — 3 outlet",
+              "price": 862,
+              "image": "p071_01.png"
+            },
+            {
+              "sku": "CR.343.66.6",
+              "finish": "Brushed gold — 3 outlet",
+              "price": 862,
+              "image": "p071_01.png"
+            },
+            {
+              "sku": "CR.343.66.7",
+              "finish": "Brushed stainless steel — 3 outlet",
+              "price": 862,
+              "image": "p071_01.png"
+            }
           ]
         },
         {
@@ -98,10 +277,30 @@
           "image": "p071_02.png",
           "note": "This valve requires an ARMERA DOCK TH.310 for first-fix installation.",
           "variants": [
-            { "sku": "CR.342.66H.4", "finish": "Chrome — 2 outlet", "price": 686 },
-            { "sku": "CR.342.66H.5", "finish": "Brushed black — 2 outlet", "price": 862 },
-            { "sku": "CR.342.66H.6", "finish": "Brushed gold — 2 outlet", "price": 862 },
-            { "sku": "CR.342.66H.7", "finish": "Brushed stainless steel — 2 outlet", "price": 862 }
+            {
+              "sku": "CR.342.66H.4",
+              "finish": "Chrome — 2 outlet",
+              "price": 686,
+              "image": "p071_02.png"
+            },
+            {
+              "sku": "CR.342.66H.5",
+              "finish": "Brushed black — 2 outlet",
+              "price": 862,
+              "image": "p071_02.png"
+            },
+            {
+              "sku": "CR.342.66H.6",
+              "finish": "Brushed gold — 2 outlet",
+              "price": 862,
+              "image": "p071_02.png"
+            },
+            {
+              "sku": "CR.342.66H.7",
+              "finish": "Brushed stainless steel — 2 outlet",
+              "price": 862,
+              "image": "p071_02.png"
+            }
           ]
         },
         {
@@ -109,7 +308,12 @@
           "name": "ARMERA-DOCK first fix housing for concealed valves",
           "image": "p071_03.png",
           "variants": [
-            { "sku": "TH.310", "finish": "First fix housing", "price": 177 }
+            {
+              "sku": "TH.310",
+              "finish": "First fix housing",
+              "price": 177,
+              "image": "sku-th-310.jpg"
+            }
           ]
         }
       ]
@@ -119,7 +323,10 @@
       "name": "Index",
       "title": "Index thermostatic valves",
       "tagline": "Beautifully designed, Index provides an easy push on/off operation with the safety and comfort of thermostatic technology.",
-      "hero": { "img": "p072_01.png", "caption": "Index 2 outlet concealed valve in chrome." },
+      "hero": {
+        "img": "p072_01.png",
+        "caption": "Index 2 outlet concealed valve in chrome."
+      },
       "products": [
         {
           "slug": "index-1-outlet-concealed-valve",
@@ -127,10 +334,30 @@
           "image": "p073_02.png",
           "note": "This valve requires an ARMERA DOCK TH.310 for first-fix installation. Supplied with 3 etched buttons with handset, overhead shower and bath tub graphics.",
           "variants": [
-            { "sku": "IN.331.60.4", "finish": "Chrome", "price": 525 },
-            { "sku": "IN.331.60.5", "finish": "Brushed black", "price": 701 },
-            { "sku": "IN.331.60.6", "finish": "Brushed gold", "price": 701 },
-            { "sku": "IN.331.60.7", "finish": "Brushed stainless steel", "price": 701 }
+            {
+              "sku": "IN.331.60.4",
+              "finish": "Chrome",
+              "price": 525,
+              "image": "sku-in-331-60-4.jpg"
+            },
+            {
+              "sku": "IN.331.60.5",
+              "finish": "Brushed black",
+              "price": 701,
+              "image": "sku-in-331-60-5.jpg"
+            },
+            {
+              "sku": "IN.331.60.6",
+              "finish": "Brushed gold",
+              "price": 701,
+              "image": "sku-in-331-60-6.jpg"
+            },
+            {
+              "sku": "IN.331.60.7",
+              "finish": "Brushed stainless steel",
+              "price": 701,
+              "image": "sku-in-331-60-7.jpg"
+            }
           ]
         },
         {
@@ -139,10 +366,30 @@
           "image": "p073_01.png",
           "note": "This valve requires an ARMERA DOCK TH.310 for first-fix installation. Supplied with 3 etched buttons with handset, overhead shower and bath tub graphics.",
           "variants": [
-            { "sku": "IN.332.60.4", "finish": "Chrome", "price": 642 },
-            { "sku": "IN.332.60.5", "finish": "Brushed black", "price": 813 },
-            { "sku": "IN.332.60.6", "finish": "Brushed gold", "price": 813 },
-            { "sku": "IN.332.60.7", "finish": "Brushed stainless steel", "price": 813 }
+            {
+              "sku": "IN.332.60.4",
+              "finish": "Chrome",
+              "price": 642,
+              "image": "sku-in-332-60-4.jpg"
+            },
+            {
+              "sku": "IN.332.60.5",
+              "finish": "Brushed black",
+              "price": 813,
+              "image": "sku-in-332-60-5.jpg"
+            },
+            {
+              "sku": "IN.332.60.6",
+              "finish": "Brushed gold",
+              "price": 813,
+              "image": "sku-in-332-60-6.jpg"
+            },
+            {
+              "sku": "IN.332.60.7",
+              "finish": "Brushed stainless steel",
+              "price": 813,
+              "image": "sku-in-332-60-7.jpg"
+            }
           ]
         },
         {
@@ -150,7 +397,12 @@
           "name": "ARMERA-DOCK first fix housing for concealed valves",
           "image": "p073_03.png",
           "variants": [
-            { "sku": "TH.310", "finish": "First fix housing", "price": 177 }
+            {
+              "sku": "TH.310",
+              "finish": "First fix housing",
+              "price": 177,
+              "image": "sku-th-310.jpg"
+            }
           ]
         }
       ]
@@ -160,7 +412,10 @@
       "name": "Maze Index",
       "title": "Maze Index thermostatic valves",
       "tagline": "Beautifully designed, Index provides an easy push on/off operation with the safety and comfort of thermostatic technology.",
-      "hero": { "img": "p074_01.png", "caption": "Maze Index 2 outlet concealed valve in brushed black." },
+      "hero": {
+        "img": "p074_01.png",
+        "caption": "Maze Index 2 outlet concealed valve in brushed black."
+      },
       "products": [
         {
           "slug": "maze-index-1-outlet-concealed-valve",
@@ -168,10 +423,30 @@
           "image": "p075_02.png",
           "note": "This valve requires an ARMERA DOCK TH.310 for first-fix installation. Supplied with 3 etched buttons with handset, overhead shower and bath tub graphics.",
           "variants": [
-            { "sku": "IN.431.60.4", "finish": "Chrome", "price": 567 },
-            { "sku": "IN.431.60.5", "finish": "Brushed black", "price": 749 },
-            { "sku": "IN.431.60.6", "finish": "Brushed gold", "price": 749 },
-            { "sku": "IN.431.60.7", "finish": "Brushed stainless steel", "price": 749 }
+            {
+              "sku": "IN.431.60.4",
+              "finish": "Chrome",
+              "price": 567,
+              "image": "sku-in-431-60-4.jpg"
+            },
+            {
+              "sku": "IN.431.60.5",
+              "finish": "Brushed black",
+              "price": 749,
+              "image": "sku-in-431-60-5.jpg"
+            },
+            {
+              "sku": "IN.431.60.6",
+              "finish": "Brushed gold",
+              "price": 749,
+              "image": "sku-in-431-60-6.jpg"
+            },
+            {
+              "sku": "IN.431.60.7",
+              "finish": "Brushed stainless steel",
+              "price": 749,
+              "image": "sku-in-431-60-7.jpg"
+            }
           ]
         },
         {
@@ -180,10 +455,30 @@
           "image": "p075_01.png",
           "note": "This valve requires an ARMERA DOCK TH.310 for first-fix installation. Supplied with 3 etched buttons with handset, overhead shower and bath tub graphics.",
           "variants": [
-            { "sku": "IN.432.60.4", "finish": "Chrome", "price": 686 },
-            { "sku": "IN.432.60.5", "finish": "Brushed black", "price": 862 },
-            { "sku": "IN.432.60.6", "finish": "Brushed gold", "price": 862 },
-            { "sku": "IN.432.60.7", "finish": "Brushed stainless steel", "price": 862 }
+            {
+              "sku": "IN.432.60.4",
+              "finish": "Chrome",
+              "price": 686,
+              "image": "sku-in-432-60-4.jpg"
+            },
+            {
+              "sku": "IN.432.60.5",
+              "finish": "Brushed black",
+              "price": 862,
+              "image": "sku-in-432-60-5.jpg"
+            },
+            {
+              "sku": "IN.432.60.6",
+              "finish": "Brushed gold",
+              "price": 862,
+              "image": "sku-in-432-60-6.jpg"
+            },
+            {
+              "sku": "IN.432.60.7",
+              "finish": "Brushed stainless steel",
+              "price": 862,
+              "image": "sku-in-432-60-7.jpg"
+            }
           ]
         },
         {
@@ -191,7 +486,12 @@
           "name": "ARMERA-DOCK first fix housing for concealed valves",
           "image": "p075_03.png",
           "variants": [
-            { "sku": "TH.310", "finish": "First fix housing", "price": 177 }
+            {
+              "sku": "TH.310",
+              "finish": "First fix housing",
+              "price": 177,
+              "image": "sku-th-310.jpg"
+            }
           ]
         }
       ]
@@ -201,7 +501,10 @@
       "name": "Landscape",
       "title": "Landscape thermostatic valves",
       "tagline": "Elongate your showering design and functionality with the safety and comfort of thermostatic technology.",
-      "hero": { "img": "p076_01.png", "caption": "Maze Index 3 outlet concealed landscape thermostatic valve in chrome." },
+      "hero": {
+        "img": "p076_01.png",
+        "caption": "Maze Index 3 outlet concealed landscape thermostatic valve in chrome."
+      },
       "products": [
         {
           "slug": "pivot-3-outlet-landscape-valve",
@@ -209,10 +512,30 @@
           "image": "p077_01.png",
           "note": "This valve comes complete with built in box containing all parts and trim.",
           "variants": [
-            { "sku": "PI.383.67.4", "finish": "Chrome", "price": 856 },
-            { "sku": "PI.383.67.5", "finish": "Brushed black", "price": 997 },
-            { "sku": "PI.383.67.6", "finish": "Brushed gold", "price": 997 },
-            { "sku": "PI.383.67.7", "finish": "Brushed stainless steel", "price": 997 }
+            {
+              "sku": "PI.383.67.4",
+              "finish": "Chrome",
+              "price": 856,
+              "image": "sku-pi-383-67-4.jpg"
+            },
+            {
+              "sku": "PI.383.67.5",
+              "finish": "Brushed black",
+              "price": 997,
+              "image": "sku-pi-383-67-5.jpg"
+            },
+            {
+              "sku": "PI.383.67.6",
+              "finish": "Brushed gold",
+              "price": 997,
+              "image": "sku-pi-383-67-6.jpg"
+            },
+            {
+              "sku": "PI.383.67.7",
+              "finish": "Brushed stainless steel",
+              "price": 997,
+              "image": "sku-pi-383-67-7.jpg"
+            }
           ]
         },
         {
@@ -221,10 +544,30 @@
           "image": "p077_02.png",
           "note": "This valve comes complete with built in box containing all parts and trim.",
           "variants": [
-            { "sku": "IN.373.61.4", "finish": "Chrome", "price": 856 },
-            { "sku": "IN.373.61.5", "finish": "Brushed black", "price": 997 },
-            { "sku": "IN.373.61.6", "finish": "Brushed gold", "price": 997 },
-            { "sku": "IN.373.61.7", "finish": "Brushed stainless steel", "price": 997 }
+            {
+              "sku": "IN.373.61.4",
+              "finish": "Chrome",
+              "price": 856,
+              "image": "sku-in-373-61-4.jpg"
+            },
+            {
+              "sku": "IN.373.61.5",
+              "finish": "Brushed black",
+              "price": 997,
+              "image": "sku-in-373-61-5.jpg"
+            },
+            {
+              "sku": "IN.373.61.6",
+              "finish": "Brushed gold",
+              "price": 997,
+              "image": "sku-in-373-61-6.jpg"
+            },
+            {
+              "sku": "IN.373.61.7",
+              "finish": "Brushed stainless steel",
+              "price": 997,
+              "image": "sku-in-373-61-7.jpg"
+            }
           ]
         },
         {
@@ -233,10 +576,30 @@
           "image": "p077_03.png",
           "note": "This valve comes complete with built in box containing all parts and trim.",
           "variants": [
-            { "sku": "IN.473.61.4", "finish": "Chrome", "price": 893 },
-            { "sku": "IN.473.61.5", "finish": "Brushed black", "price": 1039 },
-            { "sku": "IN.473.61.6", "finish": "Brushed gold", "price": 1039 },
-            { "sku": "IN.473.61.7", "finish": "Brushed stainless steel", "price": 1039 }
+            {
+              "sku": "IN.473.61.4",
+              "finish": "Chrome",
+              "price": 893,
+              "image": "sku-in-473-61-4.jpg"
+            },
+            {
+              "sku": "IN.473.61.5",
+              "finish": "Brushed black",
+              "price": 1039,
+              "image": "sku-in-473-61-5.jpg"
+            },
+            {
+              "sku": "IN.473.61.6",
+              "finish": "Brushed gold",
+              "price": 1039,
+              "image": "sku-in-473-61-6.jpg"
+            },
+            {
+              "sku": "IN.473.61.7",
+              "finish": "Brushed stainless steel",
+              "price": 1039,
+              "image": "sku-in-473-61-7.jpg"
+            }
           ]
         }
       ]
@@ -246,17 +609,40 @@
       "name": "Exposed",
       "title": "Exposed thermostatic valves",
       "tagline": "Precision engineered thermostatic showering with the safety and comfort of thermostatic technology.",
-      "hero": { "img": "p083_01.png", "caption": "Rio Round in brushed black. Also shown Maze wall mounted basin mixer in brushed black with round counter top basin and brushed black bottle trap." },
+      "hero": {
+        "img": "p083_01.png",
+        "caption": "Rio Round in brushed black. Also shown Maze wall mounted basin mixer in brushed black with round counter top basin and brushed black bottle trap."
+      },
       "products": [
         {
           "slug": "exposed-thermostatic-shower-valve",
           "name": "Exposed ½” thermostatic shower valve",
           "image": "p078_01.png",
           "variants": [
-            { "sku": "TH.365.66.4", "finish": "Chrome", "price": 229 },
-            { "sku": "TH.365.66.5", "finish": "Brushed black", "price": 331 },
-            { "sku": "TH.365.66.6", "finish": "Brushed gold", "price": 331 },
-            { "sku": "TH.365.66.7", "finish": "Brushed stainless steel", "price": 331 }
+            {
+              "sku": "TH.365.66.4",
+              "finish": "Chrome",
+              "price": 229,
+              "image": "sku-th-365-66-4.jpg"
+            },
+            {
+              "sku": "TH.365.66.5",
+              "finish": "Brushed black",
+              "price": 331,
+              "image": "sku-th-365-66-5.jpg"
+            },
+            {
+              "sku": "TH.365.66.6",
+              "finish": "Brushed gold",
+              "price": 331,
+              "image": "sku-th-365-66-6.jpg"
+            },
+            {
+              "sku": "TH.365.66.7",
+              "finish": "Brushed stainless steel",
+              "price": 331,
+              "image": "sku-th-365-66-7.jpg"
+            }
           ]
         },
         {
@@ -265,7 +651,12 @@
           "image": "p078_02.png",
           "note": "Chrome only.",
           "variants": [
-            { "sku": "TH.325.4", "finish": "Chrome", "price": 356 }
+            {
+              "sku": "TH.325.4",
+              "finish": "Chrome",
+              "price": 356,
+              "image": "sku-th-325-4.jpg"
+            }
           ]
         },
         {
@@ -274,7 +665,12 @@
           "image": "p078_05.png",
           "note": "Includes fast fix brackets.",
           "variants": [
-            { "sku": "SS.365.468.66.4", "finish": "Chrome", "price": 384 }
+            {
+              "sku": "SS.365.468.66.4",
+              "finish": "Chrome",
+              "price": 384,
+              "image": "sku-ss-365-468-66-4.jpg"
+            }
           ]
         },
         {
@@ -282,10 +678,30 @@
           "name": "Fast fix brackets (1 pair)",
           "image": "p078_03.png",
           "variants": [
-            { "sku": "SH.901.4", "finish": "Chrome", "price": 43 },
-            { "sku": "SH.901.5", "finish": "Brushed black", "price": 60 },
-            { "sku": "SH.901.6", "finish": "Brushed gold", "price": 60 },
-            { "sku": "SH.901.7", "finish": "Brushed stainless steel", "price": 60 }
+            {
+              "sku": "SH.901.4",
+              "finish": "Chrome",
+              "price": 43,
+              "image": "sku-sh-901-4.jpg"
+            },
+            {
+              "sku": "SH.901.5",
+              "finish": "Brushed black",
+              "price": 60,
+              "image": "sku-sh-901-5.jpg"
+            },
+            {
+              "sku": "SH.901.6",
+              "finish": "Brushed gold",
+              "price": 60,
+              "image": "sku-sh-901-6.jpg"
+            },
+            {
+              "sku": "SH.901.7",
+              "finish": "Brushed stainless steel",
+              "price": 60,
+              "image": "sku-sh-901-7.jpg"
+            }
           ]
         }
       ]
@@ -301,7 +717,10 @@
         "Smoothflex hose",
         "Thermostatic technology for safety & comfort"
       ],
-      "hero": { "img": "p083_01.png", "caption": "Rio Round in brushed black. Also shown Maze wall mounted basin mixer in brushed black with round counter top basin and brushed black bottle trap. Scene 600mm mirror." },
+      "hero": {
+        "img": "p083_01.png",
+        "caption": "Rio Round in brushed black. Also shown Maze wall mounted basin mixer in brushed black with round counter top basin and brushed black bottle trap. Scene 600mm mirror."
+      },
       "products": [
         {
           "slug": "rio-round-rigid-riser-kit",
@@ -309,10 +728,30 @@
           "image": "p079_02.png",
           "note": "Adjustable height 730–1170mm. Includes fast-fix brackets.",
           "variants": [
-            { "sku": "RI.452.66.4", "finish": "Chrome", "price": 642 },
-            { "sku": "RI.452.66.5", "finish": "Brushed black", "price": 900 },
-            { "sku": "RI.452.66.6", "finish": "Brushed gold", "price": 900 },
-            { "sku": "RI.452.66.7", "finish": "Brushed stainless steel", "price": 900 }
+            {
+              "sku": "RI.452.66.4",
+              "finish": "Chrome",
+              "price": 642,
+              "image": "sku-ri-452-66-4.jpg"
+            },
+            {
+              "sku": "RI.452.66.5",
+              "finish": "Brushed black",
+              "price": 900,
+              "image": "sku-ri-452-66-5.jpg"
+            },
+            {
+              "sku": "RI.452.66.6",
+              "finish": "Brushed gold",
+              "price": 900,
+              "image": "sku-ri-452-66-6.jpg"
+            },
+            {
+              "sku": "RI.452.66.7",
+              "finish": "Brushed stainless steel",
+              "price": 900,
+              "image": "sku-ri-452-66-7.jpg"
+            }
           ]
         },
         {
@@ -321,8 +760,18 @@
           "image": "p079_01.png",
           "note": "Adjustable height 780–1210mm. Includes fast-fix brackets.",
           "variants": [
-            { "sku": "RI.452.55.4", "finish": "Chrome", "price": 712 },
-            { "sku": "RI.452.55.5", "finish": "Brushed black", "price": 1000 }
+            {
+              "sku": "RI.452.55.4",
+              "finish": "Chrome",
+              "price": 712,
+              "image": "sku-ri-452-55-4.jpg"
+            },
+            {
+              "sku": "RI.452.55.5",
+              "finish": "Brushed black",
+              "price": 1000,
+              "image": "sku-ri-452-55-5.jpg"
+            }
           ]
         }
       ]

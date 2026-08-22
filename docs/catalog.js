@@ -29,6 +29,19 @@
   var BLANK = 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==';
   function prodImgSafe(f) { return f ? prodImg(f) : BLANK; }
   function codeImage(p, code) { return (p.imagesByCode && p.imagesByCode[code]) || mainImage(p); }
+  // Each variant carries its own photo; fall back through colour code then product.
+  function variantImage(p, v) {
+    return v.image || (v.code && p.imagesByCode && p.imagesByCode[v.code]) || mainImage(p);
+  }
+  // Do the variants actually differ visually? (drives the picker's thumbnails)
+  function variantsDiffer(p) {
+    var seen = {}, n = 0;
+    p.variants.forEach(function (v) {
+      var f = variantImage(p, v);
+      if (f && !seen[f]) { seen[f] = 1; n++; }
+    });
+    return n > 1;
+  }
 
   // Only water-using products carry the WRAS line.
   function isWaterUsing(cat, range, p) {
@@ -154,33 +167,43 @@
 
   function productView(cat, range, p) {
     document.title = p.name + ' — ' + range.title + ' — ARMERA';
-    var hasColours = !!p.imagesByCode && !!(range.swatches && range.swatches.length);
-    var heroImg = hasColours ? codeImage(p, p.variants[0].code) : mainImage(p);
+    var heroImg = variantImage(p, p.variants[0]);
+    var multi = p.variants.length > 1;
+    var differ = variantsDiffer(p);
+    var isColour = !!(range.swatches && range.swatches.length && p.variants[0].code);
 
+    // Round colour swatches (furniture ranges keep these as a quick visual picker)
     var swatchButtons = '';
-    if (hasColours) {
+    if (isColour) {
       swatchButtons = '<div class="variant-swatches"><p class="label">Colour — <b>' + esc(p.variants[0].finish) + '</b></p><div class="row">' +
         p.variants.map(function (v, i) {
-          var s = (range.swatches || []).filter(function (x) { return x.code === v.code; })[0];
-          var bg = s && s.img ? 'background-image:url(\'' + swatchImg(s.img) + '\')' : 'background:#fff';
-          return '<button type="button" class="' + (i === 0 ? 'on' : '') + '" style="' + bg + '" data-img="' + prodImgSafe(codeImage(p, v.code)) + '" data-name="' + esc(v.finish) + '" data-code="' + esc(v.code) + '" aria-label="' + esc(v.finish) + '"></button>';
+          var sw = (range.swatches || []).filter(function (x) { return x.code === v.code; })[0];
+          var bg = sw && sw.img ? 'background-image:url(\'' + swatchImg(sw.img) + '\')' : 'background:#fff';
+          return '<button type="button" class="' + (i === 0 ? 'on' : '') + '" style="' + bg + '" data-v="' + i + '" aria-label="' + esc(v.finish) + '"></button>';
         }).join('') + '</div></div>';
     }
 
+    // Every variation, clickable, with its own preview
+    var pickerLabel = isColour ? 'Colour' : (differ ? 'Finish' : 'Option');
+    var picker = '<div class="variant-picker">' +
+      '<p class="label">' + (multi ? pickerLabel + 's &amp; pricing' : 'Code &amp; pricing') + '</p>' +
+      '<div class="vlist">' +
+      p.variants.map(function (v, i) {
+        return '<button type="button" class="vopt' + (i === 0 ? ' on' : '') + '" data-v="' + i + '">' +
+          (differ ? '<span class="vthumb"><img src="' + prodImgSafe(variantImage(p, v)) + '" alt="" loading="lazy"></span>' : '') +
+          '<span class="vmeta"><span class="vsku">' + esc(v.sku) + '</span>' +
+          '<span class="vfin">' + esc(v.finish) + '</span></span>' +
+          '<span class="vprice">' + money(v.price) + '</span>' +
+          '</button>';
+      }).join('') + '</div></div>';
+
     var gallery = '';
     if (p.gallery && p.gallery.length) {
-      gallery = '<div class="thumbs"><button type="button" class="on" data-img="' + prodImg(mainImage(p)) + '"><img src="' + prodImg(mainImage(p)) + '" alt=""></button>' +
+      gallery = '<div class="thumbs"><button type="button" class="on" data-img="' + prodImgSafe(heroImg) + '"><img src="' + prodImgSafe(heroImg) + '" alt=""></button>' +
         p.gallery.map(function (g) {
           return '<button type="button" data-img="' + prodImg(g) + '"><img src="' + prodImg(g) + '" alt=""></button>';
         }).join('') + '</div>';
     }
-
-    var finishCol = hasColours ? 'Colour' : 'Finish / option';
-    var table = '<table class="pricing"><caption>Options &amp; pricing</caption>' +
-      '<thead><tr><th>Code</th><th>' + finishCol + '</th><th class="price">RRP</th></tr></thead><tbody>' +
-      p.variants.map(function (v) {
-        return '<tr' + (v.code ? ' data-code="' + esc(v.code) + '"' : '') + '><td class="sku">' + esc(v.sku) + '</td><td>' + esc(v.finish) + '</td><td class="price">' + money(v.price) + '</td></tr>';
-      }).join('') + '</tbody></table>';
 
     var notes = [p.note].concat(p.notes || []).filter(Boolean).map(function (n) {
       return '<p class="note">' + esc(n) + '</p>';
@@ -215,7 +238,7 @@
       '<h1>' + esc(p.name) + '</h1>' +
       (p.dims ? '<p class="dims">' + esc(p.dims) + (/x/.test(p.dims) ? ' mm' : '') + '</p>' : '') +
       '<p class="from">' + fromLabel(p) + '<span class="inc">RRP inc. VAT</span></p>' +
-      swatchButtons + table + notes + basinNote +
+      swatchButtons + picker + notes + basinNote +
       (p.footnote ? '<p class="footnote">' + esc(p.footnote) + '</p>' : '') +
       assure + '</div></div>' +
       addonBlock(range.addons) +
@@ -231,35 +254,38 @@
       '<a class="btn" href="' + u('/products/') + '">Explore the collection</a></section>';
   }
 
-  function bind() {
+  function bind(p) {
     var stageImg = root.querySelector('.pdp .stage .inner img');
-    var swatchBtns = root.querySelectorAll('.variant-swatches button');
-    if (stageImg && swatchBtns.length) {
-      Array.prototype.forEach.call(swatchBtns, function (btn) {
-        btn.addEventListener('click', function () {
-          Array.prototype.forEach.call(swatchBtns, function (b) { b.classList.remove('on'); });
-          btn.classList.add('on');
-          var img = btn.getAttribute('data-img');
-          if (img) stageImg.src = img;
-          var label = root.querySelector('.variant-swatches .label b');
-          if (label) label.textContent = btn.getAttribute('data-name') || '';
-          var code = btn.getAttribute('data-code');
-          Array.prototype.forEach.call(root.querySelectorAll('table.pricing tbody tr'), function (tr) {
-            tr.classList.toggle('hl', !!code && tr.getAttribute('data-code') === code);
-          });
-        });
+    if (!stageImg || !p) return;
+
+    function selectVariant(i) {
+      var v = p.variants[i];
+      if (!v) return;
+      var src = prodImgSafe(v.image || (v.code && p.imagesByCode && p.imagesByCode[v.code]) || p.image);
+      var pre = new Image();
+      pre.onload = function () { stageImg.src = src; };
+      pre.src = src;
+      Array.prototype.forEach.call(root.querySelectorAll('[data-v]'), function (b) {
+        b.classList.toggle('on', +b.getAttribute('data-v') === i);
       });
+      var label = root.querySelector('.variant-swatches .label b');
+      if (label) label.textContent = v.finish;
+      var t = root.querySelector('.thumbs button.on');
+      if (t) { t.classList.remove('on'); }
     }
+
+    Array.prototype.forEach.call(root.querySelectorAll('[data-v]'), function (btn) {
+      btn.addEventListener('click', function () { selectVariant(+btn.getAttribute('data-v')); });
+    });
+
     var thumbs = root.querySelectorAll('.pdp .thumbs button');
-    if (stageImg && thumbs.length) {
-      Array.prototype.forEach.call(thumbs, function (btn) {
-        btn.addEventListener('click', function () {
-          Array.prototype.forEach.call(thumbs, function (b) { b.classList.remove('on'); });
-          btn.classList.add('on');
-          stageImg.src = btn.getAttribute('data-img');
-        });
+    Array.prototype.forEach.call(thumbs, function (btn) {
+      btn.addEventListener('click', function () {
+        Array.prototype.forEach.call(thumbs, function (b) { b.classList.remove('on'); });
+        btn.classList.add('on');
+        stageImg.src = btn.getAttribute('data-img');
       });
-    }
+    });
   }
 
   /* ---------- route + render ---------- */
@@ -273,7 +299,7 @@
     if (cfg.base && path.indexOf(cfg.base) === 0) path = path.slice(cfg.base.length);
     var segs = path.replace(/\/+$/, '').split('/').filter(Boolean); // e.g. ['products','taps','aeres','slug']
 
-    var html;
+    var html, bound = null;
     if (segs[0] !== 'products') {
       html = notFound();
     } else if (segs.length === 1) {
@@ -289,11 +315,12 @@
         else {
           var p = range.products.filter(function (x) { return x.slug === segs[3]; })[0];
           html = p ? productView(cat, range, p) : notFound();
+          bound = p || null;
         }
       }
     }
     root.innerHTML = html;
-    bind();
+    bind(bound);
   }).catch(function () {
     root.innerHTML = '<section class="pad--tight"><p class="small">The collection could not be loaded. Please refresh, or call 01225 251204.</p></section>';
   });
