@@ -473,25 +473,6 @@ footer.site .fine { border-top: 1px solid #2a2820; padding: 26px 0 34px; display
 .leaflet-interactive.radius-ring { pointer-events: none; }
 
 
-/* ---------- variant picker: every variation, clickable ---------- */
-.variant-picker { margin-top: 30px; }
-.variant-picker .label { font-size: 11.5px; letter-spacing: .22em; text-transform: uppercase; color: var(--ink-soft); margin-bottom: 12px; }
-.variant-picker .vlist { border-top: 1px solid var(--line-dark); }
-.vopt {
-  display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 16px;
-  width: 100%; text-align: left; background: none; border: 0; border-bottom: 1px solid var(--line);
-  padding: 12px 6px; cursor: pointer; font-family: var(--sans); transition: background .2s;
-}
-.vopt:hover { background: #f6f4ef; }
-.vopt.on { background: #f2efe8; box-shadow: inset 3px 0 0 var(--ink); }
-.vopt .vthumb {
-  width: 54px; height: 54px; background: var(--tile); display: flex; align-items: center;
-  justify-content: center; overflow: hidden; flex: none; border: 1px solid transparent;
-}
-.vopt.on .vthumb { border-color: var(--line-dark); }
-.vopt .vthumb img { max-width: 100%; max-height: 100%; object-fit: contain; mix-blend-mode: multiply; padding: 4px; }
-.vopt .vmeta { min-width: 0; }
-.vopt .vsku { display: block; font-size: 11.5px; letter-spacing: .08em; color: var(--muted); }
-.vopt .vfin { display: block; font-size: 14.5px; color: var(--ink); margin-top: 2px; line-height: 1.35; }
-.vopt .vprice { font-size: 15px; color: var(--ink); white-space: nowrap; }
-@media (max-width: 480px) { .vopt { gap: 12px; } .vopt .vthumb { width: 44px; height: 44px; } }
+/* pricing rows are clickable — they preview that variation */
+table.pricing tbody tr { cursor: pointer; transition: background .18s; }
+table.pricing tbody tr:hover td { background: #f6f4ef; }

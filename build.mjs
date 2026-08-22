@@ -8,6 +8,7 @@
 import { readFileSync, writeFileSync, mkdirSync, readdirSync, rmSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { createHash } from 'node:crypto';
 
 const ROOT = dirname(fileURLToPath(import.meta.url));
 // Output to docs/ (served by GitHub Pages from the main branch).
@@ -19,6 +20,14 @@ const SUPABASE_URL = 'https://pcouznwpyhtfrleedcsv.supabase.co';
 const ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBjb3V6bndweWh0ZnJsZWVkY3N2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM4NjM3NzIsImV4cCI6MjA5OTQzOTc3Mn0.pNRCs82pde-0vMnaTh6ygtQNeWKgFS2s3lrIkhM8uZU';
 const ASSETS = `${SUPABASE_URL}/storage/v1/object/public/site-assets`;
 const INSTRUCTIONS_BUCKET = 'instructions';
+
+// Short content hashes for cache-busting: a changed file gets a new URL, so a
+// browser can never pair a stale stylesheet with fresh scripts.
+const STATIC_FILES = ['styles.css', 'site.js', 'catalog.js', 'instructions.js', 'videos.js', 'retailers.js', 'admin.js'];
+const assetVersions = Object.fromEntries(STATIC_FILES.map(f => [
+  f, createHash('sha1').update(readFileSync(join(ROOT, 'static', f))).digest('hex').slice(0, 8)
+]));
+const v = f => `/${f}?v=${assetVersions[f]}`;
 
 const site = JSON.parse(readFileSync(join(ROOT, 'data/site.json'), 'utf8'));
 const categories = readdirSync(join(ROOT, 'data/categories')).sort()
@@ -94,7 +103,7 @@ function layout({ title, desc, path, body, extraHead = '', extraBody = '', noind
 <meta name="description" content="${esc(desc)}">
 ${noindex ? '<meta name="robots" content="noindex">' : ''}
 <link rel="icon" href="${FAVICON}">
-<link rel="stylesheet" href="/styles.css">
+<link rel="stylesheet" href="${v('styles.css')}">
 ${extraHead}
 </head>
 <body>
@@ -166,7 +175,7 @@ ${body}
   </div>
 </footer>
 <script>window.ARMERA=${JSON.stringify(CFG)}</script>
-<script src="/site.js" defer></script>
+<script src="${v('site.js')}" defer></script>
 ${extraBody}
 </body>
 </html>`;
@@ -334,7 +343,7 @@ ${crumbLabels ? crumbs(crumbLabels) : ''}
 ${catBand()}`;
   write(path, layout({
     title, desc, path: '/products/', body,
-    extraBody: `<script src="/catalog.js" defer></script>`
+    extraBody: `<script src="${v('catalog.js')}" defer></script>`
   }));
 }
 
@@ -561,7 +570,7 @@ ${crumbs([{ label: 'Home', href: '/' }, { label: 'Support', href: '/support/' },
     desc: 'Installation and product instructions for the ARMERA collection, available as PDF downloads.',
     path: '/support/',
     body,
-    extraBody: `<script src="/instructions.js" type="module"></script>`
+    extraBody: `<script src="${v('instructions.js')}" type="module"></script>`
   }));
 }
 
@@ -589,7 +598,7 @@ ${crumbs([{ label: 'Home', href: '/' }, { label: 'Support', href: '/support/' },
     desc: 'ARMERA how-to videos.',
     path: '/support/',
     body,
-    extraBody: `<script src="/videos.js" defer></script>`
+    extraBody: `<script src="${v('videos.js')}" defer></script>`
   }));
 }
 
@@ -639,7 +648,7 @@ ${catBand()}`;
     desc: 'Find your nearest ARMERA stockist. Search by town or postcode and view our retail partners on the map.',
     path: '/retailers/',
     body,
-    extraBody: `<script src="/retailers.js" defer></script>`
+    extraBody: `<script src="${v('retailers.js')}" defer></script>`
   }));
 }
 
@@ -709,7 +718,7 @@ function adminPage() {
     path: '/admin/',
     body,
     noindex: true,
-    extraBody: `<script src="${ASSETS}/vendor/supabase/supabase.js"></script><script src="/admin.js" defer></script>`
+    extraBody: `<script src="${ASSETS}/vendor/supabase/supabase.js"></script><script src="${v('admin.js')}" defer></script>`
   }));
 }
 

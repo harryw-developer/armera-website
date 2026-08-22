@@ -167,35 +167,29 @@
 
   function productView(cat, range, p) {
     document.title = p.name + ' — ' + range.title + ' — ARMERA';
+    var hasColours = !!(range.swatches && range.swatches.length && p.variants[0].code);
     var heroImg = variantImage(p, p.variants[0]);
-    var multi = p.variants.length > 1;
-    var differ = variantsDiffer(p);
-    var isColour = !!(range.swatches && range.swatches.length && p.variants[0].code);
 
-    // Round colour swatches (furniture ranges keep these as a quick visual picker)
+    // Round colour swatches, as before, for ranges with colour options
     var swatchButtons = '';
-    if (isColour) {
+    if (hasColours) {
       swatchButtons = '<div class="variant-swatches"><p class="label">Colour — <b>' + esc(p.variants[0].finish) + '</b></p><div class="row">' +
         p.variants.map(function (v, i) {
           var sw = (range.swatches || []).filter(function (x) { return x.code === v.code; })[0];
           var bg = sw && sw.img ? 'background-image:url(\'' + swatchImg(sw.img) + '\')' : 'background:#fff';
-          return '<button type="button" class="' + (i === 0 ? 'on' : '') + '" style="' + bg + '" data-v="' + i + '" aria-label="' + esc(v.finish) + '"></button>';
+          return '<button type="button" class="' + (i === 0 ? 'on' : '') + '" style="' + bg + '" data-v="' + i + '" data-name="' + esc(v.finish) + '" aria-label="' + esc(v.finish) + '"></button>';
         }).join('') + '</div></div>';
     }
 
-    // Every variation, clickable, with its own preview
-    var pickerLabel = isColour ? 'Colour' : (differ ? 'Finish' : 'Option');
-    var picker = '<div class="variant-picker">' +
-      '<p class="label">' + (multi ? pickerLabel + 's &amp; pricing' : 'Code &amp; pricing') + '</p>' +
-      '<div class="vlist">' +
+    // Pricing table, as before — every row clickable to preview that variation
+    var finishCol = hasColours ? 'Colour' : 'Finish / option';
+    var table = '<table class="pricing"><caption>Options &amp; pricing</caption>' +
+      '<thead><tr><th>Code</th><th>' + finishCol + '</th><th class="price">RRP</th></tr></thead><tbody>' +
       p.variants.map(function (v, i) {
-        return '<button type="button" class="vopt' + (i === 0 ? ' on' : '') + '" data-v="' + i + '">' +
-          (differ ? '<span class="vthumb"><img src="' + prodImgSafe(variantImage(p, v)) + '" alt="" loading="lazy"></span>' : '') +
-          '<span class="vmeta"><span class="vsku">' + esc(v.sku) + '</span>' +
-          '<span class="vfin">' + esc(v.finish) + '</span></span>' +
-          '<span class="vprice">' + money(v.price) + '</span>' +
-          '</button>';
-      }).join('') + '</div></div>';
+        return '<tr data-v="' + i + '"' + (i === 0 ? ' class="hl"' : '') + (v.code ? ' data-code="' + esc(v.code) + '"' : '') + '>' +
+          '<td class="sku">' + esc(v.sku) + '</td><td>' + esc(v.finish) + '</td>' +
+          '<td class="price">' + money(v.price) + '</td></tr>';
+      }).join('') + '</tbody></table>';
 
     var gallery = '';
     if (p.gallery && p.gallery.length) {
@@ -238,7 +232,7 @@
       '<h1>' + esc(p.name) + '</h1>' +
       (p.dims ? '<p class="dims">' + esc(p.dims) + (/x/.test(p.dims) ? ' mm' : '') + '</p>' : '') +
       '<p class="from">' + fromLabel(p) + '<span class="inc">RRP inc. VAT</span></p>' +
-      swatchButtons + picker + notes + basinNote +
+      swatchButtons + table + notes + basinNote +
       (p.footnote ? '<p class="footnote">' + esc(p.footnote) + '</p>' : '') +
       assure + '</div></div>' +
       addonBlock(range.addons) +
@@ -261,20 +255,21 @@
     function selectVariant(i) {
       var v = p.variants[i];
       if (!v) return;
-      var src = prodImgSafe(v.image || (v.code && p.imagesByCode && p.imagesByCode[v.code]) || p.image);
+      var src = prodImgSafe(variantImage(p, v));
       var pre = new Image();
       pre.onload = function () { stageImg.src = src; };
       pre.src = src;
-      Array.prototype.forEach.call(root.querySelectorAll('[data-v]'), function (b) {
+      Array.prototype.forEach.call(root.querySelectorAll('.variant-swatches button'), function (b) {
         b.classList.toggle('on', +b.getAttribute('data-v') === i);
+      });
+      Array.prototype.forEach.call(root.querySelectorAll('table.pricing tbody tr'), function (tr) {
+        tr.classList.toggle('hl', +tr.getAttribute('data-v') === i);
       });
       var label = root.querySelector('.variant-swatches .label b');
       if (label) label.textContent = v.finish;
-      var t = root.querySelector('.thumbs button.on');
-      if (t) { t.classList.remove('on'); }
     }
 
-    Array.prototype.forEach.call(root.querySelectorAll('[data-v]'), function (btn) {
+    Array.prototype.forEach.call(root.querySelectorAll('.variant-swatches button, table.pricing tbody tr'), function (btn) {
       btn.addEventListener('click', function () { selectVariant(+btn.getAttribute('data-v')); });
     });
 
