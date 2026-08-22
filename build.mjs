@@ -69,9 +69,8 @@ const catBand = ({ dark = false } = {}) => `
 </section>`;
 
 /* ---------------- layout ---------------- */
-const FAVICON = `data:image/svg+xml,${encodeURIComponent(
-  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" fill="#232220"/><text x="32" y="44" font-family="Georgia,serif" font-size="36" fill="#f4efe4" text-anchor="middle">A</text></svg>`
-)}`;
+// Favicon: the ARMERA 'A' from the logo, on the brand ink tile.
+const FAVICON = `${ASSETS}/brand/favicon-32.png`;
 
 const navModel = [
   { href: '/products/', label: 'Products', children: categories.map(c => ({ href: `/products/${c.slug}/`, label: c.name })) },
@@ -102,7 +101,8 @@ function layout({ title, desc, path, body, extraHead = '', extraBody = '', noind
 <title>${esc(title)}</title>
 <meta name="description" content="${esc(desc)}">
 ${noindex ? '<meta name="robots" content="noindex">' : ''}
-<link rel="icon" href="${FAVICON}">
+<link rel="icon" type="image/png" sizes="32x32" href="${FAVICON}">
+<link rel="apple-touch-icon" sizes="180x180" href="${ASSETS}/brand/favicon-180.png">
 <link rel="stylesheet" href="${v('styles.css')}">
 ${extraHead}
 </head>

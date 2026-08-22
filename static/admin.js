@@ -23,6 +23,19 @@
   var slugify = function (s) {
     return String(s).toLowerCase().replace(/&/g, 'and').replace(/[’'"]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
   };
+  // A "?" that explains a field on hover / keyboard focus.
+  var hq = function (tip, side) {
+    return el('span', {
+      class: 'hq' + (side === 'left' ? ' tip-left' : ''),
+      'data-tip': tip, tabindex: '0', role: 'note', 'aria-label': 'Help: ' + tip, text: '?'
+    });
+  };
+  // lbl('Name', 'The product name as customers see it — e.g. “600mm 2 drawer wall hung unit”.') or lbl('Name', 'what this field does')
+  var lbl = function (text, tip, side) {
+    var l = el('label', { text: text });
+    if (tip) l.appendChild(hq(tip, side));
+    return l;
+  };
   var msg = function (target, text, cls) {
     var old = target.querySelector('.adm-msg');
     if (old) old.remove();
@@ -163,6 +176,10 @@
   /* ---------- catalogue tab ---------- */
   function renderCatalogue(panel) {
     var cat = state.rows[state.catKey];
+    panel.appendChild(el('p', { class: 'tab-intro', html:
+      'Pick a <b>category</b> then a <b>range</b> below, and edit the products inside it. ' +
+      'Everything you save here appears on the website straight away — no need to tell anyone to rebuild it. ' +
+      'Hover a <span class="hq" data-tip="Like this one — every ? explains the box it sits next to.">?</span> for help with any box.' }));
     if (state.rangeIdx >= cat.ranges.length) state.rangeIdx = 0;
 
     var row = el('div', { class: 'adm-row' });
@@ -183,9 +200,11 @@
       rangeSel.appendChild(o);
     });
     row.appendChild(catSel);
+    row.appendChild(hq('The eight top-level sections of the site — Furniture & Basins, WCs, Taps and so on.', 'left'));
     row.appendChild(rangeSel);
+    row.appendChild(hq('The families inside the chosen category — Atoll, Palladium, Holloway and so on.', 'left'));
     row.appendChild(el('button', {
-      class: 'abtn abtn--ghost abtn--sm', text: 'Add range',
+      class: 'abtn abtn--ghost abtn--sm', title: 'Create a new family of products inside the chosen category.', text: 'Add range',
       onclick: function () {
         var name = prompt('Name of the new range (e.g. "Marlow")');
         if (!name) return;
@@ -198,7 +217,7 @@
       }
     }));
     row.appendChild(el('button', {
-      class: 'abtn abtn--danger abtn--sm', text: 'Delete range',
+      class: 'abtn abtn--danger abtn--sm', title: 'Permanently remove this range and every product in it. This cannot be undone.', text: 'Delete range',
       onclick: function () {
         var r = cat.ranges[state.rangeIdx];
         if (!confirm('Delete the whole "' + r.title + '" range and its ' + r.products.length + ' product(s)? This cannot be undone.')) return;
@@ -215,7 +234,6 @@
     /* range details */
     var d = el('details', {});
     d.appendChild(el('summary', { text: 'Range details (name, tagline, hero image, colours)' }));
-    var lbl = function (t) { return el('label', { text: t }); };
     var name = el('input', { type: 'text', value: range.name });
     var title = el('input', { type: 'text', value: range.title });
     var tagline = el('textarea', { text: range.tagline || '' });
@@ -225,16 +243,16 @@
     var heroCap = el('textarea', { text: (range.hero && range.hero.caption) || '' });
     heroCap.style.minHeight = '60px';
     var heroFile = el('input', { type: 'file', accept: 'image/*' });
-    d.appendChild(lbl('Range name')); d.appendChild(name);
-    d.appendChild(lbl('Page title')); d.appendChild(title);
-    d.appendChild(lbl('Tagline')); d.appendChild(tagline);
-    d.appendChild(lbl('Footnote (optional)')); d.appendChild(footnote);
-    d.appendChild(lbl('Hero image — current: ' + ((range.hero && range.hero.img) || 'none') + ' (upload to replace)'));
+    d.appendChild(lbl('Range name', 'The short name shown in menus and on tiles — e.g. “Atoll”. Keep it to the family name.')); d.appendChild(name);
+    d.appendChild(lbl('Page title', 'The heading at the top of the range page — usually the range name plus the type, e.g. “Atoll furniture”.')); d.appendChild(title);
+    d.appendChild(lbl('Tagline', 'One line of description under the heading, and on the tile that links here. Straight from the catalogue is ideal.')); d.appendChild(tagline);
+    d.appendChild(lbl('Footnote (optional)', 'Small print shown under the products in this range — e.g. “These cabinets require handles to be ordered separately.”')); d.appendChild(footnote);
+    d.appendChild(lbl('Hero image', 'The wide lifestyle photo across the top of the range page. Landscape photos work best. Current file: ' + ((range.hero && range.hero.img) || 'none') + '. Choosing a file replaces it.'));
     d.appendChild(heroFile);
-    d.appendChild(lbl('Hero caption')); d.appendChild(heroCap);
+    d.appendChild(lbl('Hero caption', 'The small caption over the bottom-right of the hero photo, describing what is pictured.')); d.appendChild(heroCap);
 
     /* swatches */
-    d.appendChild(lbl('Colours (code · name · swatch image)'));
+    d.appendChild(lbl('Colours', 'The round colour swatches on the range page. Code is a short label such as 11 or 23 — use the same code on a product option to link them. Name is what customers read. The image is a small square of the colour.'));
     var swWrap = el('div', {});
     var swatches = range.swatches ? range.swatches.slice() : [];
     var drawSw = function () {
@@ -286,7 +304,12 @@
     panel.appendChild(d);
 
     /* products */
-    panel.appendChild(el('label', { text: 'Products in ' + range.title }));
+    var ph = lbl('Products in ' + range.title, 'Every product in this range. “Edit” opens its details, prices and photos. “Remove” deletes it from the site.');
+    panel.appendChild(ph);
+    ph.appendChild(el('a', {
+      class: 'preview-link', style: 'margin-left:14px', target: '_blank', rel: 'noopener',
+      href: (cfg.base || '') + '/products/' + cat.slug + '/' + range.slug + '/', text: 'View this range on the site'
+    }));
     var list = el('div', { class: 'adm-list' });
     range.products.forEach(function (p, i) {
       var item = el('div', { class: 'item' });
@@ -306,6 +329,7 @@
     panel.appendChild(list);
     panel.appendChild(el('button', {
       class: 'abtn abtn--ghost abtn--sm', text: 'Add product', style: 'margin-top:14px',
+      title: 'Add a new product to this range. You will be asked for its name, then you can set its options, prices and photos.',
       onclick: function () {
         var nm = prompt('Product name (e.g. "700mm 2 drawer wall hung unit")');
         if (!nm) return;
@@ -324,20 +348,25 @@
   function renderProductEditor(panel, range, p) {
     var box = el('div', {});
     box.appendChild(el('h3', { text: 'Edit — ' + p.name }));
-    box.appendChild(el('p', { class: 'hint', text: 'Page address: /products/…/' + range.slug + '/' + p.slug + '/' }));
-    var lbl = function (t) { return el('label', { text: t }); };
+    var addr = el('p', { class: 'hint' });
+    addr.appendChild(el('span', { text: 'Page address: /products/…/' + range.slug + '/' + p.slug + '/  ' }));
+    addr.appendChild(el('a', {
+      class: 'preview-link', target: '_blank', rel: 'noopener',
+      href: (cfg.base || '') + '/products/' + state.rows[state.catKey].slug + '/' + range.slug + '/' + p.slug + '/', text: 'View on the site'
+    }));
+    box.appendChild(addr);
 
     var name = el('input', { type: 'text', value: p.name });
     var dims = el('input', { type: 'text', value: p.dims || '' });
     var note = el('textarea', { text: p.note || '' }); note.style.minHeight = '60px';
     var footnote = el('textarea', { text: p.footnote || '' }); footnote.style.minHeight = '60px';
-    box.appendChild(lbl('Name')); box.appendChild(name);
-    box.appendChild(lbl('Dimensions (e.g. 600w x 520h x 460d — leave blank if not applicable)')); box.appendChild(dims);
-    box.appendChild(lbl('Note shown on the product page (optional)')); box.appendChild(note);
-    box.appendChild(lbl('Footnote (optional)')); box.appendChild(footnote);
+    box.appendChild(lbl('Name', 'The product name as customers see it — e.g. “600mm 2 drawer wall hung unit”.')); box.appendChild(name);
+    box.appendChild(lbl('Dimensions', 'Shown under the product name. Use the catalogue format, e.g. 600w x 520h x 460d. “mm” is added automatically. Leave blank if not applicable.')); box.appendChild(dims);
+    box.appendChild(lbl('Note (optional)', 'A short note in a bordered box on the product page — e.g. “Price excludes ceramic basin.”')); box.appendChild(note);
+    box.appendChild(lbl('Footnote (optional)', 'Small print shown under the products in this range — e.g. “These cabinets require handles to be ordered separately.”')); box.appendChild(footnote);
 
     /* variants (drawn first — the photo slots below follow the option rows) */
-    box.appendChild(lbl('Options & pricing (code · finish/option · colour code · RRP £)'));
+    box.appendChild(lbl('Options & pricing', 'One row per version of this product. Code is the order code (AT.620.600.11). Finish/option is what customers read (Chrome, Matt white). Colour code links to a colour swatch — leave blank for brassware finishes. RRP is the price in pounds, numbers only.'));
     var vWrap = el('div', {});
     var imgWrap = el('div', {});
     var variants = p.variants.map(function (v) { return Object.assign({}, v); });
@@ -404,12 +433,13 @@
     }));
     box.appendChild(el('p', { class: 'hint', text: 'Each option gets its own photo slot below, so every variation can show its own preview. The colour code links a furniture option to its colour swatch under Range details → Colours.' }));
 
-    box.appendChild(lbl('Photos — one per option'));
+    box.appendChild(lbl('Photos — one per option', 'Each option can have its own photo. Customers click a row in the pricing table (or a colour swatch) and the main picture changes to that one. Options without their own photo fall back to the shared product photo.'));
     box.appendChild(imgWrap);
     drawImages();
 
     var save = el('button', {
       class: 'abtn', text: 'Save product', type: 'button', style: 'margin-top:22px;display:block',
+      title: 'Save every change on this product — details, options, prices and photos — and put them live.',
       onclick: function () {
         p.name = name.value.trim();
         if (dims.value.trim()) p.dims = dims.value.trim(); else delete p.dims;
@@ -442,18 +472,19 @@
   function renderPages(panel) {
     var pages = state.rows.pages || {};
     pages.home = pages.home || {}; pages.about = pages.about || {}; pages.support = pages.support || {}; pages.contact = pages.contact || {};
-    var lbl = function (t) { return el('label', { text: t }); };
 
+    panel.appendChild(el('p', { class: 'tab-intro', text:
+      'The wording on the main pages. Product names and prices are not here — those live under Products.' }));
     panel.appendChild(el('h3', { text: 'Homepage' }));
     var hHeading = el('input', { type: 'text', value: pages.home.heading || '' });
     var hLede = el('textarea', { text: pages.home.lede || '' });
-    panel.appendChild(lbl('Main heading')); panel.appendChild(hHeading);
-    panel.appendChild(lbl('Intro sentence')); panel.appendChild(hLede);
+    panel.appendChild(lbl('Main heading', 'The large headline over the photo at the top of the homepage.')); panel.appendChild(hHeading);
+    panel.appendChild(lbl('Intro sentence', 'The sentence under the homepage headline. One or two lines reads best.')); panel.appendChild(hLede);
 
     panel.appendChild(el('hr', { class: 'rule' }));
     panel.appendChild(el('h3', { text: 'About page' }));
     var aHeading = el('input', { type: 'text', value: pages.about.heading || '' });
-    panel.appendChild(lbl('Heading')); panel.appendChild(aHeading);
+    panel.appendChild(lbl('Heading', 'The main heading at the top of the About page.')); panel.appendChild(aHeading);
     var sections = (pages.about.sections || []).map(function (s) { return { side: s.side, paras: (s.paras || []).slice() }; });
     var sWrap = el('div', {});
     var drawS = function () {
@@ -481,10 +512,10 @@
     var phone = el('input', { type: 'text', value: pages.contact.phone || '' });
     var email = el('input', { type: 'text', value: pages.contact.email || '' });
     var address = el('textarea', { text: pages.contact.address || '' }); address.style.minHeight = '60px';
-    panel.appendChild(lbl('Spares line')); panel.appendChild(spares);
-    panel.appendChild(lbl('Phone (shown site-wide)')); panel.appendChild(phone);
-    panel.appendChild(lbl('Email (shown site-wide)')); panel.appendChild(email);
-    panel.appendChild(lbl('Address')); panel.appendChild(address);
+    panel.appendChild(lbl('Spares line', 'Shown on the Support page and the Contact page. Include the phone number you want people to ring for spares.')); panel.appendChild(spares);
+    panel.appendChild(lbl('Phone', 'Used in the top bar, footer and Contact page. Changing it here updates every one of them, and the click-to-call links.')); panel.appendChild(phone);
+    panel.appendChild(lbl('Email', 'Used in the top bar, footer and Contact page, including the click-to-email links.')); panel.appendChild(email);
+    panel.appendChild(lbl('Address', 'Shown in the footer and on the Contact page.')); panel.appendChild(address);
 
     panel.appendChild(el('button', {
       class: 'abtn', text: 'Save page text', style: 'margin-top:24px;display:block',
@@ -503,7 +534,9 @@
   /* ---------- instructions tab ---------- */
   function renderInstructions(panel) {
     panel.appendChild(el('h3', { text: 'Instruction PDFs' }));
-    panel.appendChild(el('p', { class: 'hint', text: 'These appear on the public Instructions page in filename order, each with a thumbnail of its first page. Start filenames with a number to control the order, e.g. “01 - Holloway furniture.pdf”.' }));
+    panel.appendChild(el('p', { class: 'tab-intro', html:
+      'The documents on the <b>Instructions</b> page. They are listed in filename order, each showing a picture of its first page. ' +
+      'Name files “01 - …”, “02 - …” to control the order — the number is hidden from customers.' }));
     var list = el('div', { class: 'adm-list' });
     panel.appendChild(list);
 
@@ -535,7 +568,7 @@
     };
     refresh();
 
-    panel.appendChild(el('label', { text: 'Upload PDF(s)' }));
+    panel.appendChild(lbl('Upload PDF(s)', 'Choose one or more PDFs. They appear on the Instructions page straight away, ordered by filename — start names with 01, 02, 03 to control the order.'));
     var f = el('input', { type: 'file', accept: 'application/pdf', multiple: 'multiple' });
     panel.appendChild(f);
     f.addEventListener('change', function () {
@@ -559,7 +592,9 @@
     if (!Array.isArray(videos)) { videos = []; state.rows.videos = videos; }
 
     panel.appendChild(el('h3', { text: 'How-to videos' }));
-    panel.appendChild(el('p', { class: 'hint', text: 'These appear on the public How-to videos page in this order. Each card shows the uploaded thumbnail and opens the YouTube link.' }));
+    panel.appendChild(el('p', { class: 'tab-intro', html:
+      'The cards on the <b>How-to videos</b> page, shown in the order below — use the ↑ and ↓ buttons to rearrange them. ' +
+      'Each card opens its YouTube link in a new tab.' }));
     var list = el('div', { class: 'adm-list' });
     panel.appendChild(list);
 
@@ -593,13 +628,12 @@
 
     panel.appendChild(el('hr', { class: 'rule' }));
     panel.appendChild(el('h3', { text: 'Add a video' }));
-    var lbl = function (t) { return el('label', { text: t }); };
     var title = el('input', { type: 'text', placeholder: 'How to remove a flow regulator' });
     var url = el('input', { type: 'text', placeholder: 'https://www.youtube.com/watch?v=…' });
     var thumbFile = el('input', { type: 'file', accept: 'image/*' });
-    panel.appendChild(lbl('Title')); panel.appendChild(title);
-    panel.appendChild(lbl('YouTube link')); panel.appendChild(url);
-    panel.appendChild(lbl('Thumbnail image')); panel.appendChild(thumbFile);
+    panel.appendChild(lbl('Title', 'Shown across the top of the video card — e.g. “How to remove a flow regulator”.')); panel.appendChild(title);
+    panel.appendChild(lbl('YouTube link', 'Paste the full link from YouTube’s address bar, starting https://. Clicking the card opens it in a new tab.')); panel.appendChild(url);
+    panel.appendChild(lbl('Thumbnail image', 'The picture on the video card. A still from the video works well — landscape images are cropped to a tall card.')); panel.appendChild(thumbFile);
     panel.appendChild(el('button', {
       class: 'abtn', text: 'Add video', style: 'margin-top:20px;display:block',
       onclick: function () {
@@ -621,11 +655,12 @@
   function renderRetailers(panel) {
     var retailers = state.rows.retailers;
     if (!Array.isArray(retailers)) { retailers = []; state.rows.retailers = retailers; }
-    var lbl = function (t) { return el('label', { text: t }); };
     var persist = function (okText) { return saveRowUpsert('retailers', panel, okText); };
 
     panel.appendChild(el('h3', { text: 'Retailers' }));
-    panel.appendChild(el('p', { class: 'hint', text: 'These appear as pins on the Find a retailer map. Postcodes are turned into map positions automatically — press “Locate” after typing one.' }));
+    panel.appendChild(el('p', { class: 'tab-intro', html:
+      'Everyone listed here appears as a pin on the <b>Find a retailer</b> map and in the list beside it. ' +
+      'To add one: press <b>New retailer</b>, fill in the details, type the postcode, press <b>Locate from postcode</b>, then <b>Add retailer</b>.' }));
 
     var filter = el('input', { type: 'text', placeholder: 'Filter by name, town or postcode', style: 'max-width:420px' });
     panel.appendChild(filter);
@@ -657,14 +692,14 @@
       var website = el('input', { type: 'text', value: r.website || '' });
       var lat = el('input', { type: 'text', value: r.lat != null ? r.lat : '' });
       var lng = el('input', { type: 'text', value: r.lng != null ? r.lng : '' });
-      box.appendChild(lbl('Retailer name')); box.appendChild(name);
-      box.appendChild(lbl('Street address')); box.appendChild(address);
-      box.appendChild(lbl('Town')); box.appendChild(town);
-      box.appendChild(lbl('County')); box.appendChild(county);
-      box.appendChild(lbl('Postcode')); box.appendChild(postcode);
-      box.appendChild(lbl('Phone')); box.appendChild(phone);
-      box.appendChild(lbl('Website')); box.appendChild(website);
-      box.appendChild(lbl('Map position'));
+      box.appendChild(lbl('Retailer name', 'The business name as it should appear on the map pin and in the list.')); box.appendChild(name);
+      box.appendChild(lbl('Street address', 'Street and building only — the town, county and postcode go in their own boxes below.')); box.appendChild(address);
+      box.appendChild(lbl('Town', 'Customers can search by town, so spell it as people would type it.')); box.appendChild(town);
+      box.appendChild(lbl('County', 'Optional. Shown after the town in the retailer’s address.')); box.appendChild(county);
+      box.appendChild(lbl('Postcode', 'Used to place the pin on the map. Type it, then press “Locate from postcode” below.')); box.appendChild(postcode);
+      box.appendChild(lbl('Phone', 'Shown on the retailer’s card and pin, as a tap-to-call link.')); box.appendChild(phone);
+      box.appendChild(lbl('Website', 'Full address including https:// — it opens in a new tab.')); box.appendChild(website);
+      box.appendChild(lbl('Map position', 'Where the pin sits. Press “Locate from postcode” to fill this in automatically. Only type numbers here if the postcode is not recognised.'));
       var geo = el('div', { class: 'adm-row' });
       lat.style.maxWidth = '150px'; lng.style.maxWidth = '150px';
       geo.appendChild(lat); geo.appendChild(lng);
@@ -764,10 +799,11 @@
     var pages = state.rows.pages || {};
     state.rows.pages = pages;
     var cat = pages.catalogue || {};
-    var lbl = function (t) { return el('label', { text: t }); };
 
     panel.appendChild(el('h3', { text: 'Catalogue' }));
-    panel.appendChild(el('p', { class: 'hint', text: 'Upload a new edition and every “View the catalogue” link across the site — homepage, products, about, support, contact, footer and top bar — points at it straight away. The cover image is taken from the PDF’s first page automatically.' }));
+    panel.appendChild(el('p', { class: 'tab-intro', html:
+      'The brochure behind every <b>“View the catalogue”</b> link on the site — top bar, homepage, products, about, support, contact and footer. ' +
+      'Upload a new edition here and all of them change at once, cover picture included.' }));
 
     var current = el('div', { class: 'imgrow', style: 'grid-template-columns:110px 1fr;align-items:start' });
     var cover = el('div', { class: 'thumb', style: 'width:110px;height:150px' });
@@ -790,8 +826,8 @@
     panel.appendChild(el('h3', { text: 'Upload a new edition' }));
     var label = el('input', { type: 'text', value: cat.label || '', placeholder: 'e.g. September 2026 Collection' });
     var file = el('input', { type: 'file', accept: 'application/pdf' });
-    panel.appendChild(lbl('Edition name (shown beside the catalogue)')); panel.appendChild(label);
-    panel.appendChild(lbl('Catalogue PDF')); panel.appendChild(file);
+    panel.appendChild(lbl('Edition name', 'Shown next to the catalogue across the site — e.g. “September 2026 Collection”.')); panel.appendChild(label);
+    panel.appendChild(lbl('Catalogue PDF', 'Upload the new catalogue and every “View the catalogue” link on the site points at it immediately. The cover picture is taken from page 1 automatically.')); panel.appendChild(file);
 
     var status = el('p', { class: 'small', style: 'margin-top:12px' });
     panel.appendChild(status);
@@ -852,9 +888,10 @@
 
   /* ---------- account tab ---------- */
   function renderAccount(panel) {
+    panel.appendChild(el('p', { class: 'tab-intro', text: 'Your sign-in details for this control panel.' }));
     panel.appendChild(el('h3', { text: 'Your name' }));
     var nm = el('input', { type: 'text', value: displayName() });
-    panel.appendChild(el('label', { text: 'Display name (used for the greeting)' }));
+    panel.appendChild(lbl('Display name', 'Just the name used to greet you at the top of this page.'));
     panel.appendChild(nm);
     panel.appendChild(el('button', {
       class: 'abtn abtn--ghost abtn--sm', text: 'Update name', style: 'margin-top:14px;display:block',
@@ -868,11 +905,10 @@
     }));
     panel.appendChild(el('hr', { class: 'rule' }));
     panel.appendChild(el('h3', { text: 'Change password' }));
-    var lbl = function (t) { return el('label', { text: t }); };
     var p1 = el('input', { type: 'password', autocomplete: 'new-password' });
     var p2 = el('input', { type: 'password', autocomplete: 'new-password' });
-    panel.appendChild(lbl('New password (minimum 8 characters)')); panel.appendChild(p1);
-    panel.appendChild(lbl('Repeat new password')); panel.appendChild(p2);
+    panel.appendChild(lbl('New password', 'At least 8 characters. You will use this with your email address to sign in next time.')); panel.appendChild(p1);
+    panel.appendChild(lbl('Repeat new password', 'Type the same password again so nothing is mistyped.')); panel.appendChild(p2);
     panel.appendChild(el('button', {
       class: 'abtn', text: 'Update password', style: 'margin-top:22px;display:block',
       onclick: function () {
