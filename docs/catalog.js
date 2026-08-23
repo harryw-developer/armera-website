@@ -33,6 +33,35 @@
   function variantImage(p, v) {
     return v.image || (v.code && p.imagesByCode && p.imagesByCode[v.code]) || mainImage(p);
   }
+  // Generic finish swatches for brassware and accessories.
+  function finishSwatch(name) {
+    var f = String(name || '').toLowerCase();
+    if (/matt\s*white/.test(f)) return 'finish-matt-white.png';
+    if (/matt\s*black/.test(f)) return 'finish-matt-black.png';
+    if (/brushed\s*black/.test(f)) return 'finish-black.png';
+    if (/brushed\s*gold|^gold/.test(f)) return 'finish-gold.png';
+    if (/stainless/.test(f)) return 'finish-stainless.png';
+    if (/chrome/.test(f)) return 'finish-chrome.png';
+    if (/white/.test(f)) return 'finish-white.png';
+    return null;
+  }
+  // Swatches suit finishes, not sizes or tap-hole options. Where a product
+  // repeats a finish (a valve in four finishes across three outlet counts),
+  // show each finish once, pointing at its first option.
+  function finishSwatches(p) {
+    if (p.variants.length < 2) return null;
+    var seen = {}, out = [];
+    for (var i = 0; i < p.variants.length; i++) {
+      var file = finishSwatch(p.variants[i].finish);
+      if (!file) return null;                 // a size or fitting option, not a finish
+      if (!seen[file]) {
+        seen[file] = true;
+        out.push({ file: file, index: i, name: p.variants[i].finish });
+      }
+    }
+    return (out.length >= 2 && out.length <= 6) ? out : null;
+  }
+
   // Do the variants actually differ visually? (drives the picker's thumbnails)
   function variantsDiffer(p) {
     var seen = {}, n = 0;
@@ -170,8 +199,17 @@
     var hasColours = !!(range.swatches && range.swatches.length && p.variants[0].code);
     var heroImg = variantImage(p, p.variants[0]);
 
-    // Round colour swatches, as before, for ranges with colour options
+    // Round swatches: a range's own colours, or generic finish swatches
     var swatchButtons = '';
+    if (!hasColours && variantsDiffer(p)) {
+      var fs = finishSwatches(p);
+      if (fs) {
+        swatchButtons = '<div class="variant-swatches"><p class="label">Finish — <b>' + esc(p.variants[0].finish) + '</b></p><div class="row">' +
+          fs.map(function (f, n) {
+            return '<button type="button" class="' + (n === 0 ? 'on' : '') + '" style="background-image:url(\'' + swatchImg(f.file) + '\')" data-v="' + f.index + '" aria-label="' + esc(f.name) + '" title="' + esc(f.name) + '"></button>';
+          }).join('') + '</div></div>';
+      }
+    }
     if (hasColours) {
       swatchButtons = '<div class="variant-swatches"><p class="label">Colour — <b>' + esc(p.variants[0].finish) + '</b></p><div class="row">' +
         p.variants.map(function (v, i) {
