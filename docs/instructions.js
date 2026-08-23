@@ -54,8 +54,51 @@
       '<div class="body"><h4></h4><p>' + (kb ? kb + ' KB — PDF' : 'PDF') + '</p></div>';
     a.querySelector('h4').textContent = titleOf(f.name);
     grid.appendChild(a);
-    return { url: url, el: a };
+    return { url: url, el: a, name: f.name, title: titleOf(f.name) };
   });
+
+  // Filter by document name or by the products an instruction is linked to.
+  var linkText = {};
+  try {
+    var linkRows = await fetch(cfg.supabaseUrl + '/rest/v1/site_content?key=eq.instruction_links&select=data', {
+      headers: { apikey: cfg.anonKey, Authorization: 'Bearer ' + cfg.anonKey }
+    }).then(function (r) { return r.json(); });
+    var links = (linkRows && linkRows[0] && linkRows[0].data) || {};
+    var catRows = await fetch(cfg.supabaseUrl + '/rest/v1/site_content?select=key,data', {
+      headers: { apikey: cfg.anonKey, Authorization: 'Bearer ' + cfg.anonKey }
+    }).then(function (r) { return r.json(); });
+    var nameOf = {};
+    (catRows || []).filter(function (r) { return /^\d\d-/.test(r.key); }).forEach(function (row) {
+      (row.data.ranges || []).forEach(function (rg) {
+        (rg.products || []).forEach(function (p) {
+          nameOf[row.data.slug + '/' + rg.slug + '/' + p.slug] = p.name + ' ' + rg.title;
+        });
+      });
+    });
+    Object.keys(links).forEach(function (file) {
+      linkText[file] = (links[file] || []).map(function (k) { return nameOf[k] || k; }).join(' ');
+    });
+  } catch (e) { /* filtering falls back to the document name */ }
+
+  var searchEl = document.getElementById('pdf-search');
+  var countEl = document.getElementById('pdf-count');
+  var noneEl = document.getElementById('pdf-none');
+  function applyFilter() {
+    var q = (searchEl.value || '').trim().toLowerCase();
+    var shown = 0;
+    cards.forEach(function (c) {
+      var hay = (c.title + ' ' + c.name + ' ' + (linkText[c.name] || '')).toLowerCase();
+      var hit = !q || hay.indexOf(q) !== -1;
+      c.el.style.display = hit ? '' : 'none';
+      if (hit) shown++;
+    });
+    countEl.textContent = shown + (shown === 1 ? ' document' : ' documents');
+    noneEl.style.display = shown ? 'none' : 'block';
+  }
+  if (searchEl) {
+    searchEl.addEventListener('input', applyFilter);
+    applyFilter();
+  }
 
   // Render first-page thumbnails with pdf.js (hosted on Supabase storage)
   try {

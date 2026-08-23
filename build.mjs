@@ -23,7 +23,7 @@ const INSTRUCTIONS_BUCKET = 'instructions';
 
 // Short content hashes for cache-busting: a changed file gets a new URL, so a
 // browser can never pair a stale stylesheet with fresh scripts.
-const STATIC_FILES = ['styles.css', 'site.js', 'track.js', 'catalog.js', 'instructions.js', 'videos.js', 'retailers.js', 'admin.js'];
+const STATIC_FILES = ['styles.css', 'site.js', 'search.js', 'track.js', 'catalog.js', 'instructions.js', 'videos.js', 'retailers.js', 'admin.js'];
 const assetVersions = Object.fromEntries(STATIC_FILES.map(f => [
   f, createHash('sha1').update(readFileSync(join(ROOT, 'static', f))).digest('hex').slice(0, 8)
 ]));
@@ -118,7 +118,12 @@ ${extraHead}
   <div class="container">
     <a href="/" aria-label="ARMERA home"><img class="logo-img" src="${ASSETS}/brand/logo.png" alt="ARMERA"></a>
     <nav class="primary" aria-label="Primary">${nav}</nav>
-    <button class="burger" aria-label="Open menu"><span></span><span></span><span></span></button>
+    <div class="head-tools">
+      <button class="icon-btn js-search-open" aria-label="Search the site">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><line x1="15.8" y1="15.8" x2="21" y2="21"/></svg>
+      </button>
+      <button class="burger" aria-label="Open menu"><span></span><span></span><span></span></button>
+    </div>
   </div>
 </header>
 <div class="mobile-menu" role="dialog" aria-label="Menu">
@@ -128,12 +133,23 @@ ${extraHead}
       <button class="close btn" style="margin:0;padding:10px 22px">Close</button>
     </div>
     ${mobileNav}
+    <a class="big js-search-open" href="#" role="button">Search</a>
     <p class="small" style="margin-top:34px"><span data-ck="contact.phone">${site.phone}</span> &nbsp;·&nbsp; <span data-ck="contact.email">${site.email}</span></p>
   </div>
 </div>
 <main>
 ${body}
 </main>
+<div class="search-overlay" id="site-search" role="dialog" aria-modal="true" aria-label="Search the site">
+  <div class="search-bar">
+    <div class="container">
+      <svg class="search-ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><line x1="15.8" y1="15.8" x2="21" y2="21"/></svg>
+      <input id="site-search-input" type="search" placeholder="Search products, ranges, retailers, instructions…" aria-label="Search" autocomplete="off">
+      <button class="search-close js-search-close" aria-label="Close search">Close</button>
+    </div>
+  </div>
+  <div class="search-results"><div class="container" id="site-search-results"></div></div>
+</div>
 <footer class="site">
   <div class="container">
     <div class="grid-foot">
@@ -176,6 +192,7 @@ ${body}
 </footer>
 <script>window.ARMERA=${JSON.stringify(CFG)}</script>
 <script src="${v('site.js')}" defer></script>
+<script src="${v('search.js')}" defer></script>
 <script src="${v('track.js')}" defer></script>
 ${extraBody}
 </body>
@@ -559,7 +576,12 @@ ${crumbs([{ label: 'Home', href: '/' }, { label: 'Support', href: '/support/' },
 </section>
 <section class="pad--tight">
   <div class="container">
+    <div class="doc-tools">
+      <input id="pdf-search" type="search" placeholder="Search instructions by name or product" aria-label="Search instructions">
+      <span class="count" id="pdf-count"></span>
+    </div>
     <div class="pdf-grid" id="pdf-grid"></div>
+    <p class="empty-note" id="pdf-none" style="display:none">No instructions match that search.</p>
     <div class="empty-note" id="pdf-empty" style="display:none">
       Instruction documents are being added. In the meantime, please call <a href="tel:01225251204" style="border-bottom:1px solid var(--line-dark)" data-ck="contact.phone">${site.phone}</a> or email <a href="mailto:${site.email}" style="border-bottom:1px solid var(--line-dark)" data-ck="contact.email">${site.email}</a> and we will gladly help.
     </div>
@@ -730,7 +752,7 @@ writeFileSync(join(DIST, '.nojekyll'), '');
 
 const css = readFileSync(join(ROOT, 'static/styles.css'), 'utf8').replaceAll('ASSETS', ASSETS);
 writeFileSync(join(DIST, 'styles.css'), css);
-for (const f of ['site.js', 'track.js', 'catalog.js', 'instructions.js', 'videos.js', 'retailers.js', 'admin.js']) {
+for (const f of ['site.js', 'search.js', 'track.js', 'catalog.js', 'instructions.js', 'videos.js', 'retailers.js', 'admin.js']) {
   writeFileSync(join(DIST, f), readFileSync(join(ROOT, 'static', f)));
 }
 

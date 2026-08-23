@@ -233,11 +233,38 @@
       (p.dims ? '<p class="dims">' + esc(p.dims) + (/x/.test(p.dims) ? ' mm' : '') + '</p>' : '') +
       '<p class="from">' + fromLabel(p) + '<span class="inc">RRP inc. VAT</span></p>' +
       swatchButtons + table + notes + basinNote +
+      '<div id="product-docs"></div>' +
       (p.footnote ? '<p class="footnote">' + esc(p.footnote) + '</p>' : '') +
       assure + '</div></div>' +
       addonBlock(range.addons) +
       (range.footnote ? '<p class="small" style="margin-top:30px;max-width:90ch">' + esc(range.footnote) + '</p>' : '') +
       '</section>' + relatedHtml;
+  }
+
+  // Instruction documents an admin has linked to this product.
+  function loadProductDocs(cats, segs, p) {
+    var holder = root.querySelector('#product-docs');
+    if (!holder) return;
+    var key = segs[1] + '/' + segs[2] + '/' + p.slug;
+    fetch(cfg.supabaseUrl + '/rest/v1/site_content?key=eq.instruction_links&select=data', {
+      headers: { apikey: cfg.anonKey, Authorization: 'Bearer ' + cfg.anonKey }
+    }).then(function (r) { return r.json(); }).then(function (rows) {
+      var links = (rows && rows[0] && rows[0].data) || {};
+      var files = Object.keys(links).filter(function (f) {
+        return (links[f] || []).indexOf(key) !== -1;
+      }).sort(function (a, b) { return a.localeCompare(b, undefined, { numeric: true }); });
+      if (!files.length) return;
+      var title = function (n) {
+        return n.replace(/\.pdf$/i, '').replace(/^\s*\d+[\s._-]+/, '').replace(/_+/g, ' ').trim();
+      };
+      holder.innerHTML = '<div class="prod-docs"><p class="label">Instructions</p>' +
+        files.map(function (f) {
+          var url = cfg.supabaseUrl + '/storage/v1/object/public/' + cfg.instructionsBucket + '/' + encodeURIComponent(f);
+          return '<a class="doc-link" href="' + esc(url) + '" target="_blank" rel="noopener">' +
+            '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/></svg>' +
+            '<span>' + esc(title(f)) + '</span></a>';
+        }).join('') + '</div>';
+    }).catch(function () { /* leave the section empty */ });
   }
 
   function notFound() {
@@ -318,6 +345,7 @@
     }
     root.innerHTML = html;
     bind(bound);
+    if (bound) loadProductDocs(cats, segs, bound);
     if (window.armeraTrack) {
       if (bound) window.armeraTrack({ page_type: 'product', item_ref: bound.slug, item_name: bound.name });
       else if (segs.length === 3) window.armeraTrack({ page_type: 'range', item_ref: segs[2], item_name: (rangeSeen && rangeSeen.title) || segs[2] });

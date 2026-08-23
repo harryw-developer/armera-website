@@ -912,22 +912,142 @@
     }));
   }
 
+  // Every product on the site, for linking instructions to product pages.
+  function allProducts() {
+    var out = [];
+    state.keys.forEach(function (k) {
+      var cat = state.rows[k];
+      (cat.ranges || []).forEach(function (rg) {
+        (rg.products || []).forEach(function (p) {
+          out.push({
+            key: cat.slug + '/' + rg.slug + '/' + p.slug,
+            name: p.name, range: rg.title, category: cat.name,
+            hay: (p.name + ' ' + rg.title + ' ' + cat.name + ' ' +
+                  (p.variants || []).map(function (v) { return v.sku; }).join(' ')).toLowerCase()
+          });
+        });
+      });
+    });
+    return out;
+  }
+
+  // A searchable checklist of every product, for one instruction document.
+  function linkPicker(fileName, links, onSaved) {
+    var box = el('div', { class: 'link-picker' });
+    var chosen = {};
+    (links[fileName] || []).forEach(function (k) { chosen[k] = true; });
+    var products = allProducts();
+
+    var head = el('div', { class: 'lp-head' });
+    var search = el('input', { type: 'search', placeholder: 'Search products by name, range or order code' });
+    head.appendChild(search);
+    var tally = el('span', { class: 'lp-tally' });
+    head.appendChild(tally);
+    box.appendChild(head);
+
+    var listEl = el('div', { class: 'lp-list' });
+    box.appendChild(listEl);
+
+    var updateTally = function () {
+      var n = Object.keys(chosen).filter(function (k) { return chosen[k]; }).length;
+      tally.textContent = n + ' selected';
+    };
+
+    var draw = function () {
+      var q = (search.value || '').trim().toLowerCase();
+      listEl.innerHTML = '';
+      var shown = products.filter(function (p) { return !q || p.hay.indexOf(q) !== -1; });
+      if (!shown.length) {
+        listEl.appendChild(el('p', { class: 'small', style: 'padding:10px 2px', text: 'No products match that search.' }));
+        return;
+      }
+      var lastGroup = '';
+      shown.slice(0, 400).forEach(function (p) {
+        var group = p.category + ' · ' + p.range;
+        if (group !== lastGroup) {
+          listEl.appendChild(el('p', { class: 'lp-group', text: group }));
+          lastGroup = group;
+        }
+        var row = el('label', { class: 'lp-row' });
+        var cb = el('input', { type: 'checkbox' });
+        cb.checked = !!chosen[p.key];
+        cb.addEventListener('change', function () {
+          chosen[p.key] = cb.checked;
+          updateTally();
+        });
+        row.appendChild(cb);
+        row.appendChild(el('span', { class: 'lp-name', text: p.name }));
+        listEl.appendChild(row);
+      });
+      if (shown.length > 400) {
+        listEl.appendChild(el('p', { class: 'small', style: 'padding:8px 2px', text: 'Showing the first 400 — narrow the search to find others.' }));
+      }
+    };
+    search.addEventListener('input', draw);
+    draw();
+    updateTally();
+
+    var foot = el('div', { class: 'lp-foot' });
+    foot.appendChild(el('button', {
+      class: 'abtn abtn--sm', text: 'Save', onclick: function () {
+        var keys = Object.keys(chosen).filter(function (k) { return chosen[k]; }).sort();
+        if (keys.length) links[fileName] = keys; else delete links[fileName];
+        state.rows.instruction_links = links;
+        saveRowUpsert('instruction_links', box,
+          keys.length ? 'Saved — this document now appears on ' + keys.length + ' product page' + (keys.length === 1 ? '' : 's') + '.'
+                      : 'Saved — this document no longer appears on any product page.')
+          .then(function () { if (onSaved) onSaved(); });
+      }
+    }));
+    foot.appendChild(el('button', {
+      class: 'abtn abtn--ghost abtn--sm', text: 'Clear all', onclick: function () {
+        chosen = {}; draw(); updateTally();
+      }
+    }));
+    box.appendChild(foot);
+    return box;
+  }
+
   /* ---------- instructions tab ---------- */
   function renderInstructions(panel) {
     panel.appendChild(el('h3', { text: 'Instruction PDFs' }));
     panel.appendChild(el('p', { class: 'tab-intro', html:
       'The documents on the <b>Instructions</b> page. They are listed in filename order, each showing a picture of its first page. ' +
-      'Name files “01 - …”, “02 - …” to control the order — the number is hidden from customers.' }));
+      'Name files “01 - …”, “02 - …” to control the order — the number is hidden from customers. ' +
+      'Use <b>Show on products…</b> to tick which product pages a document should also appear on.' }));
     var list = el('div', { class: 'adm-list' });
     panel.appendChild(list);
 
+    var links = {};
     var refresh = function () {
       list.innerHTML = '';
-      sb.storage.from(cfg.instructionsBucket).list('', { limit: 500, sortBy: { column: 'name', order: 'asc' } }).then(function (res) {
+      Promise.all([
+        sb.storage.from(cfg.instructionsBucket).list('', { limit: 500, sortBy: { column: 'name', order: 'asc' } }),
+        sb.from('site_content').select('data').eq('key', 'instruction_links').maybeSingle()
+      ]).then(function (both) {
+        var res = both[0];
+        links = (both[1] && both[1].data && both[1].data.data) || {};
+        state.rows.instruction_links = links;
         (res.data || []).filter(function (f) { return /\.pdf$/i.test(f.name); }).forEach(function (f) {
+          var wrapRow = el('div', {});
           var item = el('div', { class: 'item' });
           var kb = f.metadata && f.metadata.size ? Math.round(f.metadata.size / 1024) + ' KB' : '';
-          item.appendChild(el('span', { class: 'nm', html: f.name + ' <span class="dim">' + kb + '</span>' }));
+          var linked = (links[f.name] || []).length;
+          var nm = el('span', { class: 'nm' });
+          nm.appendChild(el('span', { text: f.name }));
+          nm.appendChild(el('span', { class: 'dim', style: 'display:block;font-size:11.5px',
+            text: kb + (linked ? ' · shown on ' + linked + ' product page' + (linked === 1 ? '' : 's') : ' · not shown on any product page') }));
+          item.appendChild(nm);
+
+          var panelSlot = el('div', {});
+          item.appendChild(el('button', {
+            class: 'abtn abtn--ghost abtn--sm', text: 'Show on products…',
+            title: 'Choose which product pages this document appears on.',
+            onclick: function () {
+              if (panelSlot.firstChild) { panelSlot.innerHTML = ''; return; }
+              panelSlot.appendChild(linkPicker(f.name, links, function () { refresh(); }));
+            }
+          }));
           item.appendChild(el('button', {
             class: 'abtn abtn--ghost abtn--sm', text: 'View',
             onclick: function () { window.open(cfg.supabaseUrl + '/storage/v1/object/public/' + cfg.instructionsBucket + '/' + encodeURIComponent(f.name), '_blank'); }
@@ -942,7 +1062,9 @@
               });
             }
           }));
-          list.appendChild(item);
+          wrapRow.appendChild(item);
+          wrapRow.appendChild(panelSlot);
+          list.appendChild(wrapRow);
         });
         if (!list.children.length) list.appendChild(el('div', { class: 'item', html: '<span class="dim">No instruction PDFs yet.</span>' }));
       });

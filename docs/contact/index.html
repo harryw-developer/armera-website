@@ -8,7 +8,7 @@
 
 <link rel="icon" type="image/png" sizes="32x32" href="https://pcouznwpyhtfrleedcsv.supabase.co/storage/v1/object/public/site-assets/brand/favicon-32.png">
 <link rel="apple-touch-icon" sizes="180x180" href="https://pcouznwpyhtfrleedcsv.supabase.co/storage/v1/object/public/site-assets/brand/favicon-180.png">
-<link rel="stylesheet" href="/armera-website/styles.css?v=acede09b">
+<link rel="stylesheet" href="/armera-website/styles.css?v=9343508b">
 
 </head>
 <body>
@@ -23,7 +23,12 @@
   <div class="container">
     <a href="/armera-website/" aria-label="ARMERA home"><img class="logo-img" src="https://pcouznwpyhtfrleedcsv.supabase.co/storage/v1/object/public/site-assets/brand/logo.png" alt="ARMERA"></a>
     <nav class="primary" aria-label="Primary"><div><a class="navlink" href="/armera-website/products/">Products</a><div class="menu-drop"><a href="/armera-website/products/furniture-and-basins/">Furniture &amp; Basins</a><a href="/armera-website/products/wcs/">WCs</a><a href="/armera-website/products/concealed-cisterns-and-flush-plates/">Concealed Cisterns &amp; Flush Plates</a><a href="/armera-website/products/taps/">Taps</a><a href="/armera-website/products/wastes/">Wastes</a><a href="/armera-website/products/thermostatic-valves/">Thermostatic Valves</a><a href="/armera-website/products/showering/">Showering</a><a href="/armera-website/products/accessories-and-mirrors/">Accessories &amp; Mirrors</a></div></div><div><a class="navlink" href="/armera-website/inspiration/">Inspiration</a></div><div><a class="navlink" href="/armera-website/about/">About</a></div><div><a class="navlink" href="/armera-website/retailers/">Find a retailer</a></div><div><a class="navlink" href="/armera-website/support/">Support</a></div><div><a class="navlink active" href="/armera-website/contact/">Contact</a></div></nav>
-    <button class="burger" aria-label="Open menu"><span></span><span></span><span></span></button>
+    <div class="head-tools">
+      <button class="icon-btn js-search-open" aria-label="Search the site">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><line x1="15.8" y1="15.8" x2="21" y2="21"/></svg>
+      </button>
+      <button class="burger" aria-label="Open menu"><span></span><span></span><span></span></button>
+    </div>
   </div>
 </header>
 <div class="mobile-menu" role="dialog" aria-label="Menu">
@@ -33,6 +38,7 @@
       <button class="close btn" style="margin:0;padding:10px 22px">Close</button>
     </div>
     <a class="big" href="/armera-website/products/">Products</a><a class="sub" href="/armera-website/products/furniture-and-basins/">Furniture &amp; Basins</a><a class="sub" href="/armera-website/products/wcs/">WCs</a><a class="sub" href="/armera-website/products/concealed-cisterns-and-flush-plates/">Concealed Cisterns &amp; Flush Plates</a><a class="sub" href="/armera-website/products/taps/">Taps</a><a class="sub" href="/armera-website/products/wastes/">Wastes</a><a class="sub" href="/armera-website/products/thermostatic-valves/">Thermostatic Valves</a><a class="sub" href="/armera-website/products/showering/">Showering</a><a class="sub" href="/armera-website/products/accessories-and-mirrors/">Accessories &amp; Mirrors</a><a class="big" href="/armera-website/inspiration/">Inspiration</a><a class="big" href="/armera-website/about/">About</a><a class="big" href="/armera-website/retailers/">Find a retailer</a><a class="big" href="/armera-website/support/">Support</a><a class="big" href="/armera-website/contact/">Contact</a>
+    <a class="big js-search-open" href="#" role="button">Search</a>
     <p class="small" style="margin-top:34px"><span data-ck="contact.phone">01225 251204</span> &nbsp;·&nbsp; <span data-ck="contact.email">info@armera.co.uk</span></p>
   </div>
 </div>
@@ -79,6 +85,16 @@
   </figure>
 </div>
 </main>
+<div class="search-overlay" id="site-search" role="dialog" aria-modal="true" aria-label="Search the site">
+  <div class="search-bar">
+    <div class="container">
+      <svg class="search-ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><line x1="15.8" y1="15.8" x2="21" y2="21"/></svg>
+      <input id="site-search-input" type="search" placeholder="Search products, ranges, retailers, instructions…" aria-label="Search" autocomplete="off">
+      <button class="search-close js-search-close" aria-label="Close search">Close</button>
+    </div>
+  </div>
+  <div class="search-results"><div class="container" id="site-search-results"></div></div>
+</div>
 <footer class="site">
   <div class="container">
     <div class="grid-foot">
@@ -121,6 +137,7 @@
 </footer>
 <script>window.ARMERA={"supabaseUrl":"https://pcouznwpyhtfrleedcsv.supabase.co","anonKey":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBjb3V6bndweWh0ZnJsZWVkY3N2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM4NjM3NzIsImV4cCI6MjA5OTQzOTc3Mn0.pNRCs82pde-0vMnaTh6ygtQNeWKgFS2s3lrIkhM8uZU","assets":"https://pcouznwpyhtfrleedcsv.supabase.co/storage/v1/object/public/site-assets","base":"/armera-website","instructionsBucket":"instructions"}</script>
 <script src="/armera-website/site.js?v=56ba08c2" defer></script>
+<script src="/armera-website/search.js?v=2608c80b" defer></script>
 <script src="/armera-website/track.js?v=06d830ba" defer></script>
 
 </body>
