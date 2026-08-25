@@ -45,6 +45,49 @@
     var pages = rows && rows[0] && rows[0].data;
     if (!pages) return;
 
+    // News banner across the top of the homepage (homepage only).
+    var banner = document.getElementById('news-banner');
+    if (banner) {
+      var b = pages.banner || {};
+      if (b.on && b.text) {
+        var textEl = document.getElementById('news-banner-text');
+        textEl.textContent = b.text;
+        if (b.bg) banner.style.background = b.bg;
+        if (b.fg) banner.style.color = b.fg;
+        if (b.font === 'custom' && b.fontFile) {
+          var url = cfg.assets + '/fonts/' + encodeURIComponent(b.fontFile);
+          var ext = (b.fontFile.split('.').pop() || '').toLowerCase();
+          var fmt = ext === 'woff2' ? 'woff2' : ext === 'woff' ? 'woff' : ext === 'otf' ? 'opentype' : 'truetype';
+          var st = document.createElement('style');
+          st.textContent = "@font-face{font-family:'ArmeraBanner';src:url('" + url + "') format('" + fmt + "');font-display:swap}";
+          document.head.appendChild(st);
+          textEl.style.fontFamily = "'ArmeraBanner', " + getComputedStyle(document.body).fontFamily;
+        }
+        if (b.size) textEl.style.fontSize = b.size + 'px';
+        banner.hidden = false;
+      }
+    }
+
+    // Homepage hero: a photograph or a looping video, whichever is set.
+    var heroMedia = document.getElementById('hero-media');
+    if (heroMedia && pages.home && pages.home.hero && pages.home.hero.file) {
+      var h = pages.home.hero;
+      var src = cfg.assets + '/lifestyle/' + encodeURIComponent(h.file);
+      if (h.type === 'video') {
+        var v = document.createElement('video');
+        v.id = 'hero-media';
+        v.src = src;
+        v.autoplay = true; v.muted = true; v.loop = true; v.playsInline = true;
+        v.setAttribute('playsinline', '');
+        v.setAttribute('aria-label', h.alt || 'ARMERA bathroomware');
+        if (h.poster) v.poster = cfg.assets + '/lifestyle/' + encodeURIComponent(h.poster);
+        heroMedia.parentNode.replaceChild(v, heroMedia);
+      } else {
+        heroMedia.src = src;
+        if (h.alt) heroMedia.alt = h.alt;
+      }
+    }
+
     // Catalogue: one upload in the admin re-points every link, title and cover.
     var cat = pages.catalogue;
     if (cat && cat.file) {

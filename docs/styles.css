@@ -658,3 +658,19 @@ table.pricing tbody tr:hover td { background: #f6f4ef; }
 .adm-tabs { margin-bottom: 34px; }
 .adm .adm-panel > h3:not(:first-child) { margin-top: 34px; }
 .dash-card h4 { margin-bottom: 18px; }
+
+/* ---------- homepage news banner ---------- */
+.news-banner { background: var(--ink); color: #f4f1e9; }
+.news-banner[hidden] { display: none; }
+.news-banner .container { padding-top: 12px; padding-bottom: 12px; }
+.news-banner p { font-size: 14px; letter-spacing: .06em; text-align: center; line-height: 1.5; margin: 0; }
+
+/* hero video behaves exactly like the hero photograph */
+.hero video { width: 100%; height: min(86vh, 860px); object-fit: cover; opacity: .94; display: block; }
+
+/* admin: switches and colour pickers */
+.adm .switch-row { display: flex; align-items: center; gap: 10px; margin: 14px 0 4px; cursor: pointer; font-size: 14.5px; color: var(--ink-soft); }
+.adm .switch-row input { width: 17px; height: 17px; accent-color: var(--ink); flex: none; }
+.adm .colour-pick { display: flex; align-items: center; gap: 9px; font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--label); margin: 0; }
+.adm .colour-pick input[type="color"] { width: 46px; height: 34px; padding: 2px; border: 1px solid var(--line-dark); background: var(--paper); cursor: pointer; }
+.adm .colour-pick input[type="number"] { padding: 8px 10px; }

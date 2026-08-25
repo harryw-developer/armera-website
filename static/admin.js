@@ -856,7 +856,139 @@
 
     panel.appendChild(el('p', { class: 'tab-intro', text:
       'The wording on the main pages. Product names and prices are not here — those live under Products.' }));
+    /* ---- news banner ---- */
+    pages.banner = pages.banner || {};
+    var b = pages.banner;
+    panel.appendChild(el('h3', { text: 'News banner' }));
+    panel.appendChild(el('p', { class: 'hint', text: 'A strip across the very top of the homepage — useful for an exhibition, a lead time or a seasonal notice.' }));
+
+    var onRow = el('label', { class: 'switch-row' });
+    var onBox = el('input', { type: 'checkbox' });
+    onBox.checked = !!b.on;
+    onRow.appendChild(onBox);
+    onRow.appendChild(el('span', { text: 'Show the banner on the homepage' }));
+    onRow.appendChild(hq('Untick to hide it without losing the wording — it stays here ready for next time.'));
+    panel.appendChild(onRow);
+
+    var bText = el('textarea', { text: b.text || '' });
+    bText.style.minHeight = '60px';
+    panel.appendChild(lbl('Banner wording', 'Keep it to one short line — it is centred across the full width of the page.'));
+    panel.appendChild(bText);
+
+    var colRow = el('div', { class: 'adm-row', style: 'margin-top:18px' });
+    var bBg = el('input', { type: 'color', value: b.bg || '#232220' });
+    var bFg = el('input', { type: 'color', value: b.fg || '#f4f1e9' });
+    var mk = function (labelText, input, tip) {
+      var w = el('label', { class: 'colour-pick' });
+      w.appendChild(el('span', { text: labelText }));
+      w.appendChild(input);
+      w.appendChild(hq(tip));
+      return w;
+    };
+    colRow.appendChild(mk('Background', bBg, 'The colour of the strip itself.'));
+    colRow.appendChild(mk('Text', bFg, 'The colour of the wording. Keep it well apart from the background so it stays easy to read.'));
+    var bSize = el('input', { type: 'number', min: '11', max: '28', value: b.size || 14, style: 'max-width:90px' });
+    colRow.appendChild(mk('Size (px)', bSize, 'Text size in pixels. 14 is the default.'));
+    panel.appendChild(colRow);
+
+    var contrastNote = el('p', { class: 'small', style: 'margin-top:10px' });
+    var checkContrast = function () {
+      var toRgb = function (h) { h = h.replace('#', ''); return [0, 2, 4].map(function (i) { return parseInt(h.substr(i, 2), 16) / 255; }); };
+      var L = function (h) {
+        return toRgb(h).map(function (c) { return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4); })
+          .reduce(function (a, c, i) { return a + c * [0.2126, 0.7152, 0.0722][i]; }, 0);
+      };
+      var l1 = L(bBg.value), l2 = L(bFg.value);
+      var r = (Math.max(l1, l2) + 0.05) / (Math.min(l1, l2) + 0.05);
+      contrastNote.textContent = r >= 4.5
+        ? 'Easy to read (contrast ' + r.toFixed(1) + ':1).'
+        : 'Hard to read — the text and background are too close in tone (contrast ' + r.toFixed(1) + ':1). Aim for 4.5:1 or more.';
+      contrastNote.style.color = r >= 4.5 ? '#4c6440' : '#8a3d2e';
+    };
+    bBg.addEventListener('input', checkContrast);
+    bFg.addEventListener('input', checkContrast);
+    checkContrast();
+    panel.appendChild(contrastNote);
+
+    var fontSel = el('select', {});
+    [['site', 'The site font'], ['custom', 'An uploaded font']].forEach(function (o) {
+      var opt = el('option', { value: o[0], text: o[1] });
+      if ((b.font || 'site') === o[0]) opt.selected = true;
+      fontSel.appendChild(opt);
+    });
+    panel.appendChild(lbl('Banner font', 'Use the site font, or upload your own to give the banner its own character.'));
+    panel.appendChild(fontSel);
+    var fontBox = el('div', { style: 'margin-top:12px' });
+    var fontFile = el('input', { type: 'file', accept: '.woff2,.woff,.ttf,.otf,font/*' });
+    fontBox.appendChild(el('p', { class: 'small', text: b.fontFile ? 'Current font file: ' + b.fontFile : 'No font uploaded yet.' }));
+    fontBox.appendChild(fontFile);
+    fontBox.appendChild(el('p', { class: 'hint', text: 'A .woff2 file is best (smallest and fastest); .woff, .ttf and .otf also work. Make sure you are licensed to use the font on a website.' }));
+    fontBox.style.display = fontSel.value === 'custom' ? '' : 'none';
+    fontSel.addEventListener('change', function () { fontBox.style.display = fontSel.value === 'custom' ? '' : 'none'; });
+    panel.appendChild(fontBox);
+
+    panel.appendChild(el('button', {
+      class: 'abtn', text: 'Save banner', style: 'margin-top:20px;display:block',
+      onclick: function () {
+        var finish = function () {
+          b.on = onBox.checked;
+          b.text = bText.value.trim();
+          b.bg = bBg.value;
+          b.fg = bFg.value;
+          b.size = Math.max(11, Math.min(28, parseInt(bSize.value, 10) || 14));
+          b.font = fontSel.value;
+          pages.banner = b;
+          state.rows.pages = pages;
+          saveRow('pages', panel, b.on && b.text ? 'Saved — the banner is live on the homepage.' : 'Saved — the banner is hidden.');
+        };
+        if (fontSel.value === 'custom' && fontFile.files[0]) {
+          uploadTo('fonts', fontFile.files[0]).then(function (name) { b.fontFile = name; finish(); })
+            .catch(function (e) { msg(panel, 'Font upload failed: ' + e.message, 'err'); });
+        } else finish();
+      }
+    }));
+
+    panel.appendChild(el('hr', { class: 'rule' }));
     panel.appendChild(el('h3', { text: 'Homepage' }));
+
+    /* ---- hero photograph or video ---- */
+    pages.home.hero = pages.home.hero || {};
+    var hero = pages.home.hero;
+    panel.appendChild(lbl('Top of the homepage', 'The full-width picture behind the headline. You can use a photograph or a short video — a video plays automatically, silently, on a loop.'));
+    var heroNow = el('p', { class: 'small', text: hero.file ? (hero.type === 'video' ? 'Currently a video: ' : 'Currently a photo: ') + hero.file : 'Currently the original photograph.' });
+    panel.appendChild(heroNow);
+    var heroType = el('select', {});
+    [['image', 'Photograph'], ['video', 'Video']].forEach(function (o) {
+      var opt = el('option', { value: o[0], text: o[1] });
+      if ((hero.type || 'image') === o[0]) opt.selected = true;
+      heroType.appendChild(opt);
+    });
+    var heroRow = el('div', { class: 'adm-row', style: 'margin-top:10px' });
+    heroRow.appendChild(heroType);
+    var heroFile = el('input', { type: 'file', accept: 'image/*,video/mp4,video/webm' });
+    heroRow.appendChild(heroFile);
+    panel.appendChild(heroRow);
+    panel.appendChild(el('p', { class: 'hint', text: 'Landscape works best. For video, an MP4 of ten to twenty seconds under about 10 MB keeps the page quick to load — it plays without sound.' }));
+    panel.appendChild(el('button', {
+      class: 'abtn abtn--ghost abtn--sm', text: 'Save top of homepage', style: 'margin-top:12px;display:block',
+      onclick: function () {
+        if (!heroFile.files[0]) {
+          hero.type = heroType.value;
+          state.rows.pages = pages;
+          return saveRow('pages', panel, 'Saved.');
+        }
+        var f = heroFile.files[0];
+        var isVideo = /^video\//.test(f.type) || heroType.value === 'video';
+        uploadTo('lifestyle', f).then(function (name) {
+          hero.file = name;
+          hero.type = isVideo ? 'video' : 'image';
+          state.rows.pages = pages;
+          saveRow('pages', panel, 'Saved — the top of the homepage now uses ' + name + '.').then(function () { renderShell(); });
+        }).catch(function (e) { msg(panel, 'Upload failed: ' + e.message, 'err'); });
+      }
+    }));
+    panel.appendChild(el('hr', { class: 'rule' }));
+
     var hHeading = el('input', { type: 'text', value: pages.home.heading || '' });
     var hLede = el('textarea', { text: pages.home.lede || '' });
     panel.appendChild(lbl('Main heading', 'The large headline over the photo at the top of the homepage.')); panel.appendChild(hHeading);
@@ -901,7 +1033,7 @@
     panel.appendChild(el('button', {
       class: 'abtn', text: 'Save page text', style: 'margin-top:24px;display:block',
       onclick: function () {
-        pages.home = { heading: hHeading.value.trim(), lede: hLede.value.trim() };
+        pages.home = { heading: hHeading.value.trim(), lede: hLede.value.trim(), hero: pages.home.hero };
         pages.about.heading = aHeading.value.trim();
         pages.about.sections = sections.filter(function (s) { return s.side || (s.paras && s.paras.length); });
         pages.support.spares = spares.value.trim();

@@ -217,6 +217,7 @@ function crumbs(items) {
 
 /* ---------------- home (static, with editable hero text) ---------------- */
 function homePage() {
+  const banner = `<div class="news-banner" id="news-banner" hidden><div class="container"><p id="news-banner-text"></p></div></div>`;
   const featured = [
     { cat: 'furniture-and-basins', range: 'atoll-furniture' },
     { cat: 'furniture-and-basins', range: 'palladium-furniture' },
@@ -229,8 +230,9 @@ function homePage() {
   });
 
   const body = `
-<div class="hero">
-  <img src="${lifeImg('p008_01.png')}" alt="Two Palladium wall hung units in Walnut glow with Vaere monobasin mixers in brushed gold" fetchpriority="high">
+${banner}
+<div class="hero" id="hero">
+  <img id="hero-media" src="${lifeImg('p008_01.png')}" alt="Two Palladium wall hung units in Walnut glow with Vaere monobasin mixers in brushed gold" fetchpriority="high">
   <div class="veil"></div>
   <div class="content">
     <div class="container">
