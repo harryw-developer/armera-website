@@ -695,3 +695,23 @@ table.pricing tbody tr:hover td { background: #f6f4ef; }
 .toast-pct { font-size: 12px; color: #cbc4b4; flex: none; font-variant-numeric: tabular-nums; }
 @media (max-width: 560px) { .toasts { left: 14px; right: 14px; align-items: stretch; } .toast { max-width: none; } }
 @media (prefers-reduced-motion: reduce) { .toast { transition: opacity .2s ease; transform: none; } }
+
+/* ---------- admin: site file browser ---------- */
+.fb-overlay { position: fixed; inset: 0; z-index: 320; background: rgba(26,25,22,.55); backdrop-filter: blur(3px); display: flex; align-items: center; justify-content: center; padding: 4vmin; }
+.fb { background: var(--bg); border: 1px solid var(--line-dark); width: min(940px, 96vw); max-height: 88vh; display: flex; flex-direction: column; padding: 26px 28px; }
+.fb-head { display: flex; justify-content: space-between; align-items: center; gap: 20px; }
+.fb-head h3 { margin: 0; }
+.fb-tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--line); margin-bottom: 14px; flex-wrap: wrap; }
+.fb-tab { background: none; border: 0; border-bottom: 1px solid transparent; margin-bottom: -1px; padding: 9px 14px; font-family: var(--sans); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); cursor: pointer; }
+.fb-tab.on { color: var(--ink); border-color: var(--ink); }
+.fb-search { width: 100%; padding: 10px 13px; border: 1px solid var(--line-dark); background: var(--paper); font-family: var(--sans); font-size: 14px; margin-bottom: 16px; border-radius: 0; }
+.fb-search:focus { outline: none; border-color: var(--ink-soft); }
+.fb-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(132px, 1fr)); gap: 14px; overflow-y: auto; padding: 2px; }
+.fb-item { background: none; border: 1px solid var(--line); padding: 8px; cursor: pointer; text-align: left; font-family: var(--sans); transition: border-color .15s, background .15s; }
+.fb-item:hover { border-color: var(--ink); background: var(--paper); }
+.fb-thumb { display: flex; align-items: center; justify-content: center; height: 96px; background: var(--tile); overflow: hidden; position: relative; }
+.fb-thumb img, .fb-thumb video { width: 100%; height: 100%; object-fit: cover; }
+.fb-vid { position: absolute; bottom: 5px; right: 6px; font-size: 9.5px; letter-spacing: .12em; text-transform: uppercase; background: rgba(28,27,24,.82); color: #f2efe8; padding: 2px 6px; }
+.fb-doc { font-size: 12px; letter-spacing: .16em; color: var(--line-dark); }
+.fb-name { display: block; font-size: 11.5px; color: var(--ink-soft); margin-top: 7px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.fb-size { display: block; font-size: 10.5px; color: var(--muted); margin-top: 2px; }

@@ -72,7 +72,8 @@
     var heroMedia = document.getElementById('hero-media');
     if (heroMedia && pages.home && pages.home.hero && pages.home.hero.file) {
       var h = pages.home.hero;
-      var src = cfg.assets + '/lifestyle/' + encodeURIComponent(h.file);
+      var src = cfg.assets + '/' + (h.file.indexOf('/') === -1 ? 'lifestyle/' : '') +
+        h.file.split('/').map(encodeURIComponent).join('/');
       if (h.type === 'video') {
         var v = document.createElement('video');
         v.id = 'hero-media';
@@ -80,7 +81,8 @@
         v.autoplay = true; v.muted = true; v.loop = true; v.playsInline = true;
         v.setAttribute('playsinline', '');
         v.setAttribute('aria-label', h.alt || 'ARMERA bathroomware');
-        if (h.poster) v.poster = cfg.assets + '/lifestyle/' + encodeURIComponent(h.poster);
+        if (h.poster) v.poster = cfg.assets + '/' + (h.poster.indexOf('/') === -1 ? 'lifestyle/' : '') +
+          h.poster.split('/').map(encodeURIComponent).join('/');
         heroMedia.parentNode.replaceChild(v, heroMedia);
       } else {
         heroMedia.src = src;

@@ -74,6 +74,117 @@
         else msg(target, okText || 'Saved. Changes are live on the site.', 'ok');
       });
   }
+  /* ---------- browse files already on the site ---------- */
+  // opts: { folders: [{key,label}], accept: 'image'|'video'|'any', onPick: fn(path) }
+  function browseFiles(opts) {
+    var folders = opts.folders || [{ key: 'lifestyle', label: 'Photography' }];
+    var accept = opts.accept || 'any';
+    var current = folders[0].key;
+    var cache = {};
+
+    var IMG = /\.(jpe?g|png|webp|gif|avif)$/i;
+    var VID = /\.(mp4|webm|mov|m4v)$/i;
+    function allowed(name) {
+      if (accept === 'image') return IMG.test(name);
+      if (accept === 'video') return VID.test(name);
+      if (accept === 'media') return IMG.test(name) || VID.test(name);
+      return true;
+    }
+
+    var overlay = el('div', { class: 'fb-overlay' });
+    var modal = el('div', { class: 'fb' });
+    overlay.appendChild(modal);
+
+    var head = el('div', { class: 'fb-head' });
+    head.appendChild(el('h3', { text: 'Site files' }));
+    var close = el('button', { class: 'abtn abtn--ghost abtn--sm', text: 'Close' });
+    head.appendChild(close);
+    modal.appendChild(head);
+    modal.appendChild(el('p', { class: 'hint', style: 'margin:0 0 14px',
+      text: 'Everything already uploaded to the site. Choose a file to use it — nothing is uploaded again.' }));
+
+    var tabs = el('div', { class: 'fb-tabs' });
+    modal.appendChild(tabs);
+    var search = el('input', { type: 'search', placeholder: 'Search by file name', class: 'fb-search' });
+    modal.appendChild(search);
+    var grid = el('div', { class: 'fb-grid' });
+    modal.appendChild(grid);
+    var note = el('p', { class: 'small', style: 'margin-top:12px' });
+    modal.appendChild(note);
+
+    function shut() {
+      if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
+      document.removeEventListener('keydown', onKey);
+      document.body.style.overflow = '';
+    }
+    function onKey(e) { if (e.key === 'Escape') shut(); }
+    close.addEventListener('click', shut);
+    overlay.addEventListener('click', function (e) { if (e.target === overlay) shut(); });
+    document.addEventListener('keydown', onKey);
+
+    function drawTabs() {
+      tabs.innerHTML = '';
+      folders.forEach(function (f) {
+        var b = el('button', { class: 'fb-tab' + (f.key === current ? ' on' : ''), text: f.label, type: 'button' });
+        b.addEventListener('click', function () { current = f.key; drawTabs(); load(); });
+        tabs.appendChild(b);
+      });
+    }
+
+    function draw(files) {
+      var q = (search.value || '').trim().toLowerCase();
+      var shown = files.filter(function (f) { return !q || f.name.toLowerCase().indexOf(q) !== -1; });
+      grid.innerHTML = '';
+      if (!shown.length) {
+        note.textContent = files.length ? 'No files match that search.' : 'This folder is empty.';
+        return;
+      }
+      note.textContent = shown.length + (shown.length === 1 ? ' file' : ' files');
+      shown.slice(0, 300).forEach(function (f) {
+        var path = current + '/' + f.name;
+        var url = cfg.assets + '/' + path.split('/').map(encodeURIComponent).join('/');
+        var card = el('button', { class: 'fb-item', type: 'button', title: f.name });
+        var thumb = el('span', { class: 'fb-thumb' });
+        if (IMG.test(f.name)) {
+          thumb.appendChild(el('img', { src: url, alt: '', loading: 'lazy' }));
+        } else if (VID.test(f.name)) {
+          var v = el('video', { src: url, muted: 'muted', preload: 'metadata' });
+          v.muted = true;
+          thumb.appendChild(v);
+          thumb.appendChild(el('span', { class: 'fb-vid', text: 'Video' }));
+        } else {
+          thumb.appendChild(el('span', { class: 'fb-doc', text: (f.name.split('.').pop() || '').toUpperCase() }));
+        }
+        card.appendChild(thumb);
+        var kb = f.metadata && f.metadata.size ? (f.metadata.size > 1048576
+          ? (f.metadata.size / 1048576).toFixed(1) + ' MB' : Math.round(f.metadata.size / 1024) + ' KB') : '';
+        card.appendChild(el('span', { class: 'fb-name', text: f.name }));
+        if (kb) card.appendChild(el('span', { class: 'fb-size', text: kb }));
+        card.addEventListener('click', function () { opts.onPick(path, f.name); shut(); });
+        grid.appendChild(card);
+      });
+      if (shown.length > 300) note.textContent = 'Showing the first 300 of ' + shown.length + ' — search to narrow it down.';
+    }
+
+    function load() {
+      grid.innerHTML = '';
+      note.textContent = 'Loading…';
+      if (cache[current]) return draw(cache[current]);
+      sb.storage.from('site-assets').list(current, { limit: 1000, sortBy: { column: 'name', order: 'asc' } })
+        .then(function (res) {
+          var files = (res.data || []).filter(function (f) { return f && f.name && allowed(f.name); });
+          cache[current] = files;
+          draw(files);
+        });
+    }
+    search.addEventListener('input', function () { if (cache[current]) draw(cache[current]); });
+
+    drawTabs();
+    load();
+    document.body.style.overflow = 'hidden';
+    document.body.appendChild(overlay);
+  }
+
   /* ---------- floating confirmations ---------- */
   function toastHost() {
     var h = document.getElementById('adm-toasts');
@@ -1058,11 +1169,40 @@
     heroRow.appendChild(heroType);
     var heroFile = el('input', { type: 'file', accept: 'image/*,video/mp4,video/webm' });
     heroRow.appendChild(heroFile);
+    var picked = null;   // a file chosen from those already on the site
+    heroRow.appendChild(el('button', {
+      class: 'abtn abtn--ghost abtn--sm', type: 'button', text: 'Browse site files',
+      title: 'Choose a photo or video already uploaded to the site, instead of uploading another.',
+      onclick: function () {
+        browseFiles({
+          accept: 'media',
+          folders: [
+            { key: 'lifestyle', label: 'Photography & video' },
+            { key: 'inspiration', label: 'Inspiration' },
+            { key: 'products', label: 'Product photos' }
+          ],
+          onPick: function (path, name) {
+            picked = path;
+            heroFile.value = '';
+            heroType.value = /\.(mp4|webm|mov|m4v)$/i.test(name) ? 'video' : 'image';
+            heroNow.textContent = 'Chosen: ' + path + ' — press “Save top of homepage” to use it.';
+            toast('Selected ' + name, 'ok');
+          }
+        });
+      }
+    }));
     panel.appendChild(heroRow);
     panel.appendChild(el('p', { class: 'hint', text: 'Landscape works best. For video, an MP4 of ten to twenty seconds under about 10 MB keeps the page quick to load — it plays without sound.' }));
     panel.appendChild(el('button', {
       class: 'abtn abtn--ghost abtn--sm', text: 'Save top of homepage', style: 'margin-top:12px;display:block',
       onclick: function () {
+        if (picked) {
+          hero.file = picked;
+          hero.type = heroType.value;
+          state.rows.pages = pages;
+          return saveRow('pages', panel, 'Saved — the top of the homepage now uses ' + picked + '.')
+            .then(function () { renderShell(); });
+        }
         if (!heroFile.files[0]) {
           hero.type = heroType.value;
           state.rows.pages = pages;
