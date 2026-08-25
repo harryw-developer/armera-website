@@ -39,7 +39,9 @@
   var msg = function (target, text, cls) {
     var old = target.querySelector('.adm-msg');
     if (old) old.remove();
-    if (text) target.appendChild(el('p', { class: 'adm-msg ' + (cls || ''), text: text }));
+    if (!text) return;
+    target.appendChild(el('p', { class: 'adm-msg ' + (cls || ''), text: text }));
+    toast(text, cls === 'err' ? 'err' : 'ok');
   };
 
   /* ---------- data ---------- */
@@ -72,11 +74,100 @@
         else msg(target, okText || 'Saved. Changes are live on the site.', 'ok');
       });
   }
-  function uploadTo(folder, file) {
+  /* ---------- floating confirmations ---------- */
+  function toastHost() {
+    var h = document.getElementById('adm-toasts');
+    if (!h) {
+      h = el('div', { id: 'adm-toasts', class: 'toasts' });
+      document.body.appendChild(h);
+    }
+    return h;
+  }
+  // kind: 'ok' | 'err' | 'work'. Work toasts stay until you close them.
+  function toast(text, kind, opts) {
+    opts = opts || {};
+    var t = el('div', { class: 'toast toast--' + (kind || 'ok') });
+    var body = el('div', { class: 'toast-body' });
+    body.appendChild(el('p', { class: 'toast-text', text: text }));
+    t.appendChild(body);
+    toastHost().appendChild(t);
+    requestAnimationFrame(function () { t.classList.add('in'); });
+
+    var timer = null;
+    var close = function () {
+      if (t.dataset.closing) return;
+      t.dataset.closing = '1';
+      t.classList.remove('in');
+      setTimeout(function () { if (t.parentNode) t.parentNode.removeChild(t); }, 420);
+    };
+    if (kind !== 'work') {
+      timer = setTimeout(close, kind === 'err' ? 6000 : 3000);
+      t.addEventListener('click', function () { clearTimeout(timer); close(); });
+    }
+
+    return {
+      el: t,
+      close: close,
+      progress: function (pct) {
+        var bar = t.querySelector('.toast-bar span');
+        if (!bar) {
+          var wrap = el('div', { class: 'toast-bar' });
+          wrap.appendChild(el('span', {}));
+          body.appendChild(wrap);
+          bar = wrap.firstChild;
+        }
+        bar.style.width = Math.max(2, Math.min(100, pct)) + '%';
+        var pc = t.querySelector('.toast-pct');
+        if (!pc) { pc = el('span', { class: 'toast-pct' }); t.appendChild(pc); }
+        pc.textContent = Math.round(pct) + '%';
+      },
+      finish: function (msgText, ok) {
+        if (timer) clearTimeout(timer);
+        t.className = 'toast toast--' + (ok === false ? 'err' : 'ok') + ' in';
+        t.querySelector('.toast-text').textContent = msgText;
+        var bar = t.querySelector('.toast-bar');
+        if (bar) bar.remove();
+        var pc = t.querySelector('.toast-pct');
+        if (pc) pc.remove();
+        setTimeout(close, ok === false ? 6000 : 3000);
+      }
+    };
+  }
+
+  /* ---------- uploads with progress ---------- */
+  // The Supabase client gives no progress events, so large files (a hero video)
+  // look frozen. This posts the file directly so upload progress can be shown.
+  function uploadWithProgress(bucket, path, file, label, contentType) {
+    var t = toast((label || 'Uploading') + '…', 'work');
+    t.progress(0);
+    return sb.auth.getSession().then(function (r) {
+      var token = r && r.data && r.data.session && r.data.session.access_token;
+      return new Promise(function (resolve, reject) {
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', cfg.supabaseUrl + '/storage/v1/object/' + bucket + '/' + path.split('/').map(encodeURIComponent).join('/'), true);
+        xhr.setRequestHeader('apikey', cfg.anonKey);
+        xhr.setRequestHeader('Authorization', 'Bearer ' + token);
+        xhr.setRequestHeader('x-upsert', 'true');
+        xhr.setRequestHeader('cache-control', 'max-age=3600');
+        if (contentType || file.type) xhr.setRequestHeader('Content-Type', contentType || file.type);
+        xhr.upload.onprogress = function (e) {
+          if (e.lengthComputable) t.progress(e.loaded / e.total * 100);
+        };
+        xhr.onload = function () {
+          if (xhr.status >= 200 && xhr.status < 300) { t.progress(100); resolve(t); }
+          else { t.finish('Upload failed (' + xhr.status + ')', false); reject(new Error('Upload failed: ' + xhr.status)); }
+        };
+        xhr.onerror = function () { t.finish('Upload failed — check your connection', false); reject(new Error('Network error')); };
+        xhr.send(file);
+      });
+    });
+  }
+
+  function uploadTo(folder, file, label) {
     var name = slugify(file.name.replace(/\.[^.]+$/, '')) + file.name.match(/\.[^.]+$/)[0].toLowerCase();
-    return sb.storage.from('site-assets').upload(folder + '/' + name, file, { upsert: true, cacheControl: '3600' })
-      .then(function (res) {
-        if (res.error) throw res.error;
+    return uploadWithProgress('site-assets', folder + '/' + name, file, label || ('Uploading ' + file.name))
+      .then(function (t) {
+        t.finish('Uploaded ' + file.name, true);
         return name;
       });
   }
@@ -1210,7 +1301,9 @@
       var files = Array.prototype.slice.call(f.files);
       if (!files.length) return;
       Promise.all(files.map(function (file) {
-        return sb.storage.from(cfg.instructionsBucket).upload(file.name, file, { upsert: true, cacheControl: '3600' });
+        return uploadWithProgress(cfg.instructionsBucket, file.name, file, 'Uploading ' + file.name, 'application/pdf')
+          .then(function (t) { t.finish('Uploaded ' + file.name, true); return { error: null }; })
+          .catch(function (e) { return { error: e }; });
       })).then(function (results) {
         var errs = results.filter(function (r) { return r.error; });
         if (errs.length) msg(panel, 'Some uploads failed: ' + errs[0].error.message, 'err');
@@ -1496,16 +1589,17 @@
         var coverName = pdfName.replace(/\.pdf$/, '') + '.cover.jpg';
         status.textContent = 'Uploading the PDF…';
         msg(panel, '');
-        sb.storage.from('site-assets').upload('documents/' + pdfName, f, { upsert: true, cacheControl: '3600', contentType: 'application/pdf' })
-          .then(function (res) {
-            if (res.error) throw res.error;
+        uploadWithProgress('site-assets', 'documents/' + pdfName, f, 'Uploading the catalogue', 'application/pdf')
+          .then(function (t) {
+            t.finish('Catalogue uploaded', true);
             status.textContent = 'Making the cover image…';
             return makeCover(f).catch(function () { return null; });
           })
           .then(function (blob) {
             if (!blob) return null;
-            return sb.storage.from('site-assets').upload('documents/' + coverName, blob, { upsert: true, cacheControl: '3600', contentType: 'image/jpeg' })
-              .then(function (res) { return res.error ? null : coverName; });
+            return uploadWithProgress('site-assets', 'documents/' + coverName, blob, 'Saving the cover image', 'image/jpeg')
+              .then(function (t2) { t2.finish('Cover image saved', true); return coverName; })
+              .catch(function () { return null; });
           })
           .then(function (savedCover) {
             pages.catalogue = { file: pdfName, label: label.value.trim(), cover: savedCover || cat.cover || null };
