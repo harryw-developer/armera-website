@@ -319,7 +319,7 @@ function homePage() {
         <p>${esc(g.covers)}</p>
       </div>`).join('')}
     </div>
-    <p style="font-size:12.5px;margin-top:34px;color:#847d6e">${esc(site.guaranteeNote)}</p>
+    <p style="font-size:12.5px;margin-top:34px;color:#a8a294">${esc(site.guaranteeNote)}</p>
   </div>
 </section>
 
@@ -492,7 +492,7 @@ ${catBand()}
         <p>${esc(g.covers)}</p>
       </div>`).join('')}
     </div>
-    <p style="font-size:12.5px;margin-top:34px;color:#847d6e">${esc(site.guaranteeNote)}</p>
+    <p style="font-size:12.5px;margin-top:34px;color:#a8a294">${esc(site.guaranteeNote)}</p>
   </div>
 </section>`;
 
