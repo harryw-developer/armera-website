@@ -34,6 +34,38 @@ const categories = readdirSync(join(ROOT, 'data/categories')).sort()
   .map(f => JSON.parse(readFileSync(join(ROOT, 'data/categories', f), 'utf8')));
 const inspiration = JSON.parse(readFileSync(join(ROOT, 'data/inspiration.json'), 'utf8'));
 
+// The homepage hero is chosen in the admin. Bake the current choice straight
+// into the HTML so the browser requests that file and nothing else — otherwise
+// it loads a default image first and swaps, which shows the wrong picture.
+let livePages = {};
+try {
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/site_content?key=eq.pages&select=data`, {
+    headers: { apikey: ANON_KEY, Authorization: `Bearer ${ANON_KEY}` }
+  });
+  const rows = await res.json();
+  livePages = (rows && rows[0] && rows[0].data) || {};
+  console.log('Homepage hero:', livePages?.home?.hero ? `${livePages.home.hero.type} — ${livePages.home.hero.file}` : 'default photograph');
+} catch (e) {
+  console.log('Could not reach Supabase for page settings; using the default hero.');
+}
+
+const DEFAULT_HERO_ALT = 'Two Palladium wall hung units in Walnut glow with Vaere monobasin mixers in brushed gold';
+function heroMarkup() {
+  const h = (livePages.home && livePages.home.hero) || null;
+  if (!h || !h.file) {
+    return `<img id="hero-media" data-hero-file="p008_01.png" src="${lifeImg('p008_01.png')}" alt="${DEFAULT_HERO_ALT}" fetchpriority="high">`;
+  }
+  const path = h.file.includes('/') ? h.file : `lifestyle/${h.file}`;
+  const url = `${ASSETS}/${path.split('/').map(encodeURIComponent).join('/')}`;
+  if (h.type === 'video') {
+    const poster = h.poster
+      ? ` poster="${ASSETS}/${(h.poster.includes('/') ? h.poster : `lifestyle/${h.poster}`).split('/').map(encodeURIComponent).join('/')}"`
+      : '';
+    return `<video id="hero-media" data-hero-file="${esc(h.file)}" src="${url}"${poster} autoplay muted loop playsinline preload="auto" aria-label="${esc(h.alt || DEFAULT_HERO_ALT)}"></video>`;
+  }
+  return `<img id="hero-media" data-hero-file="${esc(h.file)}" src="${url}" alt="${esc(h.alt || DEFAULT_HERO_ALT)}" fetchpriority="high">`;
+}
+
 /* ---------------- helpers ---------------- */
 const esc = s => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 const lifeImg = f => `${ASSETS}/lifestyle/${f.replace(/\.png$/, '.jpg')}`;
@@ -232,7 +264,7 @@ function homePage() {
   const body = `
 ${banner}
 <div class="hero" id="hero">
-  <img id="hero-media" src="${lifeImg('p008_01.png')}" alt="Two Palladium wall hung units in Walnut glow with Vaere monobasin mixers in brushed gold" fetchpriority="high">
+  ${heroMarkup()}
   <div class="veil"></div>
   <div class="content">
     <div class="container">

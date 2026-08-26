@@ -68,27 +68,58 @@
       }
     }
 
-    // Homepage hero: a photograph or a looping video, whichever is set.
+    // Homepage hero. The build bakes the chosen file straight into the page, so
+    // normally there is nothing to do here — only step in if the admin has
+    // changed it since the site was last built.
     var heroMedia = document.getElementById('hero-media');
     if (heroMedia && pages.home && pages.home.hero && pages.home.hero.file) {
       var h = pages.home.hero;
-      var src = cfg.assets + '/' + (h.file.indexOf('/') === -1 ? 'lifestyle/' : '') +
-        h.file.split('/').map(encodeURIComponent).join('/');
-      if (h.type === 'video') {
-        var v = document.createElement('video');
-        v.id = 'hero-media';
-        v.src = src;
-        v.autoplay = true; v.muted = true; v.loop = true; v.playsInline = true;
-        v.setAttribute('playsinline', '');
-        v.setAttribute('aria-label', h.alt || 'ARMERA bathroomware');
-        if (h.poster) v.poster = cfg.assets + '/' + (h.poster.indexOf('/') === -1 ? 'lifestyle/' : '') +
-          h.poster.split('/').map(encodeURIComponent).join('/');
-        heroMedia.parentNode.replaceChild(v, heroMedia);
-      } else {
-        heroMedia.src = src;
-        if (h.alt) heroMedia.alt = h.alt;
+      var wantVideo = h.type === 'video';
+      var alreadyRight = heroMedia.getAttribute('data-hero-file') === h.file &&
+                         (heroMedia.tagName === 'VIDEO') === wantVideo;
+      if (!alreadyRight) {
+        var path = h.file.indexOf('/') === -1 ? 'lifestyle/' + h.file : h.file;
+        var src = cfg.assets + '/' + path.split('/').map(encodeURIComponent).join('/');
+        if (wantVideo) {
+          var v = document.createElement('video');
+          v.id = 'hero-media';
+          v.setAttribute('data-hero-file', h.file);
+          v.src = src;
+          v.autoplay = true; v.muted = true; v.loop = true; v.playsInline = true;
+          v.setAttribute('playsinline', '');
+          v.preload = 'auto';
+          v.setAttribute('aria-label', h.alt || 'ARMERA bathroomware');
+          if (h.poster) {
+            var pp = h.poster.indexOf('/') === -1 ? 'lifestyle/' + h.poster : h.poster;
+            v.poster = cfg.assets + '/' + pp.split('/').map(encodeURIComponent).join('/');
+          }
+          heroMedia.parentNode.replaceChild(v, heroMedia);
+        } else if (heroMedia.tagName === 'IMG') {
+          heroMedia.setAttribute('data-hero-file', h.file);
+          heroMedia.src = src;
+          if (h.alt) heroMedia.alt = h.alt;
+        } else {
+          var im = document.createElement('img');
+          im.id = 'hero-media';
+          im.setAttribute('data-hero-file', h.file);
+          im.src = src;
+          im.alt = h.alt || 'ARMERA bathroomware';
+          heroMedia.parentNode.replaceChild(im, heroMedia);
+        }
       }
     }
+
+    // Keep the hero video playing: some browsers pause it when the tab is
+    // hidden or refuse the first autoplay attempt.
+    (function () {
+      var v = document.getElementById('hero-media');
+      if (!v || v.tagName !== 'VIDEO') return;
+      var go = function () { if (v.paused) { var p = v.play(); if (p && p.catch) p.catch(function () {}); } };
+      v.addEventListener('canplay', go);
+      v.addEventListener('loadeddata', go);
+      document.addEventListener('visibilitychange', function () { if (!document.hidden) go(); });
+      go();
+    })();
 
     // Catalogue: one upload in the admin re-points every link, title and cover.
     var cat = pages.catalogue;
