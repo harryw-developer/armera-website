@@ -271,9 +271,9 @@
       (p.dims ? '<p class="dims">' + esc(p.dims) + (/x/.test(p.dims) ? ' mm' : '') + '</p>' : '') +
       '<p class="from">' + fromLabel(p) + '<span class="inc">RRP inc. VAT</span></p>' +
       swatchButtons + table + notes + basinNote +
-      '<div id="product-docs"></div>' +
       (p.footnote ? '<p class="footnote">' + esc(p.footnote) + '</p>' : '') +
-      assure + '</div></div>' +
+      assure + '</div>' +
+      '<div id="product-docs"></div></div>' +
       '<div id="product-pairs"></div>' +
       addonBlock(range.addons) +
       (range.footnote ? '<p class="small" style="margin-top:30px;max-width:90ch">' + esc(range.footnote) + '</p>' : '') +

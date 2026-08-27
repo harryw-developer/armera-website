@@ -114,7 +114,7 @@ nav.primary div:hover .menu-drop, nav.primary div:focus-within .menu-drop { opac
 /* ---------- sections ---------- */
 section.pad { padding: clamp(64px, 9vw, 130px) 0; }
 section.pad--tight { padding: clamp(44px, 6vw, 84px) 0; }
-section.pdp-sec { padding: clamp(28px, 3.2vw, 54px) 0 clamp(44px, 5vw, 76px); }
+section.pdp-sec { padding: clamp(16px, 2.4vh, 34px) 0 clamp(44px, 5vw, 76px); }
 .section-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 30px; margin-bottom: clamp(34px, 5vw, 64px); }
 .section-head h2 { margin-top: 14px; max-width: 22ch; }
 .section-head .more { font-size: 12px; letter-spacing: .22em; text-transform: uppercase; color: var(--ink-soft); border-bottom: 1px solid var(--line-dark); padding-bottom: 6px; white-space: nowrap; }
@@ -167,7 +167,7 @@ section.pdp-sec { padding: clamp(28px, 3.2vw, 54px) 0 clamp(44px, 5vw, 76px); }
 .gband .cell p { font-size: 14px; margin-top: 10px; }
 
 /* ---------- breadcrumbs ---------- */
-.crumbs { padding: 18px 0 0; font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+.crumbs { padding: clamp(9px, 1.6vh, 18px) 0 0; font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
 .crumbs a { color: var(--muted); }
 .crumbs a:hover { color: var(--ink); }
 .crumbs span.sep { margin: 0 10px; color: var(--line-dark); }
@@ -191,19 +191,19 @@ section.pdp-sec { padding: clamp(28px, 3.2vw, 54px) 0 clamp(44px, 5vw, 76px); }
 /* ---------- product page ---------- */
 .pdp { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); gap: clamp(30px, 4vw, 70px); align-items: start; }
 .pdp .stage { background: var(--tile); position: sticky; top: 110px; }
-.pdp .stage .inner { aspect-ratio: 1 / 1; max-height: min(54vh, 500px); display: flex; align-items: center; justify-content: center; padding: clamp(20px, 2.6vw, 44px); }
+.pdp .stage .inner { height: clamp(280px, 46vh, 460px); display: flex; align-items: center; justify-content: center; padding: clamp(18px, 2.2vw, 38px); }
 .pdp .stage img { max-width: 100%; max-height: 100%; object-fit: contain; mix-blend-mode: multiply; transition: opacity .25s ease; }
-.pdp .thumbs { display: flex; gap: 10px; padding: 0 14px 14px; flex-wrap: wrap; }
+.pdp .thumbs { display: flex; gap: 10px; padding: 0 14px clamp(8px, 1.5vh, 14px); flex-wrap: wrap; justify-content: center; }
 .pdp .thumbs button { width: 56px; height: 56px; background: #fff; border: 1px solid var(--line); cursor: pointer; padding: 6px; }
 .pdp .thumbs button img { width: 100%; height: 100%; object-fit: contain; mix-blend-mode: multiply; }
 .pdp .thumbs button.on { border-color: var(--brass); }
 
-.pdp .info h1 { font-size: clamp(26px, 2.5vw, 36px); margin: 10px 0 7px; }
+.pdp .info h1 { font-size: clamp(26px, 2.3vw, 34px); margin: clamp(6px, 1.1vh, 10px) 0 6px; }
 .pdp .dims { color: var(--muted); font-size: 14px; letter-spacing: .1em; }
-.pdp .from { font-size: 20px; font-weight: 400; margin-top: 14px; }
+.pdp .from { font-size: 20px; font-weight: 400; margin-top: clamp(8px, 1.6vh, 14px); }
 .pdp .from .inc { font-size: 12.5px; color: var(--muted); margin-left: 8px; letter-spacing: .04em; }
 
-.variant-swatches { margin-top: 20px; }
+.variant-swatches { margin-top: clamp(12px, 2.2vh, 20px); }
 .variant-swatches .label { font-size: 11.5px; letter-spacing: .22em; text-transform: uppercase; color: var(--ink-soft); margin-bottom: 12px; }
 .variant-swatches .label b { font-weight: 600; color: var(--ink); }
 .variant-swatches .row { display: flex; gap: 12px; flex-wrap: wrap; }
@@ -215,18 +215,18 @@ section.pdp-sec { padding: clamp(28px, 3.2vw, 54px) 0 clamp(44px, 5vw, 76px); }
 }
 .variant-swatches button.on::after { content: ''; position: absolute; inset: -6px; border: 1px solid var(--ink-soft); border-radius: 50%; }
 
-table.pricing { width: 100%; border-collapse: collapse; margin-top: 22px; }
+table.pricing { width: 100%; border-collapse: collapse; margin-top: clamp(13px, 2.4vh, 22px); }
 table.pricing caption { text-align: left; font-size: 11.5px; letter-spacing: .22em; text-transform: uppercase; color: var(--ink-soft); padding-bottom: 12px; }
 table.pricing th { font-size: 11px; font-weight: 400; letter-spacing: .18em; text-transform: uppercase; color: var(--muted); text-align: left; padding: 0 12px 10px 0; border-bottom: 1px solid var(--line-dark); }
-table.pricing td { padding: 10px 12px 10px 0; border-bottom: 1px solid var(--line); font-size: 14.5px; vertical-align: top; }
+table.pricing td { padding: clamp(5px, 0.85vh, 9px) 12px clamp(5px, 0.85vh, 9px) 0; border-bottom: 1px solid var(--line); font-size: 14.5px; vertical-align: top; }
 table.pricing td.sku { letter-spacing: .06em; color: var(--ink-soft); white-space: nowrap; }
 table.pricing td.price { text-align: right; white-space: nowrap; font-weight: 400; }
 table.pricing th.price { text-align: right; padding-right: 0; }
 table.pricing tr.hl td { background: #f6f2ea; }
 
-.pdp .note { margin-top: 16px; font-size: 14px; color: var(--ink-soft); border-left: 2px solid var(--line-dark); padding: 4px 0 4px 16px; }
-.pdp .footnote { margin-top: 18px; font-size: 12.5px; color: var(--muted); }
-.pdp .assure { margin-top: 22px; padding-top: 16px; border-top: 1px solid var(--line); display: flex; flex-wrap: wrap; gap: 8px 28px; font-size: 12.5px; color: var(--muted); letter-spacing: .04em; }
+.pdp .note { margin-top: clamp(10px, 1.8vh, 16px); font-size: 14px; color: var(--ink-soft); border-left: 2px solid var(--line-dark); padding: 4px 0 4px 16px; }
+.pdp .footnote { margin-top: clamp(8px, 1.5vh, 13px); font-size: 12.5px; color: var(--muted); }
+.pdp .assure { margin-top: clamp(11px, 2vh, 18px); padding-top: clamp(9px, 1.6vh, 14px); border-top: 1px solid var(--line); display: flex; flex-wrap: wrap; gap: 8px 28px; font-size: 12.5px; color: var(--muted); letter-spacing: .04em; }
 
 /* addons */
 .addons { margin-top: clamp(50px, 7vw, 90px); }
@@ -635,9 +635,9 @@ table.pricing tbody tr:hover td { background: #f6f4ef; }
 .doc-tools input:focus { outline: none; border-color: var(--ink-soft); }
 .doc-tools .count { font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
 
-.prod-docs { margin-top: 22px; padding-top: 18px; border-top: 1px solid var(--line); }
+.prod-docs { margin-top: clamp(12px, 2vh, 18px); padding-top: clamp(10px, 1.8vh, 16px); border-top: 1px solid var(--line); }
 .prod-docs .label { font-size: 11.5px; letter-spacing: .22em; text-transform: uppercase; color: var(--ink-soft); margin-bottom: 12px; }
-.doc-link { display: flex; align-items: center; gap: 11px; padding: 7px 0; font-size: 14.5px; color: var(--ink-soft); border-bottom: 1px solid var(--line); }
+.doc-link { display: flex; align-items: center; gap: 11px; padding: clamp(4px, 0.8vh, 7px) 0; font-size: 14.5px; color: var(--ink-soft); border-bottom: 1px solid var(--line); }
 .doc-link:last-child { border-bottom: 0; }
 .doc-link:hover { color: var(--ink); }
 .doc-link svg { width: 17px; height: 17px; flex: none; fill: none; stroke: currentColor; stroke-width: 1.4; stroke-linejoin: round; }
@@ -730,7 +730,7 @@ table.pricing tbody tr:hover td { background: #f6f4ef; }
 /* ---------- product downloads, gallery and pairings ---------- */
 .prod-docs .doc-link .kind { margin-left: auto; font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
 
-.pdp .gallery-strip { display: flex; gap: 8px; flex-wrap: wrap; padding: 12px; border-top: 1px solid var(--line); }
+.pdp .gallery-strip { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; padding: clamp(8px, 1.4vh, 12px); border-top: 1px solid var(--line); }
 .pdp .gallery-strip button { width: 56px; height: 56px; background: var(--paper); border: 1px solid var(--line); cursor: pointer; padding: 0; overflow: hidden; }
 .pdp .gallery-strip button.on { border-color: var(--ink); }
 .pdp .gallery-strip img { width: 100%; height: 100%; object-fit: cover; }
@@ -807,3 +807,30 @@ table.guar-products td { padding: 8px 10px 8px 0; border-bottom: 1px solid var(-
 .pill--checked { border-color: #a8b39c; color: #56634a; }
 .pill--registered { border-color: #9db3a8; color: #47645a; }
 .adm .abtn.on { background: var(--ink); color: #f4f1e9; border-color: var(--ink); }
+
+/* Product page on a laptop: downloads tuck under the photo so the two
+   columns finish level and the whole product clears the fold. */
+.pdp > #product-docs:empty { display: none; }
+@media (min-width: 1100px) {
+  .pdp { grid-template-columns: minmax(0, 0.95fr) minmax(0, 1fr); grid-template-rows: auto auto; row-gap: 0; }
+  .pdp > .stage { grid-column: 1; grid-row: 1; }
+  .pdp > .info { grid-column: 2; grid-row: 1 / span 2; }
+  .pdp > #product-docs { grid-column: 1; grid-row: 2; }
+}
+
+/* Short laptop screens (a 768px panel leaves ~720px once browser chrome is
+   accounted for): trim the fittings so the product still reads in one view. */
+@media (min-width: 1100px) and (max-height: 820px) {
+  .pdp .stage .inner { height: clamp(280px, 43vh, 460px); }
+  .pdp .thumbs button, .pdp .gallery-strip button { width: 48px; height: 48px; }
+  .variant-swatches button { width: 42px; height: 42px; }
+  .variant-swatches .label { margin-bottom: 9px; }
+  .crumbs { padding-top: 9px; font-size: 11px; }
+  .pdp .from { margin-top: 10px; }
+  .variant-swatches { margin-top: 12px; }
+  table.pricing { margin-top: 12px; }
+  .pdp .note { margin-top: 9px; }
+  .pdp .footnote { margin-top: 9px; }
+  .pdp .assure { margin-top: 8px; padding-top: 8px; font-size: 12px; gap: 6px 22px; }
+  .prod-docs { margin-top: 13px; padding-top: 12px; }
+}
