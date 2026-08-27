@@ -264,7 +264,7 @@
       }).join('') + '</div></section>' : '';
 
     return crumbs([{ label: 'Home', href: '/' }, { label: 'Products', href: '/products/' }, { label: cat.name, href: '/products/' + cat.slug + '/' }, { label: range.name, href: '/products/' + cat.slug + '/' + range.slug + '/' }, { label: p.name }]) +
-      '<section class="pad--tight"><div class="pdp">' +
+      '<section class="pad--tight pdp-sec"><div class="pdp">' +
       '<div class="stage"><div class="inner"><img src="' + prodImgSafe(heroImg) + '" alt="' + esc(range.name) + ' ' + esc(p.name) + '"></div>' + gallery + '</div>' +
       '<div class="info"><span class="eyebrow">' + esc(range.title) + '</span>' +
       '<h1>' + esc(p.name) + '</h1>' +
