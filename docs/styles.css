@@ -28,9 +28,9 @@ img { max-width: 100%; display: block; }
 a { color: inherit; text-decoration: none; }
 ::selection { background: #e8e2d6; }
 
-.container { max-width: 1360px; margin: 0 auto; padding: 0 clamp(22px, 4.5vw, 64px); }
+.container { max-width: min(1680px, 94vw); margin: 0 auto; padding: 0 clamp(22px, 3.2vw, 56px); }
 .container--narrow { max-width: 880px; }
-.container--mid { max-width: 1080px; }
+.container--mid { max-width: min(1180px, 92vw); }
 
 /* ---------- type ---------- */
 .eyebrow {
@@ -335,7 +335,16 @@ footer.site .fine { border-top: 1px solid #2a2820; padding: 26px 0 34px; display
 .adm-tabs button { background: none; border: 0; border-bottom: 1px solid transparent; margin-bottom: -1px; padding: 12px 18px; font-family: var(--sans); font-size: 12px; letter-spacing: .18em; text-transform: uppercase; color: var(--muted); cursor: pointer; }
 .adm-tabs button.on { color: var(--ink); border-color: var(--ink); }
 
-.adm form, .adm-panel { max-width: 860px; }
+.adm-panel { max-width: none; }
+.adm form { max-width: 860px; }
+/* form controls stay a comfortable reading width even in a full-width panel */
+.adm-panel > label, .adm-panel > input, .adm-panel > textarea, .adm-panel > select,
+.adm-panel > .adm-row, .adm-panel > p, .adm-panel > .imgrow, .adm details,
+.adm-panel > h3, .adm-panel > .tab-intro, .adm-panel > .switch-row { max-width: 860px; }
+/* things that benefit from the whole screen */
+.adm-panel > .guar-wrap, .adm-panel > .gal-grid, .adm-panel > .dash-tiles,
+.adm-panel > .dash-grid, .adm-panel > .dash-card, .adm-panel > .adm-list,
+.adm-panel > .dash-status, .adm-panel > .dash-problems, .adm-panel > .pdf-grid { max-width: none; }
 .adm label { display: block; font-size: 11px; letter-spacing: .16em; text-transform: uppercase; color: var(--label); margin: 18px 0 6px; }
 .adm input[type="text"], .adm input[type="password"], .adm input[type="email"], .adm input[type="number"], .adm textarea, .adm select {
   width: 100%; padding: 10px 12px; border: 1px solid var(--line-dark); background: var(--paper);
@@ -766,8 +775,8 @@ table.pricing tbody tr:hover td { background: #f6f4ef; }
 @media (max-width: 700px) { .gf-grid, .gf-product { grid-template-columns: 1fr; } }
 
 /* ---------- admin: guarantee registrations table ---------- */
-.guar-wrap { margin-top: 20px; overflow-x: auto; border: 1px solid var(--line); background: var(--paper); }
-table.guar { width: 100%; border-collapse: collapse; font-size: 13.5px; min-width: 900px; }
+.guar-wrap { margin-top: 20px; overflow-x: auto; border: 1px solid var(--line); background: var(--paper); width: 100%; }
+table.guar { width: 100%; border-collapse: collapse; font-size: 13.5px; min-width: 880px; table-layout: auto; }
 table.guar th {
   text-align: left; font-weight: 400; font-size: 10.5px; letter-spacing: .16em; text-transform: uppercase;
   color: var(--label); padding: 14px 16px; border-bottom: 1px solid var(--line-dark); white-space: nowrap; background: var(--bg);
