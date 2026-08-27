@@ -28,7 +28,8 @@
               "price": 494,
               "image": "p053_02.png"
             }
-          ]
+          ],
+          "spec": "spec-concealed-cisterns-slimline-concealed-cistern.pdf"
         },
         {
           "slug": "mid-height-concealed-cistern",
@@ -42,7 +43,8 @@
               "price": 467,
               "image": "p053_10.png"
             }
-          ]
+          ],
+          "spec": "spec-concealed-cisterns-mid-height-concealed-cistern.pdf"
         },
         {
           "slug": "short-concealed-cistern",
@@ -56,7 +58,8 @@
               "price": 467,
               "image": "p053_08.png"
             }
-          ]
+          ],
+          "spec": "spec-concealed-cisterns-short-concealed-cistern.pdf"
         },
         {
           "slug": "in-wall-concealed-cistern",
@@ -70,7 +73,8 @@
               "price": 192,
               "image": "p053_09.png"
             }
-          ]
+          ],
+          "spec": "spec-concealed-cisterns-in-wall-concealed-cistern.pdf"
         },
         {
           "slug": "concealed-cistern-for-wc-furniture-units",
@@ -84,7 +88,8 @@
               "price": 150,
               "image": "p053_01.png"
             }
-          ]
+          ],
+          "spec": "spec-concealed-cisterns-concealed-cistern-for-wc-furniture-units.pdf"
         }
       ]
     },
@@ -134,7 +139,8 @@
               "price": 139,
               "image": "p053_03.png"
             }
-          ]
+          ],
+          "spec": "spec-flush-plates-halo-mechanical-flush-plate.pdf"
         },
         {
           "slug": "modus-mechanical-flush-plate",
@@ -172,7 +178,8 @@
               "price": 139,
               "image": "p053_05.png"
             }
-          ]
+          ],
+          "spec": "spec-flush-plates-modus-mechanical-flush-plate.pdf"
         },
         {
           "slug": "terrain-pneumatic-flush-plate",
@@ -204,7 +211,8 @@
               "price": 139,
               "image": "p053_07.png"
             }
-          ]
+          ],
+          "spec": "spec-flush-plates-terrain-pneumatic-flush-plate.pdf"
         },
         {
           "slug": "mood-pneumatic-flush-plate",
@@ -242,7 +250,8 @@
               "price": 139,
               "image": "p053_06.png"
             }
-          ]
+          ],
+          "spec": "spec-flush-plates-mood-pneumatic-flush-plate.pdf"
         },
         {
           "slug": "eos-flush-button",
@@ -268,7 +277,8 @@
               "price": 71,
               "image": "p053_04.png"
             }
-          ]
+          ],
+          "spec": "spec-flush-plates-eos-flush-button.pdf"
         }
       ],
       "footnote": "For dimensional drawings and installation heights please contact us or refer to the catalogue."

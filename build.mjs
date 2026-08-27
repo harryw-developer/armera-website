@@ -23,7 +23,7 @@ const INSTRUCTIONS_BUCKET = 'instructions';
 
 // Short content hashes for cache-busting: a changed file gets a new URL, so a
 // browser can never pair a stale stylesheet with fresh scripts.
-const STATIC_FILES = ['styles.css', 'site.js', 'search.js', 'track.js', 'catalog.js', 'instructions.js', 'videos.js', 'retailers.js', 'admin.js'];
+const STATIC_FILES = ['styles.css', 'site.js', 'search.js', 'track.js', 'guarantee.js', 'catalog.js', 'instructions.js', 'videos.js', 'retailers.js', 'admin.js'];
 const assetVersions = Object.fromEntries(STATIC_FILES.map(f => [
   f, createHash('sha1').update(readFileSync(join(ROOT, 'static', f))).digest('hex').slice(0, 8)
 ]));
@@ -202,6 +202,7 @@ ${body}
           <li><a href="/support/">Support</a></li>
           <li><a href="/support/instructions/">Instructions</a></li>
           <li><a href="/support/how-to-videos/">How-to videos</a></li>
+          <li><a href="/register-guarantee/">Register your guarantee</a></li>
           <li><a href="/contact/">Contact us</a></li>
           <li><a data-catalogue href="${catHref}" target="_blank" rel="noopener">Download the catalogue</a></li>
         </ul>
@@ -573,8 +574,8 @@ ${crumbs([{ label: 'Home', href: '/' }, { label: 'Support' }])}
       <div class="info-card">
         <span class="eyebrow">Guarantee</span>
         <h3>Register your product</h3>
-        <p>2 years guarantee for parts &amp; labour as standard — extended up to 25 years for parts only when registered on armera.co.uk.</p>
-        <a class="link" href="/about/">Guarantee details</a>
+        <p>2 years guarantee for parts &amp; labour as standard — extended up to 25 years for parts only when registered.</p>
+        <a class="link" href="/register-guarantee/">Register your guarantee</a>
       </div>
     </div>
     <div class="info-cards" style="margin-top:clamp(18px,2.4vw,34px);grid-template-columns:1fr">
@@ -709,6 +710,112 @@ ${catBand()}`;
   }));
 }
 
+
+/* ---------------- register a guarantee ---------------- */
+function guaranteePage() {
+  const field = (name, label, opts = {}) => `
+        <label class="gf${opts.wide ? ' gf--wide' : ''}">
+          <span>${esc(label)}${opts.required ? ' <b>*</b>' : ''}</span>
+          <input type="${opts.type || 'text'}" name="${name}" ${opts.required ? 'required' : ''} ${opts.autocomplete ? `autocomplete="${opts.autocomplete}"` : ''}>
+        </label>`;
+
+  const body = `
+${crumbs([{ label: 'Home', href: '/' }, { label: 'Support', href: '/support/' }, { label: 'Register your guarantee' }])}
+<section class="pad--tight">
+  <div class="container">
+    <span class="eyebrow">Guarantee</span>
+    <h1 style="margin:14px 0 18px">Register your guarantee</h1>
+    <p class="lede" style="max-width:62ch">Registering extends your guarantee for parts — up to 25 years depending on the product. It takes a couple of minutes, and you only need your retailer and purchase date to hand.</p>
+  </div>
+</section>
+
+<section class="pad--tight" style="padding-top:0">
+  <div class="container container--mid">
+    <form id="guarantee-form" class="gform" novalidate>
+
+      <fieldset>
+        <legend>Contact information</legend>
+        <div class="gf-grid">
+          <label class="gf gf--narrow">
+            <span>Title <b>*</b></span>
+            <select name="title" required>
+              <option value="">Please choose</option>
+              <option>Mr</option><option>Mrs</option><option>Miss</option><option>Ms</option><option>Mx</option><option>Dr</option><option>Prof</option>
+            </select>
+          </label>
+          ${field('first_name', 'First name', { required: true, autocomplete: 'given-name' })}
+          ${field('last_name', 'Last name', { required: true, autocomplete: 'family-name' })}
+          ${field('email', 'Email', { required: true, type: 'email', autocomplete: 'email', wide: true })}
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Your address</legend>
+        <div class="gf-grid">
+          ${field('address1', 'Address line 1', { required: true, autocomplete: 'address-line1', wide: true })}
+          ${field('address2', 'Address line 2', { autocomplete: 'address-line2', wide: true })}
+          ${field('town', 'Town / City', { required: true, autocomplete: 'address-level2' })}
+          ${field('postcode', 'Postcode', { required: true, autocomplete: 'postal-code' })}
+          ${field('country', 'Country', { autocomplete: 'country-name' })}
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Retailer / developer details</legend>
+        <div class="gf-grid">
+          ${field('retailer_name', 'Retailer name', { required: true })}
+          ${field('purchase_date', 'Purchase date', { required: true, type: 'date' })}
+        </div>
+        <p class="gf-note">If you are registering for a new home:</p>
+        <div class="gf-grid">
+          ${field('developer_name', 'Builder / developer name')}
+          ${field('moved_in_date', 'Date you moved into your new home', { type: 'date' })}
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Installer details</legend>
+        <div class="gf-grid">
+          ${field('installer_name', 'Installer name', { wide: true })}
+          ${field('installer_address1', 'Installer address line 1', { wide: true })}
+          ${field('installer_address2', 'Installer address line 2', { wide: true })}
+          ${field('installer_town', 'Installer town / city')}
+          ${field('installer_postcode', 'Installer postcode')}
+          ${field('installer_country', 'Installer country')}
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Your purchased products</legend>
+        <p class="gf-note">Product codes &amp; descriptions — if you are unsure, please write “I don’t know”.</p>
+        <div id="gf-products"></div>
+        <button type="button" class="abtn abtn--ghost abtn--sm" id="gf-add-product">Add another product</button>
+      </fieldset>
+
+      <fieldset>
+        <legend>Proof of purchase <span class="gf-optional">optional</span></legend>
+        <p class="gf-note">A photograph of your receipt or invoice helps us process the guarantee more quickly.</p>
+        <input type="file" name="proof" id="gf-proof" accept="image/*,application/pdf">
+        <div id="gf-proof-state" class="small"></div>
+      </fieldset>
+
+      <div class="gf-submit">
+        <button type="submit" class="btn btn--solid" id="gf-send">Register my guarantee</button>
+        <p class="small" id="gf-msg"></p>
+      </div>
+    </form>
+  </div>
+</section>`;
+
+  write('register-guarantee/index.html', layout({
+    title: 'Register your guarantee — ARMERA',
+    desc: 'Register your ARMERA products to extend your guarantee for parts, up to 25 years depending on the product.',
+    path: '/support/',
+    body,
+    extraBody: `<script src="${v('guarantee.js')}" defer></script>`
+  }));
+}
+
 /* ---------------- contact ---------------- */
 function contactPage() {
   const body = `
@@ -786,7 +893,7 @@ writeFileSync(join(DIST, '.nojekyll'), '');
 
 const css = readFileSync(join(ROOT, 'static/styles.css'), 'utf8').replaceAll('ASSETS', ASSETS);
 writeFileSync(join(DIST, 'styles.css'), css);
-for (const f of ['site.js', 'search.js', 'track.js', 'catalog.js', 'instructions.js', 'videos.js', 'retailers.js', 'admin.js']) {
+for (const f of ['site.js', 'search.js', 'track.js', 'guarantee.js', 'catalog.js', 'instructions.js', 'videos.js', 'retailers.js', 'admin.js']) {
   writeFileSync(join(DIST, f), readFileSync(join(ROOT, 'static', f)));
 }
 
@@ -798,6 +905,7 @@ supportPage();
 instructionsPage();
 videosPage();
 retailersPage();
+guaranteePage();
 contactPage();
 adminPage();
 

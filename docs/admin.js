@@ -74,6 +74,58 @@
         else msg(target, okText || 'Saved. Changes are live on the site.', 'ok');
       });
   }
+  function thisKey(range, p) {
+    return state.rows[state.catKey].slug + '/' + range.slug + '/' + p.slug;
+  }
+
+  // Searchable checklist of every product, excluding one. Calls back with the list.
+  function productChecklist(selected, excludeKey, onChange) {
+    var box = el('div', { class: 'link-picker' });
+    var chosen = {};
+    (selected || []).forEach(function (k) { chosen[k] = true; });
+    var products = allProducts().filter(function (p) { return p.key !== excludeKey; });
+
+    var head = el('div', { class: 'lp-head' });
+    var search = el('input', { type: 'search', placeholder: 'Search products by name, range or order code' });
+    head.appendChild(search);
+    var tally = el('span', { class: 'lp-tally' });
+    head.appendChild(tally);
+    box.appendChild(head);
+    var listEl = el('div', { class: 'lp-list' });
+    box.appendChild(listEl);
+
+    var report = function () {
+      var keys = Object.keys(chosen).filter(function (k) { return chosen[k]; });
+      tally.textContent = keys.length + ' selected';
+      onChange(keys);
+    };
+    var draw = function () {
+      var q = (search.value || '').trim().toLowerCase();
+      listEl.innerHTML = '';
+      var shown = products.filter(function (p) { return !q || p.hay.indexOf(q) !== -1; });
+      if (!shown.length) {
+        listEl.appendChild(el('p', { class: 'small', style: 'padding:10px 2px', text: 'No products match that search.' }));
+        return;
+      }
+      var lastGroup = '';
+      shown.slice(0, 400).forEach(function (p) {
+        var group = p.category + ' · ' + p.range;
+        if (group !== lastGroup) { listEl.appendChild(el('p', { class: 'lp-group', text: group })); lastGroup = group; }
+        var row = el('label', { class: 'lp-row' });
+        var cb = el('input', { type: 'checkbox' });
+        cb.checked = !!chosen[p.key];
+        cb.addEventListener('change', function () { chosen[p.key] = cb.checked; report(); });
+        row.appendChild(cb);
+        row.appendChild(el('span', { class: 'lp-name', text: p.name }));
+        listEl.appendChild(row);
+      });
+    };
+    search.addEventListener('input', draw);
+    draw();
+    report();
+    return box;
+  }
+
   /* ---------- browse files already on the site ---------- */
   // opts: { folders: [{key,label}], accept: 'image'|'video'|'any', onPick: fn(path) }
   function browseFiles(opts) {
@@ -336,7 +388,7 @@
     wrap.appendChild(head);
 
     var tabs = el('div', { class: 'adm-tabs' });
-    [['dashboard', 'Dashboard'], ['catalogue', 'Products'], ['pages', 'Pages'], ['retailers', 'Retailers'], ['instructions', 'Instructions'], ['videos', 'Videos'], ['brochure', 'Catalogue'], ['account', 'Account']].forEach(function (t) {
+    [['dashboard', 'Dashboard'], ['catalogue', 'Products'], ['pages', 'Pages'], ['retailers', 'Retailers'], ['instructions', 'Instructions'], ['videos', 'Videos'], ['gallery', 'Photo gallery'], ['guarantees', 'Guarantees'], ['brochure', 'Catalogue'], ['account', 'Account']].forEach(function (t) {
       tabs.appendChild(el('button', {
         class: state.tab === t[0] ? 'on' : '', text: t[1],
         onclick: function () { state.tab = t[0]; state.editing = null; renderShell(); }
@@ -371,6 +423,8 @@
     if (state.tab === 'pages') renderPages(panel);
     if (state.tab === 'instructions') renderInstructions(panel);
     if (state.tab === 'videos') renderVideos(panel);
+    if (state.tab === 'gallery') renderGallery(panel);
+    if (state.tab === 'guarantees') renderGuarantees(panel);
     if (state.tab === 'retailers') renderRetailers(panel);
     if (state.tab === 'brochure') renderBrochure(panel);
     if (state.tab === 'account') renderAccount(panel);
@@ -1020,6 +1074,57 @@
     box.appendChild(imgWrap);
     drawImages();
 
+    /* ---- dimensional drawing ---- */
+    box.appendChild(el('hr', { class: 'rule' }));
+    box.appendChild(lbl('Dimensional drawing', 'The measured drawing PDF for this product. It is offered on the product page and becomes page two of the specification sheet.'));
+    var dwgNow = el('p', { class: 'small' });
+    var setDwgLabel = function () {
+      dwgNow.innerHTML = '';
+      if (p.drawing) {
+        dwgNow.appendChild(el('span', { text: 'Current: ' + p.drawing + '  ' }));
+        dwgNow.appendChild(el('a', { class: 'preview-link', target: '_blank', rel: 'noopener',
+          href: cfg.assets + '/drawings/' + encodeURIComponent(p.drawing), text: 'View' }));
+      } else {
+        dwgNow.appendChild(el('span', { text: 'No drawing yet — the specification sheet will be one page until you add one.' }));
+      }
+    };
+    setDwgLabel();
+    box.appendChild(dwgNow);
+    var dwgFile = el('input', { type: 'file', accept: 'application/pdf' });
+    box.appendChild(dwgFile);
+    dwgFile.addEventListener('change', function () {
+      if (!dwgFile.files[0]) return;
+      uploadTo('drawings', dwgFile.files[0], 'Uploading the drawing').then(function (name) {
+        p.drawing = name;
+        setDwgLabel();
+        msg(box, 'Drawing uploaded — press Save product to keep it.', 'ok');
+      }).catch(function (e) { msg(box, 'Upload failed: ' + e.message, 'err'); });
+    });
+
+    /* ---- looks good with ---- */
+    box.appendChild(el('hr', { class: 'rule' }));
+    box.appendChild(lbl('Looks good with…', 'Tick other products to show underneath this one as suggested pairings. Leave all unticked to hide the section.'));
+    var goesWith = (p.goesWith || []).slice();
+    var pairSlot = el('div', {});
+    var pairSummary = el('p', { class: 'small' });
+    var drawPairSummary = function () {
+      pairSummary.textContent = goesWith.length
+        ? goesWith.length + ' product' + (goesWith.length === 1 ? '' : 's') + ' selected'
+        : 'Nothing selected yet.';
+    };
+    drawPairSummary();
+    box.appendChild(pairSummary);
+    box.appendChild(el('button', {
+      class: 'abtn abtn--ghost abtn--sm', type: 'button', text: 'Choose products',
+      onclick: function () {
+        if (pairSlot.firstChild) { pairSlot.innerHTML = ''; return; }
+        pairSlot.appendChild(productChecklist(goesWith, thisKey(range, p), function (list) {
+          goesWith = list; drawPairSummary();
+        }));
+      }
+    }));
+    box.appendChild(pairSlot);
+
     var save = el('button', {
       class: 'abtn', text: 'Save product', type: 'button', style: 'margin-top:22px;display:block',
       title: 'Save every change on this product — details, options, prices and photos — and put them live.',
@@ -1454,6 +1559,155 @@
     });
   }
 
+  /* ---------- photo gallery tab ---------- */
+  function renderGallery(panel) {
+    var shots = state.rows.gallery;
+    if (!Array.isArray(shots)) { shots = []; state.rows.gallery = shots; }
+
+    panel.appendChild(el('h3', { text: 'Photo gallery' }));
+    panel.appendChild(el('p', { class: 'tab-intro', html:
+      'Room photography for the product pages. Upload a shot, tag it, and tick the products that appear in it — ' +
+      'it then shows in the picture strip on each of those product pages.' }));
+
+    var up = el('div', { style: 'border:1px solid var(--line);background:var(--paper);padding:18px 22px' });
+    up.appendChild(lbl('Add photographs', 'Choose one or more images. They upload straight away, then you can tag them below.'));
+    var files = el('input', { type: 'file', accept: 'image/*', multiple: 'multiple' });
+    up.appendChild(files);
+    up.appendChild(el('button', {
+      class: 'abtn abtn--ghost abtn--sm', text: 'Browse site files', style: 'margin-top:12px',
+      title: 'Add a photograph already uploaded to the site.',
+      onclick: function () {
+        browseFiles({
+          accept: 'image',
+          folders: [
+            { key: 'gallery', label: 'Gallery' },
+            { key: 'lifestyle', label: 'Photography' },
+            { key: 'inspiration', label: 'Inspiration' }
+          ],
+          onPick: function (path, name) {
+            if (path.indexOf('gallery/') !== 0) {
+              return msg(up, 'That file lives in another folder. Upload it here to use it in the gallery.', 'err');
+            }
+            if (shots.some(function (g) { return g.file === name; })) return msg(up, 'That photo is already in the gallery.', 'err');
+            shots.unshift({ file: name, caption: '', tags: [], products: [] });
+            saveRowUpsert('gallery', up, 'Added to the gallery.').then(draw);
+          }
+        });
+      }
+    }));
+    panel.appendChild(up);
+
+    files.addEventListener('change', function () {
+      var list = Array.prototype.slice.call(files.files);
+      if (!list.length) return;
+      var done = 0;
+      list.forEach(function (f) {
+        uploadTo('gallery', f, 'Uploading ' + f.name).then(function (name) {
+          if (!shots.some(function (g) { return g.file === name; })) {
+            shots.unshift({ file: name, caption: '', tags: [], products: [] });
+          }
+          if (++done === list.length) {
+            files.value = '';
+            saveRowUpsert('gallery', panel, list.length + ' photo(s) added.').then(draw);
+          }
+        }).catch(function (e) { msg(panel, 'Upload failed: ' + e.message, 'err'); });
+      });
+    });
+
+    panel.appendChild(el('hr', { class: 'rule' }));
+    var filterRow = el('div', { class: 'adm-row' });
+    var filter = el('input', { type: 'search', placeholder: 'Filter by file name, tag or product', style: 'max-width:420px' });
+    filterRow.appendChild(filter);
+    var count = el('span', { class: 'lp-tally' });
+    filterRow.appendChild(count);
+    panel.appendChild(filterRow);
+
+    var grid = el('div', { class: 'gal-grid' });
+    panel.appendChild(grid);
+
+    function productNames() {
+      var map = {};
+      allProducts().forEach(function (p) { map[p.key] = p.name + ' · ' + p.range; });
+      return map;
+    }
+    var names = productNames();
+
+    function draw() {
+      names = productNames();
+      grid.innerHTML = '';
+      var q = (filter.value || '').trim().toLowerCase();
+      var shown = shots.filter(function (g) {
+        if (!q) return true;
+        var hay = (g.file + ' ' + (g.caption || '') + ' ' + (g.tags || []).join(' ') + ' ' +
+                   (g.products || []).map(function (k) { return names[k] || k; }).join(' ')).toLowerCase();
+        return hay.indexOf(q) !== -1;
+      });
+      count.textContent = shown.length + (shown.length === 1 ? ' photo' : ' photos');
+      if (!shots.length) {
+        grid.appendChild(el('p', { class: 'small', text: 'No photographs yet — add some above.' }));
+        return;
+      }
+      shown.forEach(function (g) {
+        var idx = shots.indexOf(g);
+        var card = el('div', { class: 'gal-card' });
+        card.appendChild(el('div', { class: 'gal-shot', html: '' }));
+        card.firstChild.appendChild(el('img', { src: cfg.assets + '/gallery/' + encodeURIComponent(g.file), alt: '', loading: 'lazy' }));
+        var body = el('div', { class: 'gal-body' });
+        body.appendChild(el('p', { class: 'gal-name', text: g.file }));
+
+        var cap = el('input', { type: 'text', value: g.caption || '', placeholder: 'Caption (optional)' });
+        cap.addEventListener('change', function () { g.caption = cap.value.trim(); });
+        body.appendChild(cap);
+
+        var tags = el('input', { type: 'text', value: (g.tags || []).join(', '), placeholder: 'Tags, separated by commas' });
+        tags.addEventListener('change', function () {
+          g.tags = tags.value.split(',').map(function (t) { return t.trim(); }).filter(Boolean);
+        });
+        body.appendChild(tags);
+
+        var chosen = el('p', { class: 'small' });
+        var setChosen = function () {
+          chosen.textContent = (g.products || []).length
+            ? 'Shown on ' + g.products.length + ' product page' + (g.products.length === 1 ? '' : 's')
+            : 'Not shown on any product page yet';
+        };
+        setChosen();
+        body.appendChild(chosen);
+
+        var slot = el('div', {});
+        body.appendChild(el('button', {
+          class: 'abtn abtn--ghost abtn--sm', type: 'button', text: 'Products in this photo',
+          onclick: function () {
+            if (slot.firstChild) { slot.innerHTML = ''; return; }
+            slot.appendChild(productChecklist(g.products || [], null, function (list) {
+              g.products = list; setChosen();
+            }));
+          }
+        }));
+        body.appendChild(slot);
+
+        var actions = el('div', { class: 'adm-row', style: 'margin-top:12px' });
+        actions.appendChild(el('button', {
+          class: 'abtn abtn--sm', type: 'button', text: 'Save photo',
+          onclick: function () { saveRowUpsert('gallery', card, 'Photo saved.'); }
+        }));
+        actions.appendChild(el('button', {
+          class: 'abtn abtn--danger abtn--sm', type: 'button', text: 'Remove',
+          onclick: function () {
+            if (!confirm('Remove "' + g.file + '" from the gallery? The file stays in your site files.')) return;
+            shots.splice(idx, 1);
+            saveRowUpsert('gallery', panel, 'Photo removed.').then(draw);
+          }
+        }));
+        body.appendChild(actions);
+        card.appendChild(body);
+        grid.appendChild(card);
+      });
+    }
+    filter.addEventListener('input', draw);
+    draw();
+  }
+
   /* ---------- videos tab ---------- */
   function renderVideos(panel) {
     var videos = state.rows.videos;
@@ -1660,6 +1914,309 @@
         addSlot.appendChild(editor({}, true, function () { addSlot.innerHTML = ''; draw(); }));
       }
     }));
+  }
+
+  /* ---------- guarantee registrations tab ---------- */
+  var GUAR = { rows: null, q: '', sort: 'created_at', dir: 'desc', open: {} };
+
+  var GUARANTEE_SQL = [
+    'create table if not exists public.guarantee_registrations (',
+    '  id bigserial primary key,',
+    '  created_at timestamptz not null default now(),',
+    '  title text, first_name text not null, last_name text not null, email text not null,',
+    '  address1 text not null, address2 text, town text not null, postcode text not null, country text,',
+    '  retailer_name text not null, purchase_date date not null,',
+    '  developer_name text, moved_in_date date,',
+    '  installer_name text, installer_address1 text, installer_address2 text,',
+    '  installer_town text, installer_postcode text, installer_country text,',
+    "  products jsonb not null default '[]'::jsonb,",
+    '  proof_file text, notes text,',
+    "  status text not null default 'new'",
+    ');',
+    '',
+    'create index if not exists guarantee_created_idx on public.guarantee_registrations (created_at desc);',
+    '',
+    'alter table public.guarantee_registrations enable row level security;',
+    '',
+    '-- customers may register; only the signed-in admin can read',
+    'create policy "anyone may register a guarantee" on public.guarantee_registrations',
+    '  for insert to anon with check (true);',
+    'create policy "admin reads registrations" on public.guarantee_registrations',
+    '  for select to authenticated using (true);',
+    'create policy "admin updates registrations" on public.guarantee_registrations',
+    '  for update to authenticated using (true) with check (true);',
+    '',
+    '-- a private bucket for proof-of-purchase uploads',
+    "insert into storage.buckets (id, name, public) values ('guarantee-proof','guarantee-proof', false)",
+    '  on conflict (id) do nothing;',
+    'create policy "anyone may attach proof" on storage.objects',
+    "  for insert to anon with check (bucket_id = 'guarantee-proof');",
+    'create policy "admin reads proof" on storage.objects',
+    "  for select to authenticated using (bucket_id = 'guarantee-proof');"
+  ].join('\n');
+
+  function renderGuarantees(panel) {
+    panel.appendChild(el('h3', { text: 'Guarantee registrations' }));
+    panel.appendChild(el('p', { class: 'tab-intro', html:
+      'Everything customers submit on the <b>Register your guarantee</b> page. ' +
+      'Search by any detail, and click a row to open the full registration.' }));
+
+    var tools = el('div', { class: 'adm-row' });
+    var search = el('input', { type: 'search', placeholder: 'Search name, email, postcode, retailer or product code', style: 'max-width:460px' });
+    tools.appendChild(search);
+    var count = el('span', { class: 'lp-tally' });
+    tools.appendChild(count);
+    var exportBtn = el('button', { class: 'abtn abtn--ghost abtn--sm', text: 'Export CSV', title: 'Download everything shown as a spreadsheet file.' });
+    tools.appendChild(exportBtn);
+    panel.appendChild(tools);
+
+    var host = el('div', { class: 'guar-wrap' });
+    panel.appendChild(host);
+    host.appendChild(el('p', { class: 'small', text: 'Loading registrations…' }));
+
+    function load() {
+      sb.from('guarantee_registrations').select('*').order('created_at', { ascending: false }).limit(5000)
+        .then(function (res) {
+          if (res.error) return setupNeeded(host, res.error);
+          GUAR.rows = res.data || [];
+          draw();
+        });
+    }
+
+    function setupNeeded(target, error) {
+      target.innerHTML = '';
+      var missing = /guarantee_registrations/i.test(error.message || '') || error.code === 'PGRST205' || error.code === '42P01';
+      var card = el('div', { class: 'dash-note warn' });
+      if (missing) {
+        card.appendChild(el('p', { html: '<b>Guarantee registrations are not switched on yet.</b>' }));
+        card.appendChild(el('p', { class: 'small', style: 'margin-top:8px', text:
+          'The registration page is built and ready, but the table that stores submissions does not exist yet. ' +
+          'Open your Supabase project → SQL Editor, paste the block below and run it once. ' +
+          'Until then the form tells customers to phone or email instead, so nothing is lost.' }));
+        card.appendChild(el('pre', { class: 'dash-sql', text: GUARANTEE_SQL }));
+        var copy = el('button', { class: 'abtn abtn--sm', text: 'Copy the SQL', onclick: function () {
+          navigator.clipboard.writeText(GUARANTEE_SQL).then(function () {
+            copy.textContent = 'Copied'; setTimeout(function () { copy.textContent = 'Copy the SQL'; }, 2000);
+          });
+        } });
+        card.appendChild(copy);
+      } else {
+        card.appendChild(el('p', { text: 'Could not load registrations: ' + (error.message || 'unknown error') }));
+      }
+      target.appendChild(card);
+    }
+
+    function matches(r) {
+      if (!GUAR.q) return true;
+      var hay = [r.first_name, r.last_name, r.email, r.town, r.postcode, r.retailer_name,
+                 r.developer_name, r.installer_name, r.country, r.status,
+                 (r.products || []).map(function (p) { return (p.code || '') + ' ' + (p.description || ''); }).join(' ')]
+        .filter(Boolean).join(' ').toLowerCase();
+      return hay.indexOf(GUAR.q) !== -1;
+    }
+
+    function fmtDate(d) {
+      if (!d) return '—';
+      var dt = new Date(d);
+      if (isNaN(dt)) return d;
+      return dt.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+    }
+
+    function draw() {
+      host.innerHTML = '';
+      var rows = (GUAR.rows || []).filter(matches);
+      rows.sort(function (a, b) {
+        var x = a[GUAR.sort], y = b[GUAR.sort];
+        if (x == null) return 1;
+        if (y == null) return -1;
+        var r = String(x).localeCompare(String(y), undefined, { numeric: true });
+        return GUAR.dir === 'desc' ? -r : r;
+      });
+      count.textContent = rows.length + (rows.length === 1 ? ' registration' : ' registrations');
+
+      if (!(GUAR.rows || []).length) {
+        host.appendChild(el('div', { class: 'dash-note', html:
+          '<b>No registrations yet.</b><p class="small" style="margin-top:8px">' +
+          'They will appear here the moment a customer completes the form.</p>' }));
+        return;
+      }
+      if (!rows.length) {
+        host.appendChild(el('p', { class: 'small', text: 'Nothing matches that search.' }));
+        return;
+      }
+
+      var table = el('table', { class: 'guar' });
+      var thead = el('thead');
+      var htr = el('tr');
+      [['created_at', 'Registered'], ['last_name', 'Customer'], ['email', 'Email'],
+       ['postcode', 'Postcode'], ['retailer_name', 'Retailer'], ['purchase_date', 'Purchased'],
+       ['products', 'Products'], ['status', 'Status']].forEach(function (c) {
+        var th = el('th', { text: c[1] });
+        if (c[0] !== 'products') {
+          th.className = 'sortable' + (GUAR.sort === c[0] ? ' on ' + GUAR.dir : '');
+          th.addEventListener('click', function () {
+            if (GUAR.sort === c[0]) GUAR.dir = GUAR.dir === 'desc' ? 'asc' : 'desc';
+            else { GUAR.sort = c[0]; GUAR.dir = 'desc'; }
+            draw();
+          });
+        }
+        htr.appendChild(th);
+      });
+      thead.appendChild(htr);
+      table.appendChild(thead);
+
+      var tbody = el('tbody');
+      rows.forEach(function (r) {
+        var tr = el('tr', { class: 'guar-row' + (GUAR.open[r.id] ? ' open' : '') });
+        var cells = [
+          fmtDate(r.created_at),
+          [r.title, r.first_name, r.last_name].filter(Boolean).join(' '),
+          r.email,
+          r.postcode,
+          r.retailer_name,
+          fmtDate(r.purchase_date),
+          String((r.products || []).length),
+          r.status || 'new'
+        ];
+        cells.forEach(function (c, i) {
+          var td = el('td', { text: c });
+          if (i === 7) { td.innerHTML = ''; td.appendChild(el('span', { class: 'pill pill--' + (r.status || 'new'), text: r.status || 'new' })); }
+          tr.appendChild(td);
+        });
+        tr.addEventListener('click', function () {
+          GUAR.open[r.id] = !GUAR.open[r.id];
+          draw();
+        });
+        tbody.appendChild(tr);
+
+        if (GUAR.open[r.id]) {
+          var dtr = el('tr', { class: 'guar-detail' });
+          var td = el('td', { colspan: '8' });
+          td.appendChild(detail(r));
+          dtr.appendChild(td);
+          tbody.appendChild(dtr);
+        }
+      });
+      table.appendChild(tbody);
+      host.appendChild(table);
+    }
+
+    function block(title, pairs) {
+      var b = el('div', { class: 'guar-block' });
+      b.appendChild(el('h4', { text: title }));
+      var dl = el('dl');
+      pairs.forEach(function (p) {
+        if (!p[1]) return;
+        dl.appendChild(el('dt', { text: p[0] }));
+        dl.appendChild(el('dd', { text: p[1] }));
+      });
+      if (!dl.children.length) dl.appendChild(el('dd', { class: 'dim', text: 'Not supplied' }));
+      b.appendChild(dl);
+      return b;
+    }
+
+    function detail(r) {
+      var wrap = el('div', { class: 'guar-detail-inner' });
+      var grid = el('div', { class: 'guar-blocks' });
+      grid.appendChild(block('Customer', [
+        ['Name', [r.title, r.first_name, r.last_name].filter(Boolean).join(' ')],
+        ['Email', r.email],
+        ['Registered', fmtDate(r.created_at)]
+      ]));
+      grid.appendChild(block('Address', [
+        ['Address', [r.address1, r.address2].filter(Boolean).join(', ')],
+        ['Town / City', r.town], ['Postcode', r.postcode], ['Country', r.country]
+      ]));
+      grid.appendChild(block('Purchase', [
+        ['Retailer', r.retailer_name], ['Purchase date', fmtDate(r.purchase_date)],
+        ['Builder / developer', r.developer_name], ['Moved in', fmtDate(r.moved_in_date)]
+      ]));
+      grid.appendChild(block('Installer', [
+        ['Name', r.installer_name],
+        ['Address', [r.installer_address1, r.installer_address2].filter(Boolean).join(', ')],
+        ['Town / City', r.installer_town], ['Postcode', r.installer_postcode], ['Country', r.installer_country]
+      ]));
+      wrap.appendChild(grid);
+
+      var prods = el('div', { class: 'guar-block', style: 'margin-top:18px' });
+      prods.appendChild(el('h4', { text: 'Products registered' }));
+      if ((r.products || []).length) {
+        var pt = el('table', { class: 'guar-products' });
+        var hb = el('tr'); hb.appendChild(el('th', { text: 'Code' })); hb.appendChild(el('th', { text: 'Description' }));
+        pt.appendChild(hb);
+        r.products.forEach(function (p) {
+          var row = el('tr');
+          row.appendChild(el('td', { text: p.code || '—' }));
+          row.appendChild(el('td', { text: p.description || '—' }));
+          pt.appendChild(row);
+        });
+        prods.appendChild(pt);
+      } else {
+        prods.appendChild(el('p', { class: 'small', text: 'No products listed.' }));
+      }
+      wrap.appendChild(prods);
+
+      if (r.proof_file) {
+        var pf = el('div', { class: 'guar-block', style: 'margin-top:18px' });
+        pf.appendChild(el('h4', { text: 'Proof of purchase' }));
+        var link = el('button', { class: 'abtn abtn--ghost abtn--sm', text: 'Open proof', onclick: function (e) {
+          e.stopPropagation();
+          sb.storage.from('guarantee-proof').createSignedUrl(r.proof_file, 300).then(function (res) {
+            if (res.data && res.data.signedUrl) window.open(res.data.signedUrl, '_blank');
+            else toast('Could not open that file', 'err');
+          });
+        } });
+        pf.appendChild(link);
+        wrap.appendChild(pf);
+      }
+
+      var actions = el('div', { class: 'adm-row', style: 'margin-top:20px' });
+      ['new', 'checked', 'registered'].forEach(function (st) {
+        actions.appendChild(el('button', {
+          class: 'abtn abtn--ghost abtn--sm' + ((r.status || 'new') === st ? ' on' : ''),
+          text: st.charAt(0).toUpperCase() + st.slice(1),
+          onclick: function (e) {
+            e.stopPropagation();
+            sb.from('guarantee_registrations').update({ status: st }).eq('id', r.id).then(function (res) {
+              if (res.error) return toast('Could not update: ' + res.error.message, 'err');
+              r.status = st;
+              toast('Marked as ' + st, 'ok');
+              draw();
+            });
+          }
+        }));
+      });
+      actions.appendChild(el('a', {
+        class: 'abtn abtn--ghost abtn--sm', href: 'mailto:' + r.email, text: 'Email customer',
+        onclick: function (e) { e.stopPropagation(); }
+      }));
+      wrap.appendChild(actions);
+      wrap.addEventListener('click', function (e) { e.stopPropagation(); });
+      return wrap;
+    }
+
+    search.addEventListener('input', function () { GUAR.q = search.value.trim().toLowerCase(); draw(); });
+    exportBtn.addEventListener('click', function () {
+      var rows = (GUAR.rows || []).filter(matches);
+      if (!rows.length) return toast('Nothing to export', 'err');
+      var cols = ['created_at','title','first_name','last_name','email','address1','address2','town','postcode','country',
+                  'retailer_name','purchase_date','developer_name','moved_in_date','installer_name','installer_address1',
+                  'installer_address2','installer_town','installer_postcode','installer_country','status'];
+      var esc = function (v) { return '"' + String(v == null ? '' : v).replace(/"/g, '""') + '"'; };
+      var lines = [cols.concat(['products']).map(esc).join(',')];
+      rows.forEach(function (r) {
+        var prod = (r.products || []).map(function (p) { return (p.code || '') + ' — ' + (p.description || ''); }).join(' | ');
+        lines.push(cols.map(function (c) { return esc(r[c]); }).concat([esc(prod)]).join(','));
+      });
+      var blob = new Blob([lines.join('\n')], { type: 'text/csv' });
+      var a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'armera-guarantee-registrations.csv';
+      a.click();
+      toast('Exported ' + rows.length + ' registration(s)', 'ok');
+    });
+
+    load();
   }
 
   /* ---------- brochure (catalogue) tab ---------- */

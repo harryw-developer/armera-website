@@ -94,7 +94,9 @@
               "price": 813,
               "image": "sku-pi-343-66-7.jpg"
             }
-          ]
+          ],
+          "drawing": "PI.341_.66_DimensionalDrawings_.pdf",
+          "spec": "spec-pivot-concealed-pivot-round-concealed-valve.pdf"
         },
         {
           "slug": "pivot-round-horizontal-concealed-valve",
@@ -126,7 +128,9 @@
               "price": 813,
               "image": "sku-pi-342-66h-7.jpg"
             }
-          ]
+          ],
+          "drawing": "PI.342__.66H_DimensionalDrawings__.pdf",
+          "spec": "spec-pivot-concealed-pivot-round-horizontal-concealed-valve.pdf"
         },
         {
           "slug": "pivot-square-concealed-valve",
@@ -164,7 +168,9 @@
               "price": 642,
               "image": "sku-pi-343-55-4.jpg"
             }
-          ]
+          ],
+          "drawing": "PI.341_.55_DimensionalDrawings_.pdf",
+          "spec": "spec-pivot-concealed-pivot-square-concealed-valve.pdf"
         },
         {
           "slug": "armera-dock",
@@ -177,7 +183,9 @@
               "price": 177,
               "image": "sku-th-310.jpg"
             }
-          ]
+          ],
+          "drawing": "TH.310_DimensionalDrawings_.pdf",
+          "spec": "spec-pivot-concealed-armera-dock.pdf"
         }
       ]
     },
@@ -269,7 +277,8 @@
               "price": 862,
               "image": "p071_01.png"
             }
-          ]
+          ],
+          "spec": "spec-criterion-concealed-criterion-concealed-valve.pdf"
         },
         {
           "slug": "criterion-horizontal-concealed-valve",
@@ -301,7 +310,8 @@
               "price": 862,
               "image": "p071_02.png"
             }
-          ]
+          ],
+          "spec": "spec-criterion-concealed-criterion-horizontal-concealed-valve.pdf"
         },
         {
           "slug": "armera-dock",
@@ -314,7 +324,9 @@
               "price": 177,
               "image": "sku-th-310.jpg"
             }
-          ]
+          ],
+          "drawing": "TH.310_DimensionalDrawings_.pdf",
+          "spec": "spec-criterion-concealed-armera-dock.pdf"
         }
       ]
     },
@@ -358,7 +370,9 @@
               "price": 701,
               "image": "sku-in-331-60-7.jpg"
             }
-          ]
+          ],
+          "drawing": "IN.331_.60_DimensionalDrawings_.pdf",
+          "spec": "spec-index-concealed-index-1-outlet-concealed-valve.pdf"
         },
         {
           "slug": "index-2-outlet-concealed-valve",
@@ -390,7 +404,9 @@
               "price": 813,
               "image": "sku-in-332-60-7.jpg"
             }
-          ]
+          ],
+          "drawing": "IN.332_.60_DimensionalDrawings_.pdf",
+          "spec": "spec-index-concealed-index-2-outlet-concealed-valve.pdf"
         },
         {
           "slug": "armera-dock",
@@ -403,7 +419,9 @@
               "price": 177,
               "image": "sku-th-310.jpg"
             }
-          ]
+          ],
+          "drawing": "TH.310_DimensionalDrawings_.pdf",
+          "spec": "spec-index-concealed-armera-dock.pdf"
         }
       ]
     },
@@ -447,7 +465,9 @@
               "price": 749,
               "image": "sku-in-431-60-7.jpg"
             }
-          ]
+          ],
+          "drawing": "IN.331__.60_DimensionalDrawings__.pdf",
+          "spec": "spec-maze-index-concealed-maze-index-1-outlet-concealed-valve.pdf"
         },
         {
           "slug": "maze-index-2-outlet-concealed-valve",
@@ -479,7 +499,9 @@
               "price": 862,
               "image": "sku-in-432-60-7.jpg"
             }
-          ]
+          ],
+          "drawing": "IN.332__.60_DimensionalDrawings__.pdf",
+          "spec": "spec-maze-index-concealed-maze-index-2-outlet-concealed-valve.pdf"
         },
         {
           "slug": "armera-dock",
@@ -492,7 +514,9 @@
               "price": 177,
               "image": "sku-th-310.jpg"
             }
-          ]
+          ],
+          "drawing": "TH.310_DimensionalDrawings_.pdf",
+          "spec": "spec-maze-index-concealed-armera-dock.pdf"
         }
       ]
     },
@@ -536,7 +560,9 @@
               "price": 997,
               "image": "sku-pi-383-67-7.jpg"
             }
-          ]
+          ],
+          "drawing": "PI.383_.67_DimensionalDrawings_1.pdf",
+          "spec": "spec-landscape-concealed-pivot-3-outlet-landscape-valve.pdf"
         },
         {
           "slug": "index-3-outlet-landscape-valve",
@@ -568,7 +594,9 @@
               "price": 997,
               "image": "sku-in-373-61-7.jpg"
             }
-          ]
+          ],
+          "drawing": "IN.373_.61_DimensionalDrawings_2.pdf",
+          "spec": "spec-landscape-concealed-index-3-outlet-landscape-valve.pdf"
         },
         {
           "slug": "maze-index-3-outlet-landscape-valve",
@@ -600,7 +628,9 @@
               "price": 1039,
               "image": "sku-in-473-61-7.jpg"
             }
-          ]
+          ],
+          "drawing": "IN.373_.61_DimensionalDrawings_3.pdf",
+          "spec": "spec-landscape-concealed-maze-index-3-outlet-landscape-valve.pdf"
         }
       ]
     },
@@ -643,7 +673,9 @@
               "price": 331,
               "image": "sku-th-365-66-7.jpg"
             }
-          ]
+          ],
+          "drawing": "TH.365_.66_DimensionalDrawings_.pdf",
+          "spec": "spec-exposed-valves-exposed-thermostatic-shower-valve.pdf"
         },
         {
           "slug": "exposed-thermostatic-bath-shower-mixer",
@@ -657,7 +689,9 @@
               "price": 356,
               "image": "sku-th-325-4.jpg"
             }
-          ]
+          ],
+          "drawing": "TH.325_DimensionalDrawings_.pdf",
+          "spec": "spec-exposed-valves-exposed-thermostatic-bath-shower-mixer.pdf"
         },
         {
           "slug": "solace-set",
@@ -671,7 +705,8 @@
               "price": 384,
               "image": "sku-ss-365-468-66-4.jpg"
             }
-          ]
+          ],
+          "spec": "spec-exposed-valves-solace-set.pdf"
         },
         {
           "slug": "fast-fix-brackets",
@@ -702,7 +737,8 @@
               "price": 60,
               "image": "sku-sh-901-7.jpg"
             }
-          ]
+          ],
+          "spec": "spec-exposed-valves-fast-fix-brackets.pdf"
         }
       ]
     },
@@ -752,7 +788,9 @@
               "price": 900,
               "image": "sku-ri-452-66-7.jpg"
             }
-          ]
+          ],
+          "drawing": "RI.452_.66_DimensionalDrawings_.pdf",
+          "spec": "spec-rio-rio-round-rigid-riser-kit.pdf"
         },
         {
           "slug": "rio-square-rigid-riser-kit",
@@ -772,7 +810,9 @@
               "price": 1000,
               "image": "sku-ri-452-55-5.jpg"
             }
-          ]
+          ],
+          "drawing": "RI.352_.55_DimensionalDrawings_.pdf",
+          "spec": "spec-rio-rio-square-rigid-riser-kit.pdf"
         }
       ]
     }

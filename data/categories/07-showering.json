@@ -45,7 +45,9 @@
               "price": 364,
               "image": "sku-do-410-250-66-7.jpg"
             }
-          ]
+          ],
+          "drawing": "DO.410_.250_.66_DimensionalDrawings_.pdf",
+          "spec": "spec-fixed-heads-and-arms-domus-round-250mm-fixed-head.pdf"
         },
         {
           "slug": "domus-round-300mm-fixed-head",
@@ -76,7 +78,9 @@
               "price": 411,
               "image": "sku-do-410-300-66-7.jpg"
             }
-          ]
+          ],
+          "drawing": "DO.410_.300_.66_DimensionalDrawings_.pdf",
+          "spec": "spec-fixed-heads-and-arms-domus-round-300mm-fixed-head.pdf"
         },
         {
           "slug": "domus-square-250mm-fixed-head",
@@ -101,7 +105,9 @@
               "price": 364,
               "image": "sku-do-410-250-55-6.jpg"
             }
-          ]
+          ],
+          "drawing": "DO.410_.250_.55_DimensionalDrawings_.pdf",
+          "spec": "spec-fixed-heads-and-arms-domus-square-250mm-fixed-head.pdf"
         },
         {
           "slug": "ceiling-dropper-100mm",
@@ -132,7 +138,9 @@
               "price": 110,
               "image": "sku-sh-450-100-7.jpg"
             }
-          ]
+          ],
+          "drawing": "SH.450_.100_DimensionalDrawings_.pdf",
+          "spec": "spec-fixed-heads-and-arms-ceiling-dropper-100mm.pdf"
         },
         {
           "slug": "round-wall-mounted-shower-arm",
@@ -163,7 +171,9 @@
               "price": 139,
               "image": "sku-sh-423-66-7.jpg"
             }
-          ]
+          ],
+          "drawing": "SH.423_.66_DimensionalDrawings_.pdf",
+          "spec": "spec-fixed-heads-and-arms-round-wall-mounted-shower-arm.pdf"
         },
         {
           "slug": "square-wall-mounted-shower-arm",
@@ -188,7 +198,9 @@
               "price": 139,
               "image": "sku-sh-423-55-6.jpg"
             }
-          ]
+          ],
+          "drawing": "SH.423_.55_DimensionalDrawings_.pdf",
+          "spec": "spec-fixed-heads-and-arms-square-wall-mounted-shower-arm.pdf"
         }
       ]
     },
@@ -214,7 +226,9 @@
               "price": 117,
               "image": "sku-pr-468-4.jpg"
             }
-          ]
+          ],
+          "drawing": "PR.468_DimensionalDrawings_.pdf",
+          "spec": "spec-slide-rail-kits-mini-kits-and-outlets-protus-slide-rail-kit.pdf"
         },
         {
           "slug": "rhapsody-slide-rail-kit",
@@ -246,7 +260,9 @@
               "price": 364,
               "image": "sku-rh-468-7.jpg"
             }
-          ]
+          ],
+          "drawing": "RH.460_DimensionalDrawings_.pdf",
+          "spec": "spec-slide-rail-kits-mini-kits-and-outlets-rhapsody-slide-rail-kit.pdf"
         },
         {
           "slug": "spectre-slide-rail-kit",
@@ -272,7 +288,9 @@
               "price": 397,
               "image": "sku-sp-468-6.jpg"
             }
-          ]
+          ],
+          "drawing": "SP.460_DimensionalDrawings_.pdf",
+          "spec": "spec-slide-rail-kits-mini-kits-and-outlets-spectre-slide-rail-kit.pdf"
         },
         {
           "slug": "ribbon-slide-rail-kit",
@@ -298,7 +316,9 @@
               "price": 397,
               "image": "sku-ri-468-6.jpg"
             }
-          ]
+          ],
+          "drawing": "RI.460_DimensionalDrawings_.pdf",
+          "spec": "spec-slide-rail-kits-mini-kits-and-outlets-ribbon-slide-rail-kit.pdf"
         },
         {
           "slug": "round-wall-outlet",
@@ -329,7 +349,9 @@
               "price": 83,
               "image": "sku-sh-440-66-7.jpg"
             }
-          ]
+          ],
+          "drawing": "SH.440_.66_DimensionalDrawings_.pdf",
+          "spec": "spec-slide-rail-kits-mini-kits-and-outlets-round-wall-outlet.pdf"
         },
         {
           "slug": "square-wall-outlet",
@@ -354,7 +376,9 @@
               "price": 83,
               "image": "sku-sh-440-55-6.jpg"
             }
-          ]
+          ],
+          "drawing": "SH.440_.55_DimensionalDrawings_.pdf",
+          "spec": "spec-slide-rail-kits-mini-kits-and-outlets-square-wall-outlet.pdf"
         },
         {
           "slug": "square-mini-kit",
@@ -379,7 +403,9 @@
               "price": 225,
               "image": "sku-sh-430-55-6.jpg"
             }
-          ]
+          ],
+          "drawing": "SH.430_.55_DimensionalDrawings_.pdf",
+          "spec": "spec-slide-rail-kits-mini-kits-and-outlets-square-mini-kit.pdf"
         },
         {
           "slug": "round-mini-kit",
@@ -410,7 +436,9 @@
               "price": 225,
               "image": "sku-sh-430-66-7.jpg"
             }
-          ]
+          ],
+          "drawing": "SH.430_.66_DimensionalDrawings_1.pdf",
+          "spec": "spec-slide-rail-kits-mini-kits-and-outlets-round-mini-kit.pdf"
         },
         {
           "slug": "deck-mounted-shower-kit",
@@ -441,7 +469,8 @@
               "price": 249,
               "image": "p082_09.png"
             }
-          ]
+          ],
+          "spec": "spec-slide-rail-kits-mini-kits-and-outlets-deck-mounted-shower-kit.pdf"
         }
       ]
     },
@@ -489,7 +518,8 @@
               "price": 1714,
               "image": "sku-ss-342-430-66-7.jpg"
             }
-          ]
+          ],
+          "spec": "spec-showering-sets-pivot-minikit-set.pdf"
         },
         {
           "slug": "index-minikit-set",
@@ -525,7 +555,8 @@
               "price": 1714,
               "image": "sku-ss-332-430-66-7.jpg"
             }
-          ]
+          ],
+          "spec": "spec-showering-sets-index-minikit-set.pdf"
         },
         {
           "slug": "pivot-sliderail-set",
@@ -562,7 +593,8 @@
               "price": 1936,
               "image": "sku-ss-342-460-66-7.jpg"
             }
-          ]
+          ],
+          "spec": "spec-showering-sets-pivot-sliderail-set.pdf"
         },
         {
           "slug": "index-sliderail-set",
@@ -599,7 +631,8 @@
               "price": 1936,
               "image": "sku-ss-332-460-66-7.jpg"
             }
-          ]
+          ],
+          "spec": "spec-showering-sets-index-sliderail-set.pdf"
         }
       ],
       "footnote": "Also available: the Solace set and Rio rigid riser kits — see Thermostatic Valves."

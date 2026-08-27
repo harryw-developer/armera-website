@@ -274,35 +274,120 @@
       '<div id="product-docs"></div>' +
       (p.footnote ? '<p class="footnote">' + esc(p.footnote) + '</p>' : '') +
       assure + '</div></div>' +
+      '<div id="product-pairs"></div>' +
       addonBlock(range.addons) +
       (range.footnote ? '<p class="small" style="margin-top:30px;max-width:90ch">' + esc(range.footnote) + '</p>' : '') +
       '</section>' + relatedHtml;
   }
 
-  // Instruction documents an admin has linked to this product.
+  // Documents, photo-gallery shots and hand-picked pairings for this product.
   function loadProductDocs(cats, segs, p) {
     var holder = root.querySelector('#product-docs');
-    if (!holder) return;
     var key = segs[1] + '/' + segs[2] + '/' + p.slug;
-    fetch(cfg.supabaseUrl + '/rest/v1/site_content?key=eq.instruction_links&select=data', {
+    var title = function (n) {
+      return n.replace(/\.pdf$/i, '').replace(/^\s*\d+[\s._-]+/, '').replace(/_+/g, ' ').trim();
+    };
+    var docRow = function (url, label, kind) {
+      return '<a class="doc-link" href="' + esc(url) + '" target="_blank" rel="noopener">' +
+        '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/></svg>' +
+        '<span>' + esc(label) + '</span><span class="kind">' + esc(kind) + '</span></a>';
+    };
+
+    // Documents that come straight from the product record
+    var docs = [];
+    if (p.spec) docs.push(docRow(cfg.assets + '/spec-sheets/' + encodeURIComponent(p.spec), 'Specification sheet', 'PDF'));
+    if (p.drawing) docs.push(docRow(cfg.assets + '/drawings/' + encodeURIComponent(p.drawing), 'Dimensional drawing', 'PDF'));
+
+    function paint() {
+      if (!holder) return;
+      holder.innerHTML = docs.length
+        ? '<div class="prod-docs"><p class="label">Downloads</p>' + docs.join('') + '</div>'
+        : '';
+    }
+    paint();
+
+    fetch(cfg.supabaseUrl + '/rest/v1/site_content?key=in.(instruction_links,gallery)&select=key,data', {
       headers: { apikey: cfg.anonKey, Authorization: 'Bearer ' + cfg.anonKey }
     }).then(function (r) { return r.json(); }).then(function (rows) {
-      var links = (rows && rows[0] && rows[0].data) || {};
-      var files = Object.keys(links).filter(function (f) {
+      rows = rows || [];
+      var links = (rows.filter(function (r) { return r.key === 'instruction_links'; })[0] || {}).data || {};
+      var gallery = (rows.filter(function (r) { return r.key === 'gallery'; })[0] || {}).data || [];
+
+      Object.keys(links).filter(function (f) {
         return (links[f] || []).indexOf(key) !== -1;
-      }).sort(function (a, b) { return a.localeCompare(b, undefined, { numeric: true }); });
-      if (!files.length) return;
-      var title = function (n) {
-        return n.replace(/\.pdf$/i, '').replace(/^\s*\d+[\s._-]+/, '').replace(/_+/g, ' ').trim();
-      };
-      holder.innerHTML = '<div class="prod-docs"><p class="label">Instructions</p>' +
-        files.map(function (f) {
-          var url = cfg.supabaseUrl + '/storage/v1/object/public/' + cfg.instructionsBucket + '/' + encodeURIComponent(f);
-          return '<a class="doc-link" href="' + esc(url) + '" target="_blank" rel="noopener">' +
-            '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/></svg>' +
-            '<span>' + esc(title(f)) + '</span></a>';
-        }).join('') + '</div>';
-    }).catch(function () { /* leave the section empty */ });
+      }).sort(function (a, b) { return a.localeCompare(b, undefined, { numeric: true }); })
+        .forEach(function (f) {
+          docs.push(docRow(cfg.supabaseUrl + '/storage/v1/object/public/' + cfg.instructionsBucket + '/' + encodeURIComponent(f), title(f), 'Instructions'));
+        });
+      paint();
+
+      // Photo-gallery shots tagged with this product join the image strip
+      var shots = (Array.isArray(gallery) ? gallery : []).filter(function (g) {
+        return g && g.file && (g.products || []).indexOf(key) !== -1;
+      });
+      if (shots.length) addGalleryStrip(p, shots);
+    }).catch(function () {});
+
+    // Hand-picked pairings chosen in the admin
+    if (p.goesWith && p.goesWith.length) renderPairs(cats, p);
+  }
+
+  function addGalleryStrip(p, shots) {
+    var stage = root.querySelector('.pdp .stage');
+    var stageImg = root.querySelector('.pdp .stage .inner img');
+    if (!stage || !stageImg) return;
+    var productSrc = stageImg.src;
+    var strip = document.createElement('div');
+    strip.className = 'gallery-strip';
+
+    var mk = function (src, isLifestyle, label) {
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.title = label || '';
+      var im = document.createElement('img');
+      im.src = src; im.alt = label || '';
+      im.loading = 'lazy';
+      b.appendChild(im);
+      b.addEventListener('click', function () {
+        Array.prototype.forEach.call(strip.children, function (c) { c.classList.remove('on'); });
+        b.classList.add('on');
+        stageImg.src = src;
+        stageImg.classList.toggle('lifestyle', !!isLifestyle);
+      });
+      return b;
+    };
+    var first = mk(productSrc, false, 'Product photograph');
+    first.classList.add('on');
+    strip.appendChild(first);
+    shots.forEach(function (g) {
+      strip.appendChild(mk(cfg.assets + '/gallery/' + encodeURIComponent(g.file), true, g.caption || 'In a bathroom'));
+    });
+    stage.appendChild(strip);
+  }
+
+  function renderPairs(cats, p) {
+    var holder = root.querySelector('#product-pairs');
+    if (!holder) return;
+    var byKey = {};
+    cats.forEach(function (c) {
+      (c.ranges || []).forEach(function (rg) {
+        (rg.products || []).forEach(function (x) {
+          byKey[c.slug + '/' + rg.slug + '/' + x.slug] = { cat: c, rng: rg, p: x };
+        });
+      });
+    });
+    var picks = p.goesWith.map(function (k) { return byKey[k]; }).filter(Boolean);
+    if (!picks.length) return;
+    holder.innerHTML = '<div class="pairs"><span class="eyebrow">Coordinated</span>' +
+      '<h3 style="margin-top:12px">Looks good with…</h3>' +
+      '<p class="sub">Pieces chosen to sit beautifully alongside this one.</p>' +
+      '<div class="grid grid--4">' + picks.map(function (o) {
+        return '<a class="tile" href="' + u('/products/' + o.cat.slug + '/' + o.rng.slug + '/' + o.p.slug + '/') + '">' +
+          '<div class="frame cutout"><img src="' + prodImgSafe(mainImage(o.p)) + '" alt="' + esc(o.p.name) + '" loading="lazy"></div>' +
+          '<div class="meta"><div class="name" style="font-size:16px">' + esc(o.p.name) + '</div>' +
+          '<div class="sub">' + esc(o.rng.title) + '</div>' +
+          '<div class="pricefrom">' + fromLabel(o.p) + '</div></div></a>';
+      }).join('') + '</div></div>';
   }
 
   function notFound() {

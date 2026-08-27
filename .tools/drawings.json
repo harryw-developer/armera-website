@@ -1,0 +1,1132 @@
+{
+ "/products/accessories/emblem/corner-shelf": {
+  "drawing": "https://www.armera.co.uk/uploads/products/dimensional_drawing/CS.520_DimensionalDrawings_.pdf",
+  "skus": [
+   "CS.520.4",
+   "CS.520.5",
+   "CS.520.6",
+   "CS.520.7"
+  ]
+ },
+ "/products/accessories/emblem/emblem-300mm-towel-rail": {
+  "drawing": "https://www.armera.co.uk/uploads/products/dimensional_drawing/EM.550_DimensionalDrawings_.pdf",
+  "skus": [
+   "EM.550.4",
+   "EM.550.5",
+   "EM.550.6",
+   "EM.550.7"
+  ]
+ },
+ "/products/accessories/emblem/emblem-paper-holder": {
+  "drawing": "https://www.armera.co.uk/uploads/products/dimensional_drawing/EM.510_DimensionalDrawings_.pdf",
+  "skus": [
+   "EM.510.4",
+   "EM.510.5",
+   "EM.510.6",
+   "EM.510.7"
+  ]
+ },
+ "/products/accessories/emblem/emblem-robe-hook": {
+  "drawing": "https://www.armera.co.uk/uploads/products/dimensional_drawing/EM.570_DimensionalDrawings_.pdf",
+  "skus": [
+   "EM.570.4",
+   "EM.570.5",
+   "EM.570.6",
+   "EM.570.7"
+  ]
+ },
+ "/products/accessories/emblem/reina-corner-basket": {
+  "drawing": "https://www.armera.co.uk/uploads/products/dimensional_drawing/BA.580_.77_DimensionalDrawings_1.pdf",
+  "skus": [
+   "BA.580.77.4",
+   "BA.580.77.5",
+   "BA.580.77.6",
+   "BA.580.77.7"
+  ]
+ },
+ "/products/accessories/emblem/reina-wall-mounted-toilet-brush": {
+  "drawing": "https://www.armera.co.uk/uploads/products/dimensional_drawing/WC.590_DimensionalDrawings_.pdf",
+  "skus": [
+   "WC.590.4",
+   "WC.590.5",
+   "WC.590.6",
+   "WC.590.7"
+  ]
+ },
+ "/products/accessories/reina/corner-shelf": {
+  "drawing": "https://www.armera.co.uk/uploads/products/dimensional_drawing/CS.520_DimensionalDrawings_.pdf",
+  "skus": [
+   "CS.520.4",
+   "CS.520.5",
+   "CS.520.6",
+   "CS.520.7"
+  ]
+ },
+ "/products/accessories/reina/reina-400mm-cabinet-towel-rail": {
+  "drawing": "https://www.armera.co.uk/uploads/products/dimensional_drawing/RE.551_DimensionalDrawings_.pdf",
+  "skus": [
+   "RE.551.4",
+   "RE.551.5",
+   "RE.551.6",
+   "RE.551.7"
+  ]
+ },
+ "/products/accessories/reina/reina-corner-basket": {
+  "drawing": "https://www.armera.co.uk/uploads/products/dimensional_drawing/BA.580_.77_DimensionalDrawings_1.pdf",
+  "skus": [
+   "BA.580.77.4",
+   "BA.580.77.5",
+   "BA.580.77.6",
+   "BA.580.77.7"
+  ]
+ },
+ "/products/accessories/reina/reina-paper-holder": {
+  "drawing": "https://www.armera.co.uk/uploads/products/dimensional_drawing/RE.510_DimensionalDrawings_.pdf",
+  "skus": [
+   "RE.510.4",
+   "RE.510.5",
+   "RE.510.6",
+   "RE.510.7"
+  ]
+ },
+ "/products/accessories/reina/reina-robe-hook": {
+  "drawing": "https://www.armera.co.uk/uploads/products/dimensional_drawing/RE.570_DimensionalDrawings_.pdf",
+  "skus": [
+   "RE.570.4",
+   "RE.570.5",
+   "RE.570.6",
+   "RE.570.7"
+  ]
+ },
+ "/products/accessories/reina/reina-towel-rail": {
+  "drawing": "https://www.armera.co.uk/uploads/products/dimensional_drawing/RE.550_DimensionalDrawings_.pdf",
+  "skus": [
+   "RE.550.4",
+   "RE.550.5",
+   "RE.550.6",
+   "RE.550.7"
+  ]
+ },
+ "/products/accessories/reina/reina-wall-mounted-toilet-brush": {
+  "drawing": "https://www.armera.co.uk/uploads/products/dimensional_drawing/WC.590_DimensionalDrawings_.pdf",
+  "skus": [
+   "WC.590.4",
+   "WC.590.5",
+   "WC.590.6",
+   "WC.590.7"
+  ]
+ },
+ "/products/accessories/scene/scene-1000x500mm-oval-led-demister-mirror": {
+  "drawing": "https://www.armera.co.uk/uploads/products/dimensional_drawing/SC.590_.1000X500_.88_DimensionalDrawings_1.pdf",
+  "skus": [
+   "SC.590.1000X500.88"
+  ]
+ },
+ "/products/accessories/scene/scene-600mm-round-led-demister-mirror": {
+  "drawing": "https://www.armera.co.uk/uploads/products/dimensional_drawing/SC.590_.600_.66_DimensionalDrawings_2.pdf",
+  "skus": [
+   "SC.590.600.66"
+  ]
+ },
+ "/products/accessories/scene/scene-600x800mm-square-led-demister-mirror": {
+  "drawing": "https://www.armera.co.uk/uploads/products/dimensional_drawing/SC.590_.600x800_.55_DimensionalDrawings_2.pdf",
+  "skus": [
+   "SC.590.600X800.55"
+  ]
+ },
+ "/products/accessories/scene/scene-800mm-round-led-demister-mirror": {
+  "drawing": "https://www.armera.co.uk/uploads/products/dimensional_drawing/SC.590_.800_.66_DimensionalDrawings_2.pdf",
+  "skus": [
+   "SC.590.800.66"
+  ]
+ },
+ "/products/accessories/scene/scene-rectangular-led-demister-mirror-cabinet": {
+  "drawing": "https://www.armera.co.uk/uploads/products/dimensional_drawing/SC.592_.500X700_.55_DimensionalDrawings_.pdf",
+  "skus": [
+   "SC.592.500X700.55"
+  ]
+ },
+ "/products/furniture-and-basins/atoll/atoll-1200mm-2-drawer-wall-hung-unit": {
+  "drawing": "https://www.armera.co.uk/uploads/products/dimensional_drawing/AT.610_.1200_DimensionalDrawings_.pdf",
+  "skus": [
+   "AT.619.1200.11",
+   "AT.619.1200.12",
+   "AT.619.1200.17",
+   "AT.619.1200.22"
+  ]
+ },
+ "/products/furniture-and-basins/atoll/atoll-1500mm-2-door-wall-hung-cabinet": {
+  "drawing": "https://www.armera.co.uk/uploads/products/dimensional_drawing/AT.650_.1500_DimensionalDrawings_1.pdf",
+  "skus": [
+   "AT.650.1500.11",
+   "AT.650.1500.12",
+   "AT.650.1500.17",
+   "AT.650.1500.22"
+  ]
+ },
+ "/products/furniture-and-basins/atoll/atoll-600mm-2-drawer-wall-hung-unit": {
+  "drawing": "https://www.armera.co.uk/uploads/products/dimensional_drawing/AT.620_.600_DimensionalDrawings_.pdf",
+  "skus": [
+   "AT.620.600.11",
+   "AT.620.600.12",
+   "AT.620.600.17",
+   "AT.620.600.22"
+  ]
+ },
+ "/products/furniture-and-basins/atoll/atoll-800mm-2-drawer-wall-hung-unit": {
+  "drawing": "https://www.armera.co.uk/uploads/products/dimensional_drawing/AT.620_.800_DimensionalDrawings_.pdf",
+  "skus": [
+   "AT.620.800.11",
+   "AT.620.800.12",
+   "AT.620.800.17",
+   "AT.620.800.22"
+  ]
+ },
+ "/products/furniture-and-basins/atoll/reina-400mm-cabinet-towel-rail": {
+  "drawing": "https://www.armera.co.uk/uploads/products/dimensional_drawing/RE.551_DimensionalDrawings_.pdf",
+  "skus": [
+   "RE.551.4",
+   "RE.551.5",
+   "RE.551.6",
+   "RE.551.7"
+  ]
+ },
+ "/products/furniture-and-basins/counter-top-slabs/arctic-white-12mm": {
+  "drawing": "https://www.armera.co.uk/uploads/products/dimensional_drawing/12mm_Slabs_DimensionalDrawings_all1.pdf",
+  "skus": [
+   "SL.770.500.3",
+   "SL.770.600.3",
+   "SL.770.800.3",
+   "SL.770.1200.3"
+  ]
+ },
+ "/products/furniture-and-basins/counter-top-slabs/dapple-white-grey": {
+  "drawing": "https://www.armera.co.uk/uploads/products/dimensional_drawing/20mm_Slabs_DimensionalDrawings_all8.pdf",
+  "skus": [
+   "SL.670.500.1",
+   "SL.670.600.1",
+   "SL.670.800.1",
+   "SL.670.1200.1"
+  ]
+ },
+ "/products/furniture-and-basins/counter-top-slabs/tempest-black": {
+  "drawing": "https://www.armera.co.uk/uploads/products/dimensional_drawing/20mm_Slabs_DimensionalDrawings_all9.pdf",
+  "skus": [
+   "SL.670.500.2",
+   "SL.670.600.2",
+   "SL.670.800.2",
+   "SL.670.1200.2"
+  ]
+ },
+ "/products/furniture-and-basins/opa/opa-1500mm-2-drawer-wall-hung-cabinet": {
+  "drawing": "https://www.armera.co.uk/uploads/products/dimensional_drawing/OP.650_.1500_DimensionalDrawings_1.pdf",
+  "skus": [
+   "OP.650.1500.10",
+   "OP.650.1500.13",
+   "OP.650.1500.14",
+   "OP.650.1500.15"
+  ]
+ },
+ "/products/furniture-and-basins/opa/opa-400mm-1-door-wall-hung-unit": {
+  "drawing": "https://www.armera.co.uk/uploads/products/dimensional_drawing/OP.640_.400_DimensionalDrawings_.pdf",
+  "skus": [
+   "OP.640.400.10",
+   "OP.640.400.13",
+   "OP.640.400.14",
+   "OP.640.400.15"
+  ]
+ },
+ "/products/furniture-and-basins/opa/opa-500mm-2-drawer-wall-hung-unit": {
+  "drawing": "https://www.armera.co.uk/uploads/products/dimensional_drawing/OP.620_.500_DimensionalDrawings_.pdf",
+  "skus": [
+   "OP.620.500.10",
+   "OP.620.500.13",
+   "OP.620.500.14",
+   "OP.620.500.15"
+  ]
+ },
+ "/products/furniture-and-basins/opa/opa-600mm-2-drawer-wall-hung-unit": {
+  "drawing": "https://www.armera.co.uk/uploads/products/dimensional_drawing/OP.620_.600_DimensionalDrawings_.pdf",
+  "skus": [
+   "OP.620.600.10",
+   "OP.620.600.13",
+   "OP.620.600.14",
+   "OP.620.600.15"
+  ]
+ },
+ "/products/furniture-and-basins/opa/opa-600mm-3-drawer-floor-standing-unit": {
+  "drawing": "https://www.armera.co.uk/uploads/products/dimensional_drawing/OP.630_.600_DimensionalDrawings_.pdf",
+  "skus": [
+   "OP.630.600.10",
+   "OP.630.600.13",
+   "OP.630.600.14",
+   "OP.630.600.15"
+  ]
+ },
+ "/products/furniture-and-basins/opa/opa-600mm-wc-cabinet": {
+  "drawing": "https://www.armera.co.uk/uploads/products/dimensional_drawing/OP.690_.600_DimensionalDrawings_.pdf",
+  "skus": [
+   "OP.690.600.10",
+   "OP.690.600.13",
+   "OP.690.600.14",
+   "Op.690.600.15"
+  ]
+ },
+ "/products/furniture-and-basins/opa/opa-800mm-2-drawer-wall-hung-unit": {
+  "drawing": "https://www.armera.co.uk/uploads/products/dimensional_drawing/OP.620_.800_DimensionalDrawings_.pdf",
+  "skus": [
+   "OP.620.800.10",
+   "OP.620.800.13",
+   "OP.620.800.14",
+   "OP.620.800.15"
+  ]
+ },
+ "/products/furniture-and-basins/opa/reina-400mm-cabinet-towel-rail": {
+  "drawing": "https://www.armera.co.uk/uploads/products/dimensional_drawing/RE.551_DimensionalDrawings_.pdf",
+  "skus": [
+   "RE.551.4",
+   "RE.551.5",
+   "RE.551.6",
+   "RE.551.7"
+  ]
+ },
+ "/products/furniture-and-basins/palladium/palladium-1200mm-1-door-wall-hung-cabinet": {
+  "drawing": "https://www.armera.co.uk/uploads/products/dimensional_drawing/PA.650_.1200_DimensionalDrawings_.pdf",
+  "skus": [
+   "PA.650.1200.16",
+   "PA.650.1200.20",
+   "PA.650.1200.21",
+   "PA.650.1200.22"
+  ]
+ },
+ "/products/furniture-and-basins/palladium/palladium-500mm-wall-hung-1-outer-drawer-with-1-internal-drawer": {
+  "drawing": "https://www.armera.co.uk/uploads/products/dimensional_drawing/PA.611_.500_DimensionalDrawings_.pdf",
+  "skus": [
+   "PA.611.500.16",
+   "PA.611.500.20",
+   "PA.611.500.21",
+   "PA.611.500.22"
+  ]
+ },
+ "/products/furniture-and-basins/palladium/palladium-600mm-wall-hung-1-outer-drawer-with-1-internal-drawer": {
+  "drawing": "https://www.armera.co.uk/uploads/products/dimensional_drawing/PA.611_.600_DimensionalDrawings_.pdf",
+  "skus": [
+   "PA.611.600.16",
+   "PA.611.600.20",
+   "PA.611.600.21",
+   "PA.611.600.22"
+  ]
+ },
+ "/products/furniture-and-basins/palladium/palladium-800mm-wall-hung-1-outer-drawer-with-1-internal-drawer": {
+  "drawing": "https://www.armera.co.uk/uploads/products/dimensional_drawing/PA.611_.800_DimensionalDrawings_.pdf",
+  "skus": [
+   "PA.611.800.16",
+   "PA.611.800.20",
+   "PA.611.800.21",
+   "PA.611.800.22"
+  ]
+ },
+ "/products/furniture-and-basins/palladium/reina-400mm-cabinet-towel-rail": {
+  "drawing": "https://www.armera.co.uk/uploads/products/dimensional_drawing/RE.551_DimensionalDrawings_.pdf",
+  "skus": [
+   "RE.551.4",
+   "RE.551.5",
+   "RE.551.6",
+   "RE.551.7"
+  ]
+ },
+ "/products/furniture-and-basins/reef/reef-1200mm-1-door-wall-hung-unit": {
+  "drawing": "https://www.armera.co.uk/uploads/products/dimensional_drawing/RF.650_.1200_DimensionalDrawings_.pdf",
+  "skus": [
+   "RF.650.1200.17",
+   "RF.650.1200.18",
+   "RF.650.1200.19",
+   "RF.650.1200.22"
+  ]
+ },
+ "/products/furniture-and-basins/reef/reef-380mm-1-door-wall-hung-unit": {
+  "drawing": "https://www.armera.co.uk/uploads/products/dimensional_drawing/RF.640_.380_DimensionalDrawings_.pdf",
+  "skus": [
+   "RF.640.380.17",
+   "RF.640.380.18",
+   "RF.640.380.19",
+   "RF.640.380.22"
+  ]
+ },
+ "/products/furniture-and-basins/reef/reef-500mm-2-drawer-wall-hung-unit": {
+  "drawing": "https://www.armera.co.uk/uploads/products/dimensional_drawing/RF.620_.500_DimensionalDrawings_.pdf",
+  "skus": [
+   "RF.620.500.17",
+   "RF.620.500.18",
+   "RF.620.500.19",
+   "RF.620.500.22"
+  ]
+ },
+ "/products/furniture-and-basins/reef/reef-600mm-2-drawer-wall-hung-unit": {
+  "drawing": "https://www.armera.co.uk/uploads/products/dimensional_drawing/RF.620_.600_DimensionalDrawings_.pdf",
+  "skus": [
+   "RF.620.600.17",
+   "RF.620.600.18",
+   "RF.620.600.19",
+   "RF.620.600.22"
+  ]
+ },
+ "/products/showering/fixed-heads-arms/ceiling-dropper-100mm": {
+  "drawing": "https://www.armera.co.uk/uploads/products/dimensional_drawing/SH.450_.100_DimensionalDrawings_.pdf",
+  "skus": [
+   "SH.450.100.4",
+   "SH.450.100.5",
+   "SH.450.100.6",
+   "SH.450.100.7"
+  ]
+ },
+ "/products/showering/fixed-heads-arms/domus-round-250mm-fixed-head": {
+  "drawing": "https://www.armera.co.uk/uploads/products/dimensional_drawing/DO.410_.250_.66_DimensionalDrawings_.pdf",
+  "skus": [
+   "DO.410.250.66.4",
+   "DO.410.250.66.5",
+   "DO.410.250.66.6",
+   "DO.410.250.66.7"
+  ]
+ },
+ "/products/showering/fixed-heads-arms/domus-round-300mm-fixed-head": {
+  "drawing": "https://www.armera.co.uk/uploads/products/dimensional_drawing/DO.410_.300_.66_DimensionalDrawings_.pdf",
+  "skus": [
+   "DO.410.300.66.4",
+   "DO.410.300.66.5",
+   "DO.410.300.66.6",
+   "DO.410.300.66.7"
+  ]
+ },
+ "/products/showering/fixed-heads-arms/domus-square-250mm-fixed-head": {
+  "drawing": "https://www.armera.co.uk/uploads/products/dimensional_drawing/DO.410_.250_.55_DimensionalDrawings_.pdf",
+  "skus": [
+   "DO.410.250.55.4",
+   "DO.410.250.55.5",
+   "DO.410.250.55.6"
+  ]
+ },
+ "/products/showering/fixed-heads-arms/round-wall-mounted-shower-arm": {
+  "drawing": "https://www.armera.co.uk/uploads/products/dimensional_drawing/SH.423_.66_DimensionalDrawings_.pdf",
+  "skus": [
+   "SH.423.66.4",
+   "SH.423.66.5",
+   "SH.423.66.6",
+   "SH.423.66.7"
+  ]
+ },
+ "/products/showering/fixed-heads-arms/square-wall-mounted-shower-arm": {
+  "drawing": "https://www.armera.co.uk/uploads/products/dimensional_drawing/SH.423_.55_DimensionalDrawings_.pdf",
+  "skus": [
+   "SH.423.55.4",
+   "SH.423.55.5",
+   "SH.423.55.6"
+  ]
+ },
+ "/products/showering/shower-sets/rio-exposed-round-2-outlet-thermostatic-valve-with-rigid-riser-shower-kit": {
+  "drawing": "https://www.armera.co.uk/uploads/products/dimensional_drawing/RI.452_.66_DimensionalDrawings_.pdf",
+  "skus": [
+   "RI.452.66.4",
+   "RI.452.66.5",
+   "RI.452.66.6",
+   "RI.452.66.7"
+  ]
+ },
+ "/products/showering/shower-sets/rio-exposed-square-2-outlet-thermostatic-valve-with-rigid-riser-shower-kit": {
+  "drawing": "https://www.armera.co.uk/uploads/products/dimensional_drawing/RI.352_.55_DimensionalDrawings_.pdf",
+  "skus": [
+   "RI.452.55.4",
+   "RI.452.55.5"
+  ]
+ },
+ "/products/showering/slide-rail-kits-mini-kits-outlets/deck-mounted-shower-kit": {
+  "drawing": "https://www.armera.co.uk/uploads/products/dimensional_drawing/SH.333_DimensionalDrawings_.pdf",
+  "skus": [
+   "SH.333",
+   "SH.333.5",
+   "SH.333.6",
+   "SH.333.7"
+  ]
+ },
+ "/products/showering/slide-rail-kits-mini-kits-outlets/protus-multi-function-adjustable-slide-rail-kit": {
+  "drawing": "https://www.armera.co.uk/uploads/products/dimensional_drawing/PR.468_DimensionalDrawings_.pdf",
+  "skus": [
+   "PR.468.4"
+  ]
+ },
+ "/products/showering/slide-rail-kits-mini-kits-outlets/rhapsody-slide-rail-kit-with-multi-function-handset-and-smoothflex-hose": {
+  "drawing": "https://www.armera.co.uk/uploads/products/dimensional_drawing/RH.460_DimensionalDrawings_.pdf",
+  "skus": [
+   "RH.468.4",
+   "RH.468.5",
+   "RH.468.6",
+   "RH.468.7"
+  ]
+ },
+ "/products/showering/slide-rail-kits-mini-kits-outlets/ribbon-slide-rail-kit-with-multi-function-handset-and-smoothflex-hose": {
+  "drawing": "https://www.armera.co.uk/uploads/products/dimensional_drawing/RI.460_DimensionalDrawings_.pdf",
+  "skus": [
+   "RI.468.4",
+   "RI.468.5",
+   "RI.468.6"
+  ]
+ },
+ "/products/showering/slide-rail-kits-mini-kits-outlets/round-mini-kit": {
+  "drawing": "https://www.armera.co.uk/uploads/products/dimensional_drawing/SH.430_.66_DimensionalDrawings_1.pdf",
+  "skus": [
+   "SH.430.66.4",
+   "SH.430.66.5",
+   "SH.430.66.6",
+   "SH.430.66.7"
+  ]
+ },
+ "/products/showering/slide-rail-kits-mini-kits-outlets/round-wall-outlet": {
+  "drawing": "https://www.armera.co.uk/uploads/products/dimensional_drawing/SH.440_.66_DimensionalDrawings_.pdf",
+  "skus": [
+   "SH.440.66.4",
+   "SH.440.66.5",
+   "SH.440.66.6",
+   "SH.440.66.7"
+  ]
+ },
+ "/products/showering/slide-rail-kits-mini-kits-outlets/spectre-slide-rail-kit-with-multi-function-handset-and-smoothflex-hose": {
+  "drawing": "https://www.armera.co.uk/uploads/products/dimensional_drawing/SP.460_DimensionalDrawings_.pdf",
+  "skus": [
+   "SP.468.4",
+   "SP.468.5",
+   "SP.468.6"
+  ]
+ },
+ "/products/showering/slide-rail-kits-mini-kits-outlets/square-mini-kit": {
+  "drawing": "https://www.armera.co.uk/uploads/products/dimensional_drawing/SH.430_.55_DimensionalDrawings_.pdf",
+  "skus": [
+   "SH.430.55.4",
+   "SH.430.55.5",
+   "SH.430.55.6"
+  ]
+ },
+ "/products/showering/slide-rail-kits-mini-kits-outlets/square-wall-outlet": {
+  "drawing": "https://www.armera.co.uk/uploads/products/dimensional_drawing/SH.440_.55_DimensionalDrawings_.pdf",
+  "skus": [
+   "SH.440.55.4",
+   "SH.440.55.5",
+   "SH.440.55.6"
+  ]
+ },
+ "/products/taps/aeres/aeres-deck-mounted-bath-filler": {
+  "drawing": "https://www.armera.co.uk/uploads/products/dimensional_drawing/AE.122_DimensionalDrawings_.pdf",
+  "skus": [
+   "AE.122.4",
+   "AE.122.5",
+   "AE.122.6",
+   "AE.122.7"
+  ]
+ },
+ "/products/taps/aeres/aeres-deck-mounted-bath-shower-mixer-with-shower-kit": {
+  "drawing": "https://www.armera.co.uk/uploads/products/dimensional_drawing/AE.132_DimensionalDrawings_1.pdf",
+  "skus": [
+   "AE.132.4"
+  ]
+ },
+ "/products/taps/aeres/aeres-extended-single-lever-monobasin-mixer-with-waste": {
+  "drawing": "https://www.armera.co.uk/uploads/products/dimensional_drawing/AE.111_DimensionalDrawings_.pdf",
+  "skus": [
+   "AE.111.4",
+   "AE.111.5",
+   "AE.111.6",
+   "AE.111.7"
+  ]
+ },
+ "/products/taps/aeres/aeres-single-lever-monobasin-mixer-with-waste": {
+  "drawing": "https://www.armera.co.uk/uploads/products/dimensional_drawing/AE.110_DimensionalDrawings_1.pdf",
+  "skus": [
+   "AE.110.4",
+   "AE.110.5",
+   "AE.110.6",
+   "AE.110.7"
+  ]
+ },
+ "/products/taps/lantic/lantic-extended-monobasin": {
+  "drawing": "https://www.armera.co.uk/uploads/products/dimensional_drawing/LN.111_DimensionalDrawings_.pdf",
+  "skus": [
+   "LN.111.4",
+   "LN.111.5",
+   "LN.111.6",
+   "LN.111.7"
+  ]
+ },
+ "/products/taps/lantic/lantic-freestanding-bath-shower-mixer": {
+  "drawing": "https://www.armera.co.uk/uploads/products/dimensional_drawing/LN.134_DimensionalDrawings_.pdf",
+  "skus": [
+   "LN.134.4",
+   "LN.134.5",
+   "LN.134.6",
+   "LN.134.7"
+  ]
+ },
+ "/products/taps/lantic/lantic-monobasin": {
+  "drawing": "https://www.armera.co.uk/uploads/products/dimensional_drawing/LN.110_DimensionalDrawings_.pdf",
+  "skus": [
+   "LN.110.4",
+   "LN.110.5",
+   "LN.110.6",
+   "LN.110.7"
+  ]
+ },
+ "/products/taps/lantic/lantic-wall-mounted-basin-mixer": {
+  "drawing": "https://www.armera.co.uk/uploads/products/dimensional_drawing/LN.113_DimensionalDrawings_.pdf",
+  "skus": [
+   "LN.113.4",
+   "LN.113.5",
+   "LN.113.6",
+   "LN.113.7"
+  ]
+ },
+ "/products/taps/latitude/latitude-deck-mounted-bath-filler": {
+  "drawing": "https://www.armera.co.uk/uploads/products/dimensional_drawing/LA.122_DimensionalDrawings_.pdf",
+  "skus": [
+   "LA.122.4",
+   "LA.122.5",
+   "LA.122.6"
+  ]
+ },
+ "/products/taps/latitude/latitude-deck-mounted-bath-shower-mixer-with-shower-kit": {
+  "drawing": "https://www.armera.co.uk/uploads/products/dimensional_drawing/LA.132_DimensionalDrawings_.pdf",
+  "skus": [
+   "LA.132.4"
+  ]
+ },
+ "/products/taps/latitude/latitude-extended-single-lever-monobasin-mixer-with-waste": {
+  "drawing": "https://www.armera.co.uk/uploads/products/dimensional_drawing/LA.111_DimensionalDrawings_.pdf",
+  "skus": [
+   "LA.111.4",
+   "LA.111.5",
+   "LA.111.6"
+  ]
+ },
+ "/products/taps/latitude/latitude-single-lever-monobasin-mixer-with-waste": {
+  "drawing": "https://www.armera.co.uk/uploads/products/dimensional_drawing/LA.110_DimensionalDrawings_.pdf",
+  "skus": [
+   "LA.110.4",
+   "LA.110.5",
+   "LA.110.6"
+  ]
+ },
+ "/products/taps/latitude/latitude-wall-mounted-basin-mixer": {
+  "drawing": "https://www.armera.co.uk/uploads/products/dimensional_drawing/LA.113_DimensionalDrawings_.pdf",
+  "skus": [
+   "LA.113.4",
+   "LA.113.5",
+   "LA.113.6"
+  ]
+ },
+ "/products/taps/maze/maze-deck-mounted-bath-filler": {
+  "drawing": "https://www.armera.co.uk/uploads/products/dimensional_drawing/MA.122_DimensionalDrawings_.pdf",
+  "skus": [
+   "MA.122.4",
+   "MA.122.5",
+   "MA.122.6",
+   "MA.122.7"
+  ]
+ },
+ "/products/taps/maze/maze-deck-mounted-bath-shower-mixer-with-shower-kit": {
+  "drawing": "https://www.armera.co.uk/uploads/products/dimensional_drawing/MA.132_DimensionalDrawings_.pdf",
+  "skus": [
+   "MA.132.4"
+  ]
+ },
+ "/products/taps/maze/maze-extended-single-lever-monobasin-mixer-with-waste": {
+  "drawing": "https://www.armera.co.uk/uploads/products/dimensional_drawing/MA.111_DimensionalDrawings_.pdf",
+  "skus": [
+   "MA.111.4",
+   "MA.111.5",
+   "MA.111.6",
+   "MA.111.7"
+  ]
+ },
+ "/products/taps/maze/maze-floor-standing-bath-shower-mixer-with-shower-kit": {
+  "drawing": "https://www.armera.co.uk/uploads/products/dimensional_drawing/OC.134_DimensionalDrawings_2.pdf",
+  "skus": [
+   "MA.134.4",
+   "MA.134.5",
+   "MA.134.6",
+   "MA.134.7"
+  ]
+ },
+ "/products/taps/maze/maze-single-lever-monobasin-mixer-with-waste": {
+  "drawing": "https://www.armera.co.uk/uploads/products/dimensional_drawing/MA.110_DimensionalDrawings_.pdf",
+  "skus": [
+   "MA.110.4",
+   "MA.110.5",
+   "MA.110.6",
+   "MA.110.7"
+  ]
+ },
+ "/products/taps/maze/maze-wall-mounted-basin-mixer": {
+  "drawing": "https://www.armera.co.uk/uploads/products/dimensional_drawing/MA.113_DimensionalDrawings_.pdf",
+  "skus": [
+   "MA.113.4",
+   "MA.113.5",
+   "MA.113.6",
+   "MA.113.7"
+  ]
+ },
+ "/products/taps/maze/oculus-wall-mounted-bath-spout": {
+  "drawing": "https://www.armera.co.uk/uploads/products/dimensional_drawing/OC.120_DimensionalDrawings_.pdf",
+  "skus": [
+   "OC.120.4",
+   "OC.120.5",
+   "OC.120.6",
+   "OC.120.7"
+  ]
+ },
+ "/products/taps/maze/single-lever-manual-wall-mounted-valve-maze": {
+  "drawing": "https://www.armera.co.uk/uploads/products/dimensional_drawing/MA.471_DimensionalDrawings_.pdf",
+  "skus": [
+   "MA.471.4",
+   "MA.471.5",
+   "MA.471.6",
+   "MA.471.7"
+  ]
+ },
+ "/products/taps/oculus/oculus-deck-mounted-bath-filler": {
+  "drawing": "https://www.armera.co.uk/uploads/products/dimensional_drawing/OC.122_DimensionalDrawings_.pdf",
+  "skus": [
+   "OC.122.4",
+   "OC.122.5",
+   "OC.122.6",
+   "OC.122.7"
+  ]
+ },
+ "/products/taps/oculus/oculus-deck-mounted-bath-shower-mixer-with-shower-kit": {
+  "drawing": "https://www.armera.co.uk/uploads/products/dimensional_drawing/OC.132_DimensionalDrawings_.pdf",
+  "skus": [
+   "OC.132.4"
+  ]
+ },
+ "/products/taps/oculus/oculus-extended-single-lever-monobasin-mixer-with-waste": {
+  "drawing": "https://www.armera.co.uk/uploads/products/dimensional_drawing/OC.111_DimensionalDrawings_.pdf",
+  "skus": [
+   "OC.111.4",
+   "OC.111.5",
+   "OC.111.6",
+   "OC.111.7"
+  ]
+ },
+ "/products/taps/oculus/oculus-floor-standing-bath-shower-mixer-with-shower-kit": {
+  "drawing": "https://www.armera.co.uk/uploads/products/dimensional_drawing/OC.134_DimensionalDrawings_1.pdf",
+  "skus": [
+   "OC.134.4",
+   "OC.134.5",
+   "OC.134.6",
+   "OC.134.7"
+  ]
+ },
+ "/products/taps/oculus/oculus-manual-wall-mounted-valve": {
+  "drawing": "https://www.armera.co.uk/uploads/products/dimensional_drawing/OC.471_DimensionalDrawings_.pdf",
+  "skus": [
+   "OC.471.4",
+   "OC.471.5",
+   "OC.471.6",
+   "OC.471.7"
+  ]
+ },
+ "/products/taps/oculus/oculus-single-lever-monobasin-mixer-with-waste": {
+  "drawing": "https://www.armera.co.uk/uploads/products/dimensional_drawing/OC.110_DimensionalDrawings_.pdf",
+  "skus": [
+   "OC.110.4",
+   "OC.110.5",
+   "OC.110.6",
+   "OC.110.7"
+  ]
+ },
+ "/products/taps/oculus/oculus-wall-mounted-basin-mixer": {
+  "drawing": "https://www.armera.co.uk/uploads/products/dimensional_drawing/OC.113_DimensionalDrawings_.pdf",
+  "skus": [
+   "OC.113.4",
+   "OC.113.5",
+   "OC.113.6",
+   "OC.113.7"
+  ]
+ },
+ "/products/taps/oculus/oculus-wall-mounted-bath-spout": {
+  "drawing": "https://www.armera.co.uk/uploads/products/dimensional_drawing/OC.120_DimensionalDrawings_.pdf",
+  "skus": [
+   "OC.120.4",
+   "OC.120.5",
+   "OC.120.6",
+   "OC.120.7"
+  ]
+ },
+ "/products/taps/vaere/vaere-deck-mounted-3-hole-bath-shower-mixer-set": {
+  "drawing": "https://www.armera.co.uk/uploads/products/dimensional_drawing/VA.135_DimensionalDrawing_.pdf",
+  "skus": [
+   "VA.135.4"
+  ]
+ },
+ "/products/taps/vaere/vaere-deck-mounted-bath-spout": {
+  "drawing": "https://www.armera.co.uk/uploads/products/dimensional_drawing/VA.918_DimensionalDrawing_.pdf",
+  "skus": [
+   "VA.918.4"
+  ]
+ },
+ "/products/taps/vaere/vaere-extended-single-lever-monobasin-mixer-with-waste": {
+  "drawing": "https://www.armera.co.uk/uploads/products/dimensional_drawing/VA.111_DimensionalDrawing_.pdf",
+  "skus": [
+   "VA.111.4",
+   "VA.111.5",
+   "VA.111.6",
+   "VA.111.7"
+  ]
+ },
+ "/products/taps/vaere/vaere-floor-standing-bath-shower-mixer-with-shower-kit": {
+  "drawing": "https://www.armera.co.uk/uploads/products/dimensional_drawing/VA.134_DimensionalDrawings_.pdf",
+  "skus": [
+   "VA.134.4",
+   "VA.134.5",
+   "VA.134.6",
+   "VA.134.7"
+  ]
+ },
+ "/products/taps/vaere/vaere-single-lever-monobasin-mixer-with-waste": {
+  "drawing": "https://www.armera.co.uk/uploads/products/dimensional_drawing/VA.110_DimensionalDrawing_.pdf",
+  "skus": [
+   "VA.110.4",
+   "VA.110.5",
+   "VA.110.6",
+   "VA.110.7"
+  ]
+ },
+ "/products/taps/vaere/vaere-wall-mounted-basin-mixer": {
+  "drawing": "https://www.armera.co.uk/uploads/products/dimensional_drawing/VA.113_DimensionalDrawing_.pdf",
+  "skus": [
+   "VA.113.4",
+   "VA.113.5",
+   "VA.113.6",
+   "VA.113.7"
+  ]
+ },
+ "/products/thermostatic-valves/index-thermostatic-shower-valves/armera-dock": {
+  "drawing": "https://www.armera.co.uk/uploads/products/dimensional_drawing/TH.310_DimensionalDrawings_.pdf",
+  "skus": [
+   "TH.310"
+  ]
+ },
+ "/products/thermostatic-valves/index-thermostatic-shower-valves/index-1-outlet-concealed-thermostatic-valve": {
+  "drawing": "https://www.armera.co.uk/uploads/products/dimensional_drawing/IN.331_.60_DimensionalDrawings_.pdf",
+  "skus": [
+   "IN.331.60.4",
+   "IN.331.60.5",
+   "IN.331.60.6",
+   "IN.331.60.7"
+  ]
+ },
+ "/products/thermostatic-valves/index-thermostatic-shower-valves/index-2-outlet-concealed-thermostatic-valve": {
+  "drawing": "https://www.armera.co.uk/uploads/products/dimensional_drawing/IN.332_.60_DimensionalDrawings_.pdf",
+  "skus": [
+   "IN.332.60.4",
+   "IN.332.60.5",
+   "IN.332.60.6",
+   "IN.332.60.7"
+  ]
+ },
+ "/products/thermostatic-valves/index-thermostatic-shower-valves/index-3-outlet-concealed-landscape-thermostatic-valve": {
+  "drawing": "https://www.armera.co.uk/uploads/products/dimensional_drawing/IN.373_.61_DimensionalDrawings_2.pdf",
+  "skus": [
+   "IN.373.61.4",
+   "IN.373.61.5",
+   "IN.373.61.6",
+   "IN.373.61.7"
+  ]
+ },
+ "/products/thermostatic-valves/index-thermostatic-shower-valves/maze-index-1-outlet-concealed-thermostatic-valve": {
+  "drawing": "https://www.armera.co.uk/uploads/products/dimensional_drawing/IN.331__.60_DimensionalDrawings__.pdf",
+  "skus": [
+   "IN.431.60.4",
+   "IN.431.60.5",
+   "IN.431.60.6",
+   "IN.431.60.7"
+  ]
+ },
+ "/products/thermostatic-valves/index-thermostatic-shower-valves/maze-index-2-outlet-concealed-thermostatic-valve": {
+  "drawing": "https://www.armera.co.uk/uploads/products/dimensional_drawing/IN.332__.60_DimensionalDrawings__.pdf",
+  "skus": [
+   "IN.432.60.4",
+   "IN.432.60.5",
+   "IN.432.60.6",
+   "IN.432.60.7"
+  ]
+ },
+ "/products/thermostatic-valves/index-thermostatic-shower-valves/maze-index-3-outlet-concealed-landscape-thermostatic-valve": {
+  "drawing": "https://www.armera.co.uk/uploads/products/dimensional_drawing/IN.373_.61_DimensionalDrawings_3.pdf",
+  "skus": [
+   "IN.473.61.4",
+   "IN.473.61.5",
+   "IN.473.61.6",
+   "IN.473.61.7"
+  ]
+ },
+ "/products/thermostatic-valves/pivot-thermostatic-shower-valves/armera-dock": {
+  "drawing": "https://www.armera.co.uk/uploads/products/dimensional_drawing/TH.310_DimensionalDrawings_.pdf",
+  "skus": [
+   "TH.310"
+  ]
+ },
+ "/products/thermostatic-valves/pivot-thermostatic-shower-valves/pivot-round-concealed-3-outlet-thermostatic-landscape-valve": {
+  "drawing": "https://www.armera.co.uk/uploads/products/dimensional_drawing/PI.383_.67_DimensionalDrawings_1.pdf",
+  "skus": [
+   "PI.383.67.4",
+   "PI.383.67.5",
+   "PI.383.67.6",
+   "PI.383.67.7"
+  ]
+ },
+ "/products/thermostatic-valves/pivot-thermostatic-shower-valves/pivot-round-concealed-thermostatic-valve-1-outlet": {
+  "drawing": "https://www.armera.co.uk/uploads/products/dimensional_drawing/PI.341_.66_DimensionalDrawings_.pdf",
+  "skus": [
+   "PI.341.66.4",
+   "PI.341.66.5",
+   "PI.341.66.6",
+   "PI.341.66.7"
+  ]
+ },
+ "/products/thermostatic-valves/pivot-thermostatic-shower-valves/pivot-round-concealed-thermostatic-valve-2-outlet": {
+  "drawing": "https://www.armera.co.uk/uploads/products/dimensional_drawing/PI.342_.66_DimensionalDrawings_.pdf",
+  "skus": [
+   "PI.342.66.4",
+   "PI.342.66.5",
+   "PI.342.66.6",
+   "PI.342.66.7"
+  ]
+ },
+ "/products/thermostatic-valves/pivot-thermostatic-shower-valves/pivot-round-concealed-thermostatic-valve-3-outlet": {
+  "drawing": "https://www.armera.co.uk/uploads/products/dimensional_drawing/PI.343_.66_DimensionalDrawings_.pdf",
+  "skus": [
+   "PI.343.66.4",
+   "PI.343.66.5",
+   "PI.343.66.6",
+   "PI.343.66.7"
+  ]
+ },
+ "/products/thermostatic-valves/pivot-thermostatic-shower-valves/pivot-round-horizontal-concealed-2-outlet-thermostatic-valve": {
+  "drawing": "https://www.armera.co.uk/uploads/products/dimensional_drawing/PI.342__.66H_DimensionalDrawings__.pdf",
+  "skus": [
+   "PI.342.66H.4",
+   "PI.342.66H.5",
+   "PI.342.66H.6",
+   "PI.342.66H.7"
+  ]
+ },
+ "/products/thermostatic-valves/pivot-thermostatic-shower-valves/pivot-square-concealed-thermostatic-valve-1-outlet": {
+  "drawing": "https://www.armera.co.uk/uploads/products/dimensional_drawing/PI.341_.55_DimensionalDrawings_.pdf",
+  "skus": [
+   "PI.341.55.4"
+  ]
+ },
+ "/products/thermostatic-valves/pivot-thermostatic-shower-valves/pivot-square-concealed-thermostatic-valve-2-outlet": {
+  "drawing": "https://www.armera.co.uk/uploads/products/dimensional_drawing/PI.342_.55_DimensionalDrawings_.pdf",
+  "skus": [
+   "PI.342.55.4",
+   "PI.342.55.5",
+   "PI.342.55.6"
+  ]
+ },
+ "/products/thermostatic-valves/pivot-thermostatic-shower-valves/pivot-square-concealed-thermostatic-valve-3-outlet": {
+  "drawing": "https://www.armera.co.uk/uploads/products/dimensional_drawing/PI.343_.55_DimensionalDrawings_.pdf",
+  "skus": [
+   "PI.343.55.4"
+  ]
+ },
+ "/products/thermostatic-valves/rio/rio-exposed-round-2-outlet-thermostatic-valve-with-rigid-riser-shower-kit": {
+  "drawing": "https://www.armera.co.uk/uploads/products/dimensional_drawing/RI.452_.66_DimensionalDrawings_.pdf",
+  "skus": [
+   "RI.452.66.4",
+   "RI.452.66.5",
+   "RI.452.66.6",
+   "RI.452.66.7"
+  ]
+ },
+ "/products/thermostatic-valves/rio/rio-exposed-square-2-outlet-thermostatic-valve-with-rigid-riser-shower-kit": {
+  "drawing": "https://www.armera.co.uk/uploads/products/dimensional_drawing/RI.352_.55_DimensionalDrawings_.pdf",
+  "skus": [
+   "RI.452.55.4",
+   "RI.452.55.5"
+  ]
+ },
+ "/products/thermostatic-valves/thermostatic-exposed-valves/exposed-12-thermostatic-shower-valve": {
+  "drawing": "https://www.armera.co.uk/uploads/products/dimensional_drawing/TH.365_.66_DimensionalDrawings_.pdf",
+  "skus": [
+   "TH.365.66.4",
+   "TH.365.66.5",
+   "TH.365.66.6",
+   "TH.365.66.7"
+  ]
+ },
+ "/products/thermostatic-valves/thermostatic-exposed-valves/exposed-thermostatic-bath-shower-mixer": {
+  "drawing": "https://www.armera.co.uk/uploads/products/dimensional_drawing/TH.325_DimensionalDrawings_.pdf",
+  "skus": [
+   "TH.325.4"
+  ]
+ },
+ "/products/thermostatic-valves/thermostatic-exposed-valves/rio-exposed-round-2-outlet-thermostatic-valve-with-rigid-riser-shower-kit": {
+  "drawing": "https://www.armera.co.uk/uploads/products/dimensional_drawing/RI.452_.66_DimensionalDrawings_.pdf",
+  "skus": [
+   "RI.452.66.4",
+   "RI.452.66.5",
+   "RI.452.66.6",
+   "RI.452.66.7"
+  ]
+ },
+ "/products/thermostatic-valves/thermostatic-exposed-valves/rio-exposed-square-2-outlet-thermostatic-valve-with-rigid-riser-shower-kit": {
+  "drawing": "https://www.armera.co.uk/uploads/products/dimensional_drawing/RI.352_.55_DimensionalDrawings_.pdf",
+  "skus": [
+   "RI.452.55.4",
+   "RI.452.55.5"
+  ]
+ },
+ "/products/wastes/bath-and-basin-wastes/basin-waste-with-adaptable-installation": {
+  "drawing": "https://www.armera.co.uk/uploads/products/dimensional_drawing/BW.210_.66_DimensionalDrawings_1.pdf",
+  "skus": [
+   "BW.210.66.4",
+   "BW.210.66.17",
+   "BW.210.66.5",
+   "BW.210.66.6",
+   "BW.210.66.7"
+  ]
+ },
+ "/products/wastes/bath-and-basin-wastes/bath-filler-waste-with-click-clack-plug": {
+  "drawing": "https://www.armera.co.uk/uploads/products/dimensional_drawing/BW.232_DimensionalDrawings_5.pdf",
+  "skus": [
+   "BW.232.4",
+   "BW.232.5",
+   "BW.232.6",
+   "BW.232.7"
+  ]
+ },
+ "/products/wastes/bath-and-basin-wastes/bath-filler-waste-with-twist-handle-plug-operation": {
+  "drawing": "https://www.armera.co.uk/uploads/products/dimensional_drawing/BW.233_DimensionalDrawings__1.pdf",
+  "skus": [
+   "BW.233.4"
+  ]
+ },
+ "/products/wastes/bath-and-basin-wastes/bath-waste-with-click-clack-plug": {
+  "drawing": "https://www.armera.co.uk/uploads/products/dimensional_drawing/BW.222_DimensionalDrawings__1.pdf",
+  "skus": [
+   "BW.222.4",
+   "BW.222.5",
+   "BW.222.6",
+   "BW.222.7"
+  ]
+ },
+ "/products/wastes/bath-and-basin-wastes/bath-waste-with-twist-handle-plug-operation": {
+  "drawing": "https://www.armera.co.uk/uploads/products/dimensional_drawing/BW.223_DimensionalDrawings__.pdf",
+  "skus": [
+   "BW.223.4"
+  ]
+ },
+ "/products/wastes/bath-and-basin-wastes/bottle-trap": {
+  "drawing": "https://www.armera.co.uk/uploads/products/dimensional_drawing/BT.211_.66_DimensionalDrawings_.pdf",
+  "skus": [
+   "BT.211.66.4",
+   "BT.211.66.5",
+   "BT.211.66.6",
+   "BT.211.66.7"
+  ]
+ },
+ "/products/wastes/bath-and-basin-wastes/oculus-manual-wall-mounted-valve": {
+  "drawing": "https://www.armera.co.uk/uploads/products/dimensional_drawing/OC.471_DimensionalDrawings_.pdf",
+  "skus": [
+   "OC.471.4",
+   "OC.471.5",
+   "OC.471.6",
+   "OC.471.7"
+  ]
+ },
+ "/products/wastes/bath-and-basin-wastes/single-lever-manual-wall-mounted-valve-maze": {
+  "drawing": "https://www.armera.co.uk/uploads/products/dimensional_drawing/MA.471_DimensionalDrawings_.pdf",
+  "skus": [
+   "MA.471.4",
+   "MA.471.5",
+   "MA.471.6",
+   "MA.471.7"
+  ]
+ },
+ "/products/wcs/anthem/anthem-back-to-wall-wc-with-seat": {
+  "drawing": "https://www.armera.co.uk/uploads/products/dimensional_drawing/AN.712_DimensionalDrawings_.pdf",
+  "skus": [
+   "AN.712"
+  ]
+ },
+ "/products/wcs/anthem/anthem-close-coupled-wc-with-cistern-fititngs-and-seat": {
+  "drawing": "https://www.armera.co.uk/uploads/products/dimensional_drawing/AN.711_DimensionalDrawings_.pdf",
+  "skus": [
+   "AN.711"
+  ]
+ },
+ "/products/wcs/anthem/anthem-close-coupled-wc-with-cistern-fittings-and-seat-with-cut-out": {
+  "drawing": "https://www.armera.co.uk/uploads/products/dimensional_drawing/AN.711_.CL_DimensionalDrawings_.pdf",
+  "skus": [
+   "AN.711.CL",
+   "AN.711.CR",
+   "AN.711.CB"
+  ]
+ },
+ "/products/wcs/anthem/anthem-wall-hung-wc-with-seat": {
+  "drawing": "https://www.armera.co.uk/uploads/products/dimensional_drawing/AN.713_DimensionalDrawings_1.pdf",
+  "skus": [
+   "AN.713"
+  ]
+ },
+ "/products/wcs/lagoon/lagoon-back-to-wall-wc-with-seat": {
+  "drawing": "https://www.armera.co.uk/uploads/products/dimensional_drawing/LG.712_DimensionalDrawings_2.pdf",
+  "skus": [
+   "LG.712"
+  ]
+ },
+ "/products/wcs/lagoon/lagoon-close-coupled-wc-with-cistern-fittings-and-seat": {
+  "drawing": "https://www.armera.co.uk/uploads/products/dimensional_drawing/LG.711_DimensionalDrawings_2.pdf",
+  "skus": [
+   "LG.711"
+  ]
+ },
+ "/products/wcs/lagoon/lagoon-close-coupled-wc-with-cistern-fittings-and-seat-with-cut-out": {
+  "drawing": "https://www.armera.co.uk/uploads/products/dimensional_drawing/LG.711_.CB_DimensionalDrawings_.pdf",
+  "skus": [
+   "LG.711.CL",
+   "LG.711.CR",
+   "LG.711.CB"
+  ]
+ },
+ "/products/wcs/lagoon/lagoon-comfort-height-back-to-wall-wc-with-seat": {
+  "drawing": "https://www.armera.co.uk/uploads/products/dimensional_drawing/LG.812_DimensionalDrawings_.pdf",
+  "skus": [
+   "LG.812"
+  ]
+ },
+ "/products/wcs/lagoon/lagoon-comfort-height-close-coupled-wc-with-cistern-fittings-seat": {
+  "drawing": "https://www.armera.co.uk/uploads/products/dimensional_drawing/LG.811_DimensionalDrawings_.pdf",
+  "skus": [
+   "LG.811"
+  ]
+ },
+ "/products/wcs/lagoon/lagoon-comfort-height-close-coupled-wc-with-side-cut-out": {
+  "drawing": "https://www.armera.co.uk/uploads/products/dimensional_drawing/LG.811_DimensionalDrawings_CUT_.pdf",
+  "skus": [
+   "LG.811.CL",
+   "LG.811.CR",
+   "LG.811.CB"
+  ]
+ },
+ "/products/wcs/lagoon/lagoon-wall-hung-wc-with-seat": {
+  "drawing": "https://www.armera.co.uk/uploads/products/dimensional_drawing/LG.713_DimensionalDrawings_7.pdf",
+  "skus": [
+   "LG.713"
+  ]
+ },
+ "/products/wcs/lagoon/lagoon-wall-hung-wc-with-seat-and-vortex-flush": {
+  "drawing": "https://www.armera.co.uk/uploads/products/dimensional_drawing/LG.713_DimensionalDrawings_5.pdf",
+  "skus": [
+   "LG.714"
+  ]
+ }
+}

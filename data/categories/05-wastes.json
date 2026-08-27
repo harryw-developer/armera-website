@@ -45,7 +45,9 @@
               "price": 142,
               "image": "sku-bw-222-7.jpg"
             }
-          ]
+          ],
+          "drawing": "BW.222_DimensionalDrawings__1.pdf",
+          "spec": "spec-bath-and-basin-wastes-bath-waste-click-clack.pdf"
         },
         {
           "slug": "bath-filler-waste-click-clack",
@@ -76,7 +78,9 @@
               "price": 285,
               "image": "sku-bw-232-7.jpg"
             }
-          ]
+          ],
+          "drawing": "BW.232_DimensionalDrawings_5.pdf",
+          "spec": "spec-bath-and-basin-wastes-bath-filler-waste-click-clack.pdf"
         },
         {
           "slug": "bath-waste-twist-handle",
@@ -90,7 +94,9 @@
               "price": 87,
               "image": "sku-bw-223-4.jpg"
             }
-          ]
+          ],
+          "drawing": "BW.223_DimensionalDrawings__.pdf",
+          "spec": "spec-bath-and-basin-wastes-bath-waste-twist-handle.pdf"
         },
         {
           "slug": "bath-filler-waste-twist-handle",
@@ -104,7 +110,9 @@
               "price": 186,
               "image": "sku-bw-233-4.jpg"
             }
-          ]
+          ],
+          "drawing": "BW.233_DimensionalDrawings__1.pdf",
+          "spec": "spec-bath-and-basin-wastes-bath-filler-waste-twist-handle.pdf"
         },
         {
           "slug": "basin-waste",
@@ -142,7 +150,9 @@
               "price": 95,
               "image": "sku-bw-210-66-17.jpg"
             }
-          ]
+          ],
+          "drawing": "BW.210_.66_DimensionalDrawings_1.pdf",
+          "spec": "spec-bath-and-basin-wastes-basin-waste.pdf"
         },
         {
           "slug": "bottle-trap",
@@ -173,7 +183,9 @@
               "price": 215,
               "image": "sku-bt-211-66-7.jpg"
             }
-          ]
+          ],
+          "drawing": "BT.211_.66_DimensionalDrawings_.pdf",
+          "spec": "spec-bath-and-basin-wastes-bottle-trap.pdf"
         },
         {
           "slug": "overflow-ring",
@@ -198,7 +210,8 @@
               "price": 28,
               "image": "sku-cb-971-7.jpg"
             }
-          ]
+          ],
+          "spec": "spec-bath-and-basin-wastes-overflow-ring.pdf"
         }
       ]
     }

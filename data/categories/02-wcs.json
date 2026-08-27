@@ -28,7 +28,9 @@
               "price": 699,
               "image": "sku-lg-711.jpg"
             }
-          ]
+          ],
+          "drawing": "LG.711_DimensionalDrawings_2.pdf",
+          "spec": "spec-lagoon-close-coupled-wc.pdf"
         },
         {
           "slug": "close-coupled-wc-cut-out",
@@ -54,7 +56,9 @@
               "price": 1034,
               "image": "sku-lg-711-cb.jpg"
             }
-          ]
+          ],
+          "drawing": "LG.711_.CB_DimensionalDrawings_.pdf",
+          "spec": "spec-lagoon-close-coupled-wc-cut-out.pdf"
         },
         {
           "slug": "back-to-wall-wc",
@@ -68,7 +72,9 @@
               "price": 571,
               "image": "sku-lg-712.jpg"
             }
-          ]
+          ],
+          "drawing": "LG.712_DimensionalDrawings_2.pdf",
+          "spec": "spec-lagoon-back-to-wall-wc.pdf"
         },
         {
           "slug": "wall-hung-wc",
@@ -82,7 +88,9 @@
               "price": 571,
               "image": "sku-lg-713.jpg"
             }
-          ]
+          ],
+          "drawing": "LG.713_DimensionalDrawings_7.pdf",
+          "spec": "spec-lagoon-wall-hung-wc.pdf"
         },
         {
           "slug": "wall-hung-wc-vortex",
@@ -97,7 +105,9 @@
               "price": 571,
               "image": "sku-lg-714.jpg"
             }
-          ]
+          ],
+          "drawing": "LG.713_DimensionalDrawings_5.pdf",
+          "spec": "spec-lagoon-wall-hung-wc-vortex.pdf"
         },
         {
           "slug": "comfort-height-close-coupled-wc",
@@ -112,7 +122,9 @@
               "price": 740,
               "image": "sku-lg-811.jpg"
             }
-          ]
+          ],
+          "drawing": "LG.811_DimensionalDrawings_.pdf",
+          "spec": "spec-lagoon-comfort-height-close-coupled-wc.pdf"
         },
         {
           "slug": "comfort-height-close-coupled-wc-cut-out",
@@ -138,7 +150,9 @@
               "price": 1061,
               "image": "sku-lg-811-cb.jpg"
             }
-          ]
+          ],
+          "drawing": "LG.811_DimensionalDrawings_CUT_.pdf",
+          "spec": "spec-lagoon-comfort-height-close-coupled-wc-cut-out.pdf"
         },
         {
           "slug": "comfort-height-back-to-wall-wc",
@@ -153,7 +167,9 @@
               "price": 599,
               "image": "sku-lg-812.jpg"
             }
-          ]
+          ],
+          "drawing": "LG.812_DimensionalDrawings_.pdf",
+          "spec": "spec-lagoon-comfort-height-back-to-wall-wc.pdf"
         }
       ],
       "addons": [
@@ -218,7 +234,9 @@
               "price": 699,
               "image": "sku-an-711.jpg"
             }
-          ]
+          ],
+          "drawing": "AN.711_DimensionalDrawings_.pdf",
+          "spec": "spec-anthem-close-coupled-wc.pdf"
         },
         {
           "slug": "close-coupled-wc-cut-out",
@@ -244,7 +262,9 @@
               "price": 1034,
               "image": "sku-an-711-cb.jpg"
             }
-          ]
+          ],
+          "drawing": "AN.711_.CL_DimensionalDrawings_.pdf",
+          "spec": "spec-anthem-close-coupled-wc-cut-out.pdf"
         },
         {
           "slug": "back-to-wall-wc",
@@ -258,7 +278,9 @@
               "price": 571,
               "image": "sku-an-712.jpg"
             }
-          ]
+          ],
+          "drawing": "AN.712_DimensionalDrawings_.pdf",
+          "spec": "spec-anthem-back-to-wall-wc.pdf"
         },
         {
           "slug": "wall-hung-wc",
@@ -272,7 +294,9 @@
               "price": 571,
               "image": "sku-an-713.jpg"
             }
-          ]
+          ],
+          "drawing": "AN.713_DimensionalDrawings_1.pdf",
+          "spec": "spec-anthem-wall-hung-wc.pdf"
         }
       ],
       "addons": [
