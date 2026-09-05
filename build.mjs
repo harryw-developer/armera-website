@@ -187,7 +187,7 @@ ${body}
     <div class="grid-foot">
       <div class="brand">
         <img class="logo-img" src="${ASSETS}/brand/logo-light.png" alt="ARMERA">
-        <p>Affordable luxury within an easy to comprehend &amp; coordinated bathroomware portfolio that harnesses detail in design.</p>
+        <p>A coordinated bathroomware collection, designed for everyday use and lasting appeal.</p>
       </div>
       <div>
         <h5>Products</h5>
@@ -270,7 +270,7 @@ ${banner}
   <div class="content">
     <div class="container">
       <h1 data-ck="home.heading">Designed to inspire</h1>
-      <p class="lede" data-ck="home.lede">Thoughtful interiors created by striking &amp; beautiful bathroomware — a complete and coordinated collection, finished to the finest detail.</p>
+      <p class="lede" data-ck="home.lede">A coordinated bathroomware collection for rooms with a clear point of view — from furniture and ceramics to brassware and showering.</p>
       <a class="btn" href="/products/">Explore the collection</a>
     </div>
   </div>
@@ -304,10 +304,10 @@ ${banner}
     <div class="split">
       <div class="imgwrap"><img src="${lifeImg('p013_01.png')}" alt="Palladium 600mm unit with hidden internal drawer and organiser in Natural oak" loading="lazy"></div>
       <div class="copy">
-        <span class="eyebrow">Founded on experience &amp; passion</span>
-        <h2>Considered design in form and function</h2>
-        <p>ARMERA is the creation of a committed and personable team with over 20 years’ experience in bathrooms, product design and interiors. Our promise is to provide considered design in form and function, a complete and seductive offering, and a close partnership-approach with our customers.</p>
-        <p>We are not always trying to re-invent the wheel — we also sensibly look at what already works well, and make it better by focusing on the design detail, striking a perfect balance between old and new.</p>
+        <span class="eyebrow">Built on experience</span>
+        <h2>Details that make a bathroom work</h2>
+        <p>ARMERA brings together more than 20 years’ experience in bathrooms, product design and interiors. We create complete collections with well-judged proportions, practical details and finishes that work together.</p>
+        <p>We start with what people need from the room, not novelty for its own sake. By refining familiar forms, proportions and everyday functions, we make products that feel right in use and sit comfortably in a range of interiors.</p>
         <a class="btn" href="/about/">Our story</a>
       </div>
     </div>
@@ -341,8 +341,8 @@ ${banner}
     <div class="split">
       <div class="copy">
         <h2>Coordinated across the entire range</h2>
-        <p>Special finish options include the sleek brushed black, an elegant brushed gold and the smart brushed stainless steel. Match your brassware in your chosen finish to accessories, flush plates, toilet hinge cover caps, basin wastes and overflows.</p>
-        <p>We have an array of colour and finish options for our furniture, ranging from our opulent Walnut Noir to the contemporary Cavern Blue.</p>
+        <p>Brushed Black, Brushed Gold and Brushed Stainless Steel are coordinated across brassware, accessories, flush plates, hinge caps, basin wastes and overflows.</p>
+        <p>Furniture colours and finishes, from Walnut Noir to Cavern Blue, give you the freedom to carry a scheme through the whole room.</p>
         <a class="btn" href="/products/taps/">Explore brassware</a>
       </div>
       <div class="imgwrap"><img src="${lifeImg('p066_01.png')}" alt="Oculus wall mounted basin mixer in brushed gold with co-ordinated click clack waste" loading="lazy"></div>
@@ -380,7 +380,7 @@ ${catBand()}
 
   write('index.html', layout({
     title: 'ARMERA — Designer Bathroomware | Designed to Inspire',
-    desc: 'ARMERA brings affordable luxury within an easy to comprehend & coordinated bathroomware portfolio that harnesses detail in design.',
+    desc: 'ARMERA creates coordinated bathroomware collections for considered, practical interiors.',
     path: '/',
     body
   }));
@@ -424,7 +424,7 @@ ${crumbs([{ label: 'Home', href: '/' }, { label: 'Inspiration' }])}
   <div class="container">
     <span class="eyebrow">Gallery</span>
     <h1 style="margin:14px 0 18px">Inspiration</h1>
-    <p class="lede" style="max-width:58ch">Thoughtful interiors created by striking &amp; beautiful bathroomware. A collection of rooms and details to spark your next project.</p>
+    <p class="lede" style="max-width:58ch">Bathrooms, materials and details from the ARMERA collection — ideas for planning a room that works beautifully every day.</p>
   </div>
 </section>
 <section class="pad--tight">
@@ -446,7 +446,7 @@ ${crumbs([{ label: 'Home', href: '/' }, { label: 'Inspiration' }])}
 
   write('inspiration/index.html', layout({
     title: 'Inspiration — ARMERA',
-    desc: 'Bathroom inspiration from ARMERA — thoughtful interiors created by striking & beautiful bathroomware.',
+    desc: 'Bathroom inspiration from ARMERA: rooms, materials and details from the collection.',
     path: '/inspiration/',
     body
   }));
@@ -455,36 +455,36 @@ ${crumbs([{ label: 'Home', href: '/' }, { label: 'Inspiration' }])}
 /* ---------------- about (sections editable) ---------------- */
 const aboutSections = [
   {
-    side: 'Who we are',
+    side: 'Our approach',
     paras: [
-      'Founded on experience & passion, ARMERA is the creation of a committed and personable team with over 20 years’ experience in bathrooms, product design and interiors. Our promise is to provide considered design in form and function, a complete and seductive offering, and a close partnership-approach with our customers.',
-      'Our approach towards our sales channel is to partner with retailers ensuring the final customer receives great advice and service. Our partnership distribution strategy, devotion to detailed design, and trusted personal service embodies who we are.'
+      'ARMERA brings together more than 20 years’ experience in bathrooms, product design and interiors. We make coordinated collections with well-judged proportions, practical details and finishes that work together.',
+      'We work closely with retailers so customers can get clear advice, see the collection in person and choose with confidence.'
     ]
   },
   {
     side: 'Our design process',
     paras: [
-      'Our design process is born out of genuine passion and love of our products. We have listened and learnt from the market, from end consumers to installers, retailers to project specifiers, interior designers and contract partners. We have engineered new technologies and solutions that make life safer and easier. We have designed products to create well-proportioned, beautiful bathroomware which delivers a superior experience.',
-      'We are not always trying to re-invent the wheel, we also sensibly look at what already works well, and make it better by focusing on the design detail, striking a perfect balance between old and new.'
+      'Our starting point is how a bathroom is planned, fitted and used. We listen to homeowners, installers, retailers, specifiers and designers, then focus on the details that make a real difference: proportion, installation, safety and day-to-day use.',
+      'Rather than chasing novelty, we refine familiar forms and functions. The result is bathroomware that feels considered, straightforward to specify and made to live with.'
     ]
   },
   {
     side: 'Finishes',
     paras: [
-      'We offer special finishes coordinated across the entire range. Special finish options include the sleek brushed black, an elegant brushed gold and the smart brushed stainless steel. Customers can match their brassware in their chosen finish to accessories, flush plates, toilet hinge cover caps, basin wastes and overflows. We have an array of colour and finish options for our furniture, ranging from our opulent Walnut Noir to the contemporary Cavern Blue.'
+      'Brushed Black, Brushed Gold and Brushed Stainless Steel are coordinated across brassware, accessories, flush plates, hinge caps, basin wastes and overflows. Furniture colours and finishes, from Walnut Noir to Cavern Blue, give you the freedom to carry a scheme through the whole room.'
     ]
   },
   {
     side: 'Manufacturing',
     paras: [
-      'Manufacturing is in accordance with the strictest of quality processes and standards, implemented with years of experience in this field. This results in true manufacturing excellence, culminating in guaranteed technically and aesthetically superior products.',
-      'Our products conform to the Water Regulatory Advisory Scheme (WRAS), and are designed and manufactured with sustainability in mind, incorporating water-saving and flow-regulated technology. All of our products are quality-guaranteed.'
+      'Our products are made through established quality processes and standards, with attention paid to performance as well as appearance.',
+      'Where applicable, products conform to WRAS requirements and incorporate water-saving or flow-regulated technology. Every ARMERA product is covered by our guarantee.'
     ]
   },
   {
     side: 'In partnership',
     paras: [
-      'We love our industry, our business, our products and our customers. Thanks for working in partnership with ARMERA to ultimately provide a gratifying and superior bathroom experience.'
+      'We support the people who specify, sell, install and live with ARMERA products. Clear information, coordinated ranges and responsive service help make every project run more smoothly.'
     ]
   }
 ];
@@ -503,7 +503,7 @@ ${crumbs([{ label: 'Home', href: '/' }, { label: 'About' }])}
 <section class="pad--tight">
   <div class="container">
     <span class="eyebrow">About ARMERA</span>
-    <h1 style="margin:14px 0 26px;max-width:18ch" data-ck="about.heading">Founded on experience &amp; passion</h1>
+    <h1 style="margin:14px 0 26px;max-width:18ch" data-ck="about.heading">Bathroomware, brought together</h1>
   </div>
 </section>
 <div class="container">
@@ -533,7 +533,7 @@ ${catBand()}
 
   write('about/index.html', layout({
     title: 'About — ARMERA',
-    desc: 'Founded on experience & passion, ARMERA is the creation of a committed and personable team with over 20 years’ experience in bathrooms, product design and interiors.',
+    desc: 'Discover ARMERA: coordinated bathroomware shaped by more than 20 years of experience in bathrooms, product design and interiors.',
     path: '/about/',
     body
   }));
@@ -547,7 +547,7 @@ ${crumbs([{ label: 'Home', href: '/' }, { label: 'Support' }])}
   <div class="container">
     <span class="eyebrow">We’re here to help</span>
     <h1 style="margin:14px 0 18px">Support</h1>
-    <p class="lede" style="max-width:56ch">Advice, spares and documentation for your ARMERA products — backed by trusted personal service.</p>
+    <p class="lede" style="max-width:56ch">Product advice, spares and documentation for ARMERA bathroomware.</p>
   </div>
 </section>
 <section class="pad--tight">
@@ -696,7 +696,7 @@ ${crumbs([{ label: 'Home', href: '/' }, { label: 'Find a retailer' }])}
     <div class="empty-note" id="retailer-empty" style="display:none;margin-top:22px">
       No retailers found for that search. Try a nearby town or a wider area, or call <a href="tel:01225251204" style="border-bottom:1px solid var(--line-dark)" data-ck="contact.phone">${site.phone}</a> and we will help you find your nearest stockist.
     </div>
-    <p class="small" style="margin-top:22px">Are you a retailer interested in stocking ARMERA? We would love to hear from you — call <a href="tel:01225251204" style="border-bottom:1px solid var(--line-dark)" data-ck="contact.phone">${site.phone}</a> or email <a href="mailto:${site.email}" style="border-bottom:1px solid var(--line-dark)" data-ck="contact.email">${site.email}</a>.</p>
+    <p class="small" style="margin-top:22px">Interested in stocking ARMERA? Call <a href="tel:01225251204" style="border-bottom:1px solid var(--line-dark)" data-ck="contact.phone">${site.phone}</a> or email <a href="mailto:${site.email}" style="border-bottom:1px solid var(--line-dark)" data-ck="contact.email">${site.email}</a> to speak with our team.</p>
   </div>
 </section>
 ${catBand()}`;
@@ -823,7 +823,7 @@ ${crumbs([{ label: 'Home', href: '/' }, { label: 'Contact' }])}
 <section class="pad--tight">
   <div class="container">
     <span class="eyebrow">Contact us</span>
-    <h1 style="margin:14px 0 30px">We’d love to talk<br>bathrooms.</h1>
+    <h1 style="margin:14px 0 30px">Talk to us<br>about your bathroom.</h1>
     <p class="bigline"><a href="tel:01225251204" data-ck="contact.phone">${site.phone}</a></p>
     <p class="bigline" style="margin-top:6px"><a href="mailto:${site.email}" data-ck="contact.email">${site.email}</a></p>
     <div class="contact-list" style="max-width:860px">

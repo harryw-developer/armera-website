@@ -130,7 +130,7 @@
       '<section class="pad--tight">' +
       '<span class="eyebrow">The collection</span>' +
       '<h1 style="max-width:16ch;margin:14px 0 18px">Products</h1>' +
-      '<p class="lede" style="max-width:60ch">A complete and coordinated bathroomware portfolio — furniture, ceramics, brassware, showering and accessories, designed to work beautifully together.</p>' +
+      '<p class="lede" style="max-width:60ch">A coordinated collection of furniture, ceramics, brassware, showering and accessories, designed to work together across the room.</p>' +
       '</section><section class="pad--tight"><div class="grid grid--2">' +
       cats.map(function (c) {
         return '<a class="tile" href="' + u('/products/' + c.slug + '/') + '">' +
@@ -380,7 +380,7 @@
     if (!picks.length) return;
     holder.innerHTML = '<div class="pairs"><span class="eyebrow">Coordinated</span>' +
       '<h3 style="margin-top:12px">Looks good with…</h3>' +
-      '<p class="sub">Pieces chosen to sit beautifully alongside this one.</p>' +
+      '<p class="sub">Pieces selected to coordinate with this product.</p>' +
       '<div class="grid grid--4">' + picks.map(function (o) {
         return '<a class="tile" href="' + u('/products/' + o.cat.slug + '/' + o.rng.slug + '/' + o.p.slug + '/') + '">' +
           '<div class="frame cutout"><img src="' + prodImgSafe(mainImage(o.p)) + '" alt="' + esc(o.p.name) + '" loading="lazy"></div>' +
