@@ -20,6 +20,10 @@ const SUPABASE_URL = 'https://pcouznwpyhtfrleedcsv.supabase.co';
 const ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBjb3V6bndweWh0ZnJsZWVkY3N2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM4NjM3NzIsImV4cCI6MjA5OTQzOTc3Mn0.pNRCs82pde-0vMnaTh6ygtQNeWKgFS2s3lrIkhM8uZU';
 const ASSETS = `${SUPABASE_URL}/storage/v1/object/public/site-assets`;
 const INSTRUCTIONS_BUCKET = 'instructions';
+// CARTO basemap key (browser key — travels in every tile request, so it is
+// public by design). Free to 5m tiles/month; the CARTO + OpenStreetMap
+// attribution on the map is the condition of that tier, so leave it in place.
+const CARTO_KEY = 'cb1_30vv_1_debcb48eb777bc52077e4a38';
 
 // Short content hashes for cache-busting: a changed file gets a new URL, so a
 // browser can never pair a stale stylesheet with fresh scripts.
@@ -75,7 +79,8 @@ const CFG = {
   anonKey: ANON_KEY,
   assets: ASSETS,
   base: BASE,
-  instructionsBucket: INSTRUCTIONS_BUCKET
+  instructionsBucket: INSTRUCTIONS_BUCKET,
+  cartoKey: CARTO_KEY
 };
 
 // Catalogue: the filename lives in the Supabase `pages` row so the admin can
