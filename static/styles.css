@@ -96,12 +96,24 @@ nav.primary div:hover .menu-drop, nav.primary div:focus-within .menu-drop { opac
 /* ---------- hero ---------- */
 .hero { position: relative; overflow: hidden; background: var(--ink); }
 .hero img { width: 100%; height: min(76vh, 760px); object-fit: cover; opacity: .94; }
-/* The homepage photograph drifts slowly closer — a single unhurried pass that
-   settles rather than looping. Switched off in the admin, and for anyone who
-   has asked their computer for less movement. */
+/* One photograph, or several sliding across one after another. The frame keeps
+   the height; each shot drifts slowly closer inside it. Speed is set in the
+   admin; it stands down for anyone who has asked for less movement. */
+.hero-shuffle { position: relative; width: 100%; height: min(76vh, 760px); overflow: hidden; }
+.hero-slide { position: absolute; inset: 0; transform: translate3d(100%, 0, 0); }
+.hero-slide.on { transform: translate3d(0, 0, 0); }
+.hero-slide.out { transform: translate3d(-100%, 0, 0); }
+.hero-slide.on, .hero-slide.out { transition: transform 1.15s cubic-bezier(.55,.06,.18,1); }
+.hero-shuffle img { width: 100%; height: 100%; object-fit: cover; opacity: .94; display: block; }
 @keyframes heroDrift { from { transform: scale(1); } to { transform: scale(1.11); } }
-.hero img.kb { animation: heroDrift 34s cubic-bezier(.33,.33,.7,1) both; transform-origin: 50% 54%; will-change: transform; }
-@media (prefers-reduced-motion: reduce) { .hero img.kb { animation: none; } }
+.hero img.kb { animation: heroDrift var(--hero-zoom, 30s) cubic-bezier(.33,.33,.7,1) both; transform-origin: 50% 54%; will-change: transform; }
+@media (prefers-reduced-motion: reduce) {
+  .hero img.kb { animation: none; }
+  .hero-slide { transform: none; opacity: 0; }
+  .hero-slide.on { opacity: 1; }
+  .hero-slide.on, .hero-slide.out { transition: opacity .5s linear; }
+  .hero-slide.out { opacity: 0; }
+}
 .hero .veil { position: absolute; inset: 0; background: linear-gradient(12deg, rgba(18,17,14,.62) 0%, rgba(18,17,14,.18) 46%, rgba(18,17,14,0) 70%); }
 .hero .content { position: absolute; left: 0; right: 0; bottom: clamp(40px, 8vh, 96px); color: #f6f3ec; }
 .hero h1 { color: #fbf9f4; max-width: 13ch; }
@@ -896,3 +908,56 @@ table.guar-products td { padding: 8px 10px 8px 0; border-bottom: 1px solid var(-
   .qa-tile { min-height: 0; }
   .qa-pin { opacity: 1; }
 }
+
+/* ---- Admin: a little more relaxed than the shop front ---- */
+.adm-greet { position: relative; margin-top: 12px; font-size: clamp(30px, 3.4vw, 42px); line-height: 1.08; letter-spacing: -.005em; }
+.adm-greet .gw { display: inline-block; overflow: hidden; padding: 0 .04em .08em; }
+.adm-greet .gw-i {
+  display: inline-block;
+  animation: greetRise .9s cubic-bezier(.16,.84,.24,1) both;
+}
+@keyframes greetRise {
+  from { transform: translate3d(0, .62em, 0) scale(.985); opacity: 0; filter: blur(7px); }
+  60%  { filter: blur(0); }
+  to   { transform: none; opacity: 1; filter: blur(0); }
+}
+.adm-greet .gw--name .gw-i { color: var(--ink); }
+.adm-greet .gw-rule {
+  display: block; height: 1px; width: 132px; margin-top: 14px; background: var(--ink);
+  transform-origin: 0 50%; animation: greetRule .8s cubic-bezier(.16,.84,.24,1) both;
+}
+@keyframes greetRule { from { transform: scaleX(0); opacity: .2; } to { transform: scaleX(1); opacity: .55; } }
+@media (prefers-reduced-motion: reduce) {
+  .adm-greet .gw-i, .adm-greet .gw-rule { animation: none; opacity: 1; transform: none; filter: none; }
+}
+
+/* Softer edges and clearer targets than the public pages — it is a tool, not a
+   shop window — while keeping the same ink, paper and typeface. */
+.adm .abtn, .adm input, .adm textarea, .adm select, .adm .qa-tile, .adm-menu, .adm .dash-card { border-radius: 3px; }
+.adm input:not([type=checkbox]):not([type=range]):not([type=color]), .adm textarea, .adm select { padding: 11px 13px; }
+.adm input:focus-visible, .adm textarea:focus-visible, .adm select:focus-visible { outline: 2px solid var(--ink); outline-offset: 1px; }
+.adm .abtn { transition: transform .14s ease, box-shadow .14s ease, background .14s ease, color .14s ease; }
+.adm .abtn:hover { transform: translateY(-1px); box-shadow: 0 8px 20px rgba(35,34,32,.1); }
+.adm .abtn:active { transform: none; box-shadow: none; }
+.adm h3 { display: flex; align-items: baseline; gap: 14px; }
+.adm h3::after { content: ''; flex: 1; height: 1px; background: var(--line); }
+.adm .hero-shots { display: flex; flex-wrap: wrap; gap: 14px; margin: 16px 0 4px; }
+.adm .hero-shot-card { position: relative; width: 176px; border: 1px solid var(--line); border-radius: 3px; background: var(--paper); padding: 8px; }
+.adm .hero-shot-card img { width: 100%; height: 104px; object-fit: cover; border-radius: 2px; display: block; }
+.adm .hero-shot-name { display: block; font-size: 11.5px; color: var(--muted); margin-top: 7px; word-break: break-all; line-height: 1.35; }
+.adm .hero-shot-first { position: absolute; top: 14px; left: 14px; background: rgba(35,34,32,.82); color: #f6f3ec; font-size: 10px; letter-spacing: .12em; text-transform: uppercase; padding: 3px 7px; border-radius: 2px; }
+.adm .hero-shot-tools { display: flex; gap: 5px; margin-top: 8px; }
+.adm .iconbtn { width: 27px; height: 27px; border: 1px solid var(--line); border-radius: 3px; background: none; cursor: pointer; font-size: 14px; line-height: 1; color: var(--ink-soft); }
+.adm .iconbtn:hover { border-color: var(--ink); color: var(--ink); }
+.adm .iconbtn--x:hover { border-color: #a4402f; color: #a4402f; }
+.adm .slider-row { display: flex; align-items: center; gap: 14px; margin: 14px 0 4px; flex-wrap: wrap; }
+.adm .slider-label { font-size: 12px; letter-spacing: .18em; text-transform: uppercase; color: var(--ink-soft); }
+.adm .slider-row input[type=range] { flex: 1 1 220px; max-width: 320px; accent-color: var(--ink); }
+.adm .slider-note { font-size: 13px; color: var(--muted); min-width: 15ch; }
+.adm .qa-tile::before {
+  content: ''; position: absolute; left: 0; top: 0; height: 2px; width: 0; background: var(--ink);
+  transition: width .28s cubic-bezier(.2,.7,.2,1);
+}
+.adm .qa-tile:hover::before, .adm .qa-tile:focus-visible::before { width: 100%; }
+.adm .qa-tile .qa-ico { transition: transform .28s cubic-bezier(.2,.7,.2,1); }
+.adm .qa-tile:hover .qa-ico { transform: translateY(-3px); }

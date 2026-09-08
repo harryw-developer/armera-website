@@ -54,22 +54,29 @@ try {
 }
 
 const DEFAULT_HERO_ALT = 'Two Palladium wall hung units in Walnut glow with Vaere monobasin mixers in brushed gold';
+const DEFAULT_HERO_FILE = 'p008_01.png';
+const heroUrl = f => `${ASSETS}/${(f.includes('/') ? f : `lifestyle/${f}`).split('/').map(encodeURIComponent).join('/')}`;
+
 function heroMarkup() {
-  const h = (livePages.home && livePages.home.hero) || null;
-  // A photograph drifts slowly closer unless the admin has switched it off.
-  const kb = (h && h.zoom === false) ? '' : ' class="kb"';
-  if (!h || !h.file) {
-    return `<img id="hero-media"${kb} data-hero-file="p008_01.png" src="${lifeImg('p008_01.png')}" alt="${DEFAULT_HERO_ALT}" fetchpriority="high">`;
+  const h = (livePages.home && livePages.home.hero) || {};
+  const alt = esc(h.alt || DEFAULT_HERO_ALT);
+  const speed = Math.min(90, Math.max(10, Number(h.zoomSpeed) || 30));
+
+  if (h.type === 'video' && h.file) {
+    const poster = h.poster ? ` poster="${heroUrl(h.poster)}"` : '';
+    return `<video id="hero-media" data-hero-file="${esc(h.file)}" src="${heroUrl(h.file)}"${poster} autoplay muted loop playsinline preload="auto" aria-label="${alt}"></video>`;
   }
-  const path = h.file.includes('/') ? h.file : `lifestyle/${h.file}`;
-  const url = `${ASSETS}/${path.split('/').map(encodeURIComponent).join('/')}`;
-  if (h.type === 'video') {
-    const poster = h.poster
-      ? ` poster="${ASSETS}/${(h.poster.includes('/') ? h.poster : `lifestyle/${h.poster}`).split('/').map(encodeURIComponent).join('/')}"`
-      : '';
-    return `<video id="hero-media" data-hero-file="${esc(h.file)}" src="${url}"${poster} autoplay muted loop playsinline preload="auto" aria-label="${esc(h.alt || DEFAULT_HERO_ALT)}"></video>`;
-  }
-  return `<img id="hero-media"${kb} data-hero-file="${esc(h.file)}" src="${url}" alt="${esc(h.alt || DEFAULT_HERO_ALT)}" fetchpriority="high">`;
+
+  // One photograph or several. Several slide across, one every five seconds.
+  const files = (Array.isArray(h.files) && h.files.length ? h.files : [h.file || DEFAULT_HERO_FILE]).filter(Boolean);
+  const drift = h.zoom === false ? '' : ' kb';
+  const slides = files.map((f, i) => {
+    const cls = 'hero-slide' + (i === 0 ? ' on' : '');
+    const load = i === 0 ? ' fetchpriority="high"' : ' loading="lazy"';
+    return `<div class="${cls}"><img class="hero-shot${i === 0 ? drift : ''}" src="${heroUrl(f)}" alt="${i === 0 ? alt : ''}"${load}></div>`;
+  }).join('');
+  return `<div id="hero-media" class="hero-shuffle" data-hero-files="${esc(files.join('|'))}"` +
+    `${h.zoom === false ? ' data-hero-still=""' : ''} style="--hero-zoom:${speed}s">${slides}</div>`;
 }
 
 /* ---------------- helpers ---------------- */

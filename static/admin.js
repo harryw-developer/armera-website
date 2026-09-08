@@ -364,6 +364,25 @@
   }
 
   /* ---------- shell ---------- */
+  // The greeting assembles itself: each word lifts into focus in turn, then a
+  // hairline draws itself under the name.
+  function greetingNode() {
+    var h1 = el('h1', { class: 'adm-greet' });
+    var words = greeting().split(' ');
+    words.forEach(function (w, i) {
+      var slot = el('span', { class: 'gw' + (i === words.length - 1 && words.length > 1 ? ' gw--name' : '') });
+      var inner = el('span', { class: 'gw-i', text: w });
+      inner.style.animationDelay = (0.06 + i * 0.075).toFixed(3) + 's';
+      slot.appendChild(inner);
+      h1.appendChild(slot);
+      if (i < words.length - 1) h1.appendChild(document.createTextNode(' '));
+    });
+    var rule = el('span', { class: 'gw-rule' });
+    rule.style.animationDelay = (0.2 + words.length * 0.075).toFixed(3) + 's';
+    h1.appendChild(rule);
+    return h1;
+  }
+
   function displayName() {
     var m = (state.user && state.user.user_metadata) || {};
     return m.display_name || m.full_name || m.name || '';
@@ -388,7 +407,7 @@
       hd.appendChild(el('h1', { style: 'margin-top:8px;font-size:34px', text: here[1] }));
     } else {
       hd.appendChild(el('span', { class: 'eyebrow', text: 'ARMERA — Site admin' }));
-      hd.appendChild(el('h1', { style: 'margin-top:10px;font-size:34px', text: greeting() }));
+      hd.appendChild(greetingNode());
     }
     head.appendChild(hd);
 
@@ -1292,23 +1311,59 @@
     /* ---- hero photograph or video ---- */
     pages.home.hero = pages.home.hero || {};
     var hero = pages.home.hero;
-    panel.appendChild(lbl('Top of the homepage', 'The full-width picture behind the headline. You can use a photograph or a short video — a video plays automatically, silently, on a loop.'));
-    var heroNow = el('p', { class: 'small', text: hero.file ? (hero.type === 'video' ? 'Currently a video: ' : 'Currently a photo: ') + hero.file : 'Currently the original photograph.' });
-    panel.appendChild(heroNow);
+    panel.appendChild(lbl('Top of the homepage', 'The full-width picture behind the headline. Add several photographs and they slide across, one every five seconds. A video plays automatically, silently, on a loop.'));
+
     var heroType = el('select', {});
-    [['image', 'Photograph'], ['video', 'Video']].forEach(function (o) {
+    [['image', 'Photographs'], ['video', 'Video']].forEach(function (o) {
       var opt = el('option', { value: o[0], text: o[1] });
       if ((hero.type || 'image') === o[0]) opt.selected = true;
       heroType.appendChild(opt);
     });
-    var heroRow = el('div', { class: 'adm-row', style: 'margin-top:10px' });
-    heroRow.appendChild(heroType);
-    var heroFile = el('input', { type: 'file', accept: 'image/*,video/mp4,video/webm' });
+
+    // The photographs currently in the rotation, in the order they appear.
+    var shots = (hero.files && hero.files.length ? hero.files.slice() : (hero.file ? [hero.file] : []));
+    if (hero.type === 'video') shots = (hero.files || []).slice();
+    var shotBox = el('div', { class: 'hero-shots' });
+    var assetUrl = function (f) {
+      var p = f.indexOf('/') === -1 ? 'lifestyle/' + f : f;
+      return cfg.assets + '/' + p.split('/').map(encodeURIComponent).join('/');
+    };
+    function paintShots() {
+      shotBox.innerHTML = '';
+      if (heroType.value === 'video') {
+        shotBox.appendChild(el('p', { class: 'hint', text: hero.file && hero.type === 'video'
+          ? 'Currently playing: ' + hero.file : 'Choose a video file below.' }));
+        return;
+      }
+      if (!shots.length) {
+        shotBox.appendChild(el('p', { class: 'hint', text: 'Currently the original photograph. Add one or more below.' }));
+        return;
+      }
+      shots.forEach(function (f, i) {
+        var card = el('div', { class: 'hero-shot-card' });
+        card.appendChild(el('img', { src: assetUrl(f), alt: '' }));
+        card.appendChild(el('span', { class: 'hero-shot-name', text: f.split('/').pop() }));
+        var tools = el('div', { class: 'hero-shot-tools' });
+        if (i > 0) tools.appendChild(el('button', { class: 'iconbtn', type: 'button', title: 'Move earlier', text: '←',
+          onclick: function () { shots.splice(i - 1, 0, shots.splice(i, 1)[0]); paintShots(); } }));
+        if (i < shots.length - 1) tools.appendChild(el('button', { class: 'iconbtn', type: 'button', title: 'Move later', text: '→',
+          onclick: function () { shots.splice(i + 1, 0, shots.splice(i, 1)[0]); paintShots(); } }));
+        tools.appendChild(el('button', { class: 'iconbtn iconbtn--x', type: 'button', title: 'Remove', text: '×',
+          onclick: function () { shots.splice(i, 1); paintShots(); } }));
+        card.appendChild(tools);
+        if (i === 0) card.appendChild(el('span', { class: 'hero-shot-first', text: 'Shown first' }));
+        shotBox.appendChild(card);
+      });
+    }
+    heroType.addEventListener('change', function () { paintShots(); zoomWrap.hidden = heroType.value === 'video'; });
+    panel.appendChild(heroType);
+    panel.appendChild(shotBox);
+
+    var heroRow = el('div', { class: 'adm-row', style: 'margin-top:14px' });
+    var heroFile = el('input', { type: 'file', accept: 'image/*,video/mp4,video/webm', multiple: 'multiple' });
     heroRow.appendChild(heroFile);
-    var picked = null;   // a file chosen from those already on the site
     heroRow.appendChild(el('button', {
       class: 'abtn abtn--ghost abtn--sm', type: 'button', text: 'Browse site files',
-      title: 'Choose a photo or video already uploaded to the site, instead of uploading another.',
       onclick: function () {
         browseFiles({
           accept: 'media',
@@ -1318,51 +1373,84 @@
             { key: 'products', label: 'Product photos' }
           ],
           onPick: function (path, name) {
-            picked = path;
-            heroFile.value = '';
-            heroType.value = /\.(mp4|webm|mov|m4v)$/i.test(name) ? 'video' : 'image';
-            heroNow.textContent = 'Chosen: ' + path + ' — press “Save top of homepage” to use it.';
-            toast('Selected ' + name, 'ok');
+            if (/\.(mp4|webm|mov|m4v)$/i.test(name)) {
+              heroType.value = 'video';
+              hero.file = path; hero.type = 'video';
+              paintShots();
+              toast('Chose ' + name + ' — press Save to use it', 'ok');
+              return;
+            }
+            heroType.value = 'image';
+            if (shots.indexOf(path) === -1) shots.push(path);
+            paintShots();
+            zoomWrap.hidden = false;
+            toast('Added ' + name, 'ok');
           }
         });
       }
     }));
     panel.appendChild(heroRow);
-    panel.appendChild(el('p', { class: 'hint', text: 'Landscape works best. For video, an MP4 of ten to twenty seconds under about 10 MB keeps the page quick to load — it plays without sound.' }));
+    panel.appendChild(el('p', { class: 'hint', text: 'Landscape works best, and you can choose several photographs at once. For video, an MP4 of ten to twenty seconds under about 10 MB keeps the page quick to load — it plays without sound.' }));
 
+    var zoomWrap = el('div', {});
     var zoomRow = el('label', { class: 'switch-row' });
     var zoomBox = el('input', { type: 'checkbox' });
     zoomBox.checked = hero.zoom !== false;
     zoomRow.appendChild(zoomBox);
-    zoomRow.appendChild(el('span', { text: 'Slowly zoom in on the photograph' }));
-    zoomRow.appendChild(hq('A gentle half-minute drift closer, once, when the page opens. Photographs only — it does nothing to a video.'));
-    panel.appendChild(zoomRow);
+    zoomRow.appendChild(el('span', { text: 'Slowly zoom in on the photographs' }));
+    zoomWrap.appendChild(zoomRow);
+
+    var speedRow = el('div', { class: 'slider-row' });
+    var speed = el('input', { type: 'range', min: '12', max: '60', step: '1', value: String(hero.zoomSpeed || 30) });
+    var speedNote = el('span', { class: 'slider-note' });
+    var saySpeed = function () {
+      var v = Number(speed.value);
+      speedNote.textContent = v + ' seconds — ' + (v <= 18 ? 'quick' : v <= 26 ? 'brisk' : v <= 40 ? 'gentle' : 'barely there');
+    };
+    speed.addEventListener('input', saySpeed);
+    saySpeed();
+    speedRow.appendChild(el('span', { class: 'slider-label', text: 'Zoom speed' }));
+    speedRow.appendChild(speed);
+    speedRow.appendChild(speedNote);
+    speedRow.appendChild(hq('How long one photograph takes to drift all the way in. Lower is faster.'));
+    zoomWrap.appendChild(speedRow);
+    zoomWrap.hidden = (hero.type || 'image') === 'video';
+    panel.appendChild(zoomWrap);
+    paintShots();
+
     panel.appendChild(el('button', {
-      class: 'abtn abtn--ghost abtn--sm', text: 'Save top of homepage', style: 'margin-top:12px;display:block',
+      class: 'abtn abtn--sm', text: 'Save top of homepage', style: 'margin-top:16px;display:block',
       onclick: function () {
         hero.zoom = zoomBox.checked;
-        if (picked) {
-          hero.file = picked;
-          hero.type = heroType.value;
+        hero.zoomSpeed = Number(speed.value);
+        var isVideo = heroType.value === 'video';
+        var chosen = [].slice.call(heroFile.files || []);
+
+        var uploads = chosen.length
+          ? Promise.all(chosen.map(function (f) { return uploadTo('lifestyle', f); }))
+          : Promise.resolve([]);
+
+        uploads.then(function (names) {
+          if (isVideo) {
+            hero.type = 'video';
+            if (names.length) hero.file = names[0];
+            if (!hero.file) throw new Error('Choose a video file first.');
+          } else {
+            names.forEach(function (n) { if (shots.indexOf(n) === -1) shots.push(n); });
+            if (!shots.length) throw new Error('Add at least one photograph.');
+            hero.type = 'image';
+            hero.files = shots.slice();
+            hero.file = shots[0];
+          }
           state.rows.pages = pages;
-          return saveRow('pages', panel, 'Saved — the top of the homepage now uses ' + picked + '.')
-            .then(function () { renderShell(); });
-        }
-        if (!heroFile.files[0]) {
-          hero.type = heroType.value;
-          state.rows.pages = pages;
-          return saveRow('pages', panel, 'Saved.');
-        }
-        var f = heroFile.files[0];
-        var isVideo = /^video\//.test(f.type) || heroType.value === 'video';
-        uploadTo('lifestyle', f).then(function (name) {
-          hero.file = name;
-          hero.type = isVideo ? 'video' : 'image';
-          state.rows.pages = pages;
-          saveRow('pages', panel, 'Saved — the top of the homepage now uses ' + name + '.').then(function () { renderShell(); });
-        }).catch(function (e) { msg(panel, 'Upload failed: ' + e.message, 'err'); });
+          return saveRow('pages', panel, isVideo
+            ? 'Saved — the homepage now plays ' + hero.file + '.'
+            : 'Saved — ' + shots.length + (shots.length === 1 ? ' photograph' : ' photographs sliding') + ' at the top of the homepage.');
+        }).then(function () { renderShell(); })
+          .catch(function (e) { msg(panel, e.message || String(e), 'err'); });
       }
     }));
+
     panel.appendChild(el('hr', { class: 'rule' }));
 
     var hHeading = el('input', { type: 'text', value: pages.home.heading || '' });

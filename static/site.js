@@ -39,6 +39,122 @@
   var marked = document.querySelectorAll('[data-ck], [data-ck-sections], [data-catalogue], [data-catalogue-title], [data-catalogue-cover]');
   if (!cfg || !marked.length) return;
 
+  /* ---------------- homepage hero ----------------
+     The build bakes the chosen media into the page, so the browser fetches
+     exactly the right file and nothing else. This keeps the photographs
+     sliding — one every five seconds — and rebuilds the stack only if the
+     admin has changed it since the site was last built. It runs on what is
+     baked in first, so the slideshow works even if Supabase is unreachable. */
+  var heroTimer = null;
+
+  function heroAssetUrl(f) {
+    var p = f.indexOf('/') === -1 ? 'lifestyle/' + f : f;
+    return cfg.assets + '/' + p.split('/').map(encodeURIComponent).join('/');
+  }
+
+  function setupHero(h) {
+    var host = document.getElementById('hero-media');
+    if (!host) return;
+    h = h || {};
+
+    if (h.type === 'video' && h.file) {
+      if (host.tagName !== 'VIDEO' || host.getAttribute('data-hero-file') !== h.file) {
+        var v = document.createElement('video');
+        v.id = 'hero-media';
+        v.setAttribute('data-hero-file', h.file);
+        v.src = heroAssetUrl(h.file);
+        v.autoplay = true; v.muted = true; v.loop = true; v.playsInline = true;
+        v.setAttribute('playsinline', '');
+        v.preload = 'auto';
+        v.setAttribute('aria-label', h.alt || 'ARMERA bathroomware');
+        if (h.poster) v.poster = heroAssetUrl(h.poster);
+        if (heroTimer) { clearInterval(heroTimer); heroTimer = null; }
+        host.parentNode.replaceChild(v, host);
+        nudgeVideo(v);
+      }
+      return;
+    }
+    if (host.tagName === 'VIDEO') return;   // a video is baked in and no photos are set
+
+    var files = (h.files && h.files.length ? h.files : (h.file ? [h.file] : []));
+    if (!files.length) files = (host.getAttribute('data-hero-files') || '').split('|').filter(Boolean);
+    if (!files.length) return;
+
+    var still = h.zoom === false || host.hasAttribute('data-hero-still');
+    if (h.zoom === true) still = false;
+    var wanted = Number(h.zoomSpeed);
+    var speed = wanted ? Math.min(90, Math.max(10, wanted)) : 0;   // 0 = leave what the build baked in
+
+    if (host.getAttribute('data-hero-files') !== files.join('|')) {
+      var box = document.createElement('div');
+      box.id = 'hero-media';
+      box.className = 'hero-shuffle';
+      box.setAttribute('data-hero-files', files.join('|'));
+      files.forEach(function (f, i) {
+        var slide = document.createElement('div');
+        slide.className = 'hero-slide' + (i === 0 ? ' on' : '');
+        var im = document.createElement('img');
+        im.className = 'hero-shot' + (i === 0 && !still ? ' kb' : '');
+        im.src = heroAssetUrl(f);
+        im.alt = i === 0 ? (h.alt || 'ARMERA bathroomware') : '';
+        slide.appendChild(im);
+        box.appendChild(slide);
+      });
+      if (heroTimer) { clearInterval(heroTimer); heroTimer = null; }
+      host.parentNode.replaceChild(box, host);
+      host = box;
+    }
+
+    if (speed) host.style.setProperty('--hero-zoom', speed + 's');
+    if (still) {
+      host.setAttribute('data-hero-still', '');
+      [].forEach.call(host.querySelectorAll('img'), function (im) { im.classList.remove('kb'); });
+    } else {
+      host.removeAttribute('data-hero-still');
+      var first = host.querySelector('.hero-slide.on img');
+      if (first) first.classList.add('kb');
+    }
+    shuffleHero(host, still);
+  }
+
+  // Bring the next photograph across, and let it start its own drift as it lands.
+  function shuffleHero(box, still) {
+    if (heroTimer) return;
+    var slides = [].slice.call(box.querySelectorAll('.hero-slide'));
+    if (slides.length < 2) return;
+    var at = 0;
+    heroTimer = setInterval(function () {
+      if (document.hidden || !box.isConnected) return;
+      var cur = slides[at];
+      at = (at + 1) % slides.length;
+      var next = slides[at];
+      // park it off to the right without animating, then bring it in
+      next.classList.remove('out', 'on');
+      next.style.transition = 'none';
+      void next.offsetWidth;
+      next.style.transition = '';
+      cur.classList.remove('on');
+      cur.classList.add('out');
+      next.classList.add('on');
+      var im = next.querySelector('img');
+      if (im && !still) { im.classList.remove('kb'); void im.offsetWidth; im.classList.add('kb'); }
+    }, 5000);
+  }
+
+  // Some browsers pause a hero video when the tab is hidden, or refuse the
+  // first autoplay attempt.
+  function nudgeVideo(v) {
+    if (!v || v.tagName !== 'VIDEO') return;
+    var go = function () { if (v.paused) { var p = v.play(); if (p && p.catch) p.catch(function () {}); } };
+    v.addEventListener('canplay', go);
+    v.addEventListener('loadeddata', go);
+    document.addEventListener('visibilitychange', function () { if (!document.hidden) go(); });
+    go();
+  }
+
+  setupHero(null);
+  nudgeVideo(document.getElementById('hero-media'));
+
   fetch(cfg.supabaseUrl + '/rest/v1/site_content?key=eq.pages&select=data', {
     headers: { apikey: cfg.anonKey, Authorization: 'Bearer ' + cfg.anonKey }
   }).then(function (r) { return r.json(); }).then(function (rows) {
@@ -68,61 +184,7 @@
       }
     }
 
-    // Homepage hero. The build bakes the chosen file straight into the page, so
-    // normally there is nothing to do here — only step in if the admin has
-    // changed it since the site was last built.
-    var heroMedia = document.getElementById('hero-media');
-    if (heroMedia && pages.home && pages.home.hero && pages.home.hero.file) {
-      var h = pages.home.hero;
-      var wantVideo = h.type === 'video';
-      var alreadyRight = heroMedia.getAttribute('data-hero-file') === h.file &&
-                         (heroMedia.tagName === 'VIDEO') === wantVideo;
-      if (!alreadyRight) {
-        var path = h.file.indexOf('/') === -1 ? 'lifestyle/' + h.file : h.file;
-        var src = cfg.assets + '/' + path.split('/').map(encodeURIComponent).join('/');
-        if (wantVideo) {
-          var v = document.createElement('video');
-          v.id = 'hero-media';
-          v.setAttribute('data-hero-file', h.file);
-          v.src = src;
-          v.autoplay = true; v.muted = true; v.loop = true; v.playsInline = true;
-          v.setAttribute('playsinline', '');
-          v.preload = 'auto';
-          v.setAttribute('aria-label', h.alt || 'ARMERA bathroomware');
-          if (h.poster) {
-            var pp = h.poster.indexOf('/') === -1 ? 'lifestyle/' + h.poster : h.poster;
-            v.poster = cfg.assets + '/' + pp.split('/').map(encodeURIComponent).join('/');
-          }
-          heroMedia.parentNode.replaceChild(v, heroMedia);
-        } else if (heroMedia.tagName === 'IMG') {
-          heroMedia.setAttribute('data-hero-file', h.file);
-          heroMedia.src = src;
-          if (h.alt) heroMedia.alt = h.alt;
-        } else {
-          var im = document.createElement('img');
-          im.id = 'hero-media';
-          im.setAttribute('data-hero-file', h.file);
-          im.src = src;
-          im.alt = h.alt || 'ARMERA bathroomware';
-          heroMedia.parentNode.replaceChild(im, heroMedia);
-        }
-      }
-      // Slow zoom is a photograph-only setting, and can be changed without a rebuild.
-      var cur = document.getElementById('hero-media');
-      if (cur && cur.tagName === 'IMG') cur.classList.toggle('kb', h.zoom !== false);
-    }
-
-    // Keep the hero video playing: some browsers pause it when the tab is
-    // hidden or refuse the first autoplay attempt.
-    (function () {
-      var v = document.getElementById('hero-media');
-      if (!v || v.tagName !== 'VIDEO') return;
-      var go = function () { if (v.paused) { var p = v.play(); if (p && p.catch) p.catch(function () {}); } };
-      v.addEventListener('canplay', go);
-      v.addEventListener('loadeddata', go);
-      document.addEventListener('visibilitychange', function () { if (!document.hidden) go(); });
-      go();
-    })();
+    setupHero((pages.home || {}).hero);
 
     // Catalogue: one upload in the admin re-points every link, title and cover.
     var cat = pages.catalogue;
