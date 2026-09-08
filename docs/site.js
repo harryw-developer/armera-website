@@ -107,6 +107,9 @@
           heroMedia.parentNode.replaceChild(im, heroMedia);
         }
       }
+      // Slow zoom is a photograph-only setting, and can be changed without a rebuild.
+      var cur = document.getElementById('hero-media');
+      if (cur && cur.tagName === 'IMG') cur.classList.toggle('kb', h.zoom !== false);
     }
 
     // Keep the hero video playing: some browsers pause it when the tab is

@@ -56,8 +56,10 @@ try {
 const DEFAULT_HERO_ALT = 'Two Palladium wall hung units in Walnut glow with Vaere monobasin mixers in brushed gold';
 function heroMarkup() {
   const h = (livePages.home && livePages.home.hero) || null;
+  // A photograph drifts slowly closer unless the admin has switched it off.
+  const kb = (h && h.zoom === false) ? '' : ' class="kb"';
   if (!h || !h.file) {
-    return `<img id="hero-media" data-hero-file="p008_01.png" src="${lifeImg('p008_01.png')}" alt="${DEFAULT_HERO_ALT}" fetchpriority="high">`;
+    return `<img id="hero-media"${kb} data-hero-file="p008_01.png" src="${lifeImg('p008_01.png')}" alt="${DEFAULT_HERO_ALT}" fetchpriority="high">`;
   }
   const path = h.file.includes('/') ? h.file : `lifestyle/${h.file}`;
   const url = `${ASSETS}/${path.split('/').map(encodeURIComponent).join('/')}`;
@@ -67,7 +69,7 @@ function heroMarkup() {
       : '';
     return `<video id="hero-media" data-hero-file="${esc(h.file)}" src="${url}"${poster} autoplay muted loop playsinline preload="auto" aria-label="${esc(h.alt || DEFAULT_HERO_ALT)}"></video>`;
   }
-  return `<img id="hero-media" data-hero-file="${esc(h.file)}" src="${url}" alt="${esc(h.alt || DEFAULT_HERO_ALT)}" fetchpriority="high">`;
+  return `<img id="hero-media"${kb} data-hero-file="${esc(h.file)}" src="${url}" alt="${esc(h.alt || DEFAULT_HERO_ALT)}" fetchpriority="high">`;
 }
 
 /* ---------------- helpers ---------------- */

@@ -96,6 +96,12 @@ nav.primary div:hover .menu-drop, nav.primary div:focus-within .menu-drop { opac
 /* ---------- hero ---------- */
 .hero { position: relative; overflow: hidden; background: var(--ink); }
 .hero img { width: 100%; height: min(76vh, 760px); object-fit: cover; opacity: .94; }
+/* The homepage photograph drifts slowly closer — a single unhurried pass that
+   settles rather than looping. Switched off in the admin, and for anyone who
+   has asked their computer for less movement. */
+@keyframes heroDrift { from { transform: scale(1); } to { transform: scale(1.11); } }
+.hero img.kb { animation: heroDrift 34s cubic-bezier(.33,.33,.7,1) both; transform-origin: 50% 54%; will-change: transform; }
+@media (prefers-reduced-motion: reduce) { .hero img.kb { animation: none; } }
 .hero .veil { position: absolute; inset: 0; background: linear-gradient(12deg, rgba(18,17,14,.62) 0%, rgba(18,17,14,.18) 46%, rgba(18,17,14,0) 70%); }
 .hero .content { position: absolute; left: 0; right: 0; bottom: clamp(40px, 8vh, 96px); color: #f6f3ec; }
 .hero h1 { color: #fbf9f4; max-width: 13ch; }
@@ -833,4 +839,60 @@ table.guar-products td { padding: 8px 10px 8px 0; border-bottom: 1px solid var(-
   .pdp .footnote { margin-top: 9px; }
   .pdp .assure { margin-top: 8px; padding-top: 8px; font-size: 12px; gap: 6px 22px; }
   .prod-docs { margin-top: 13px; padding-top: 12px; }
+}
+
+/* ---- Admin: quick access and the menu that holds everything else ---- */
+.adm-bar { display: flex; align-items: center; gap: 10px; }
+.adm-menu-wrap { position: relative; }
+.adm-menu-btn.on { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+.adm-back { background: none; border: 0; padding: 0; cursor: pointer; font-family: var(--sans); font-size: 12px; letter-spacing: .16em; text-transform: uppercase; color: var(--muted); }
+.adm-back:hover { color: var(--ink); }
+
+.adm-menu {
+  position: absolute; right: 0; top: calc(100% + 12px); z-index: 70;
+  width: min(360px, 88vw); padding: 8px; background: var(--paper);
+  border: 1px solid var(--line-dark); box-shadow: 0 26px 64px rgba(35,34,32,.18);
+}
+.adm-menu .mrow { display: flex; align-items: center; width: 100%; }
+.adm-menu .mrow-go, .adm-menu button.mrow {
+  display: flex; align-items: center; gap: 13px; flex: 1; min-width: 0;
+  background: none; border: 0; cursor: pointer; text-align: left;
+  padding: 11px 12px; font-family: var(--sans); font-size: 14.5px; color: var(--ink-soft);
+}
+.adm-menu .mrow:hover, .adm-menu button.mrow:hover { background: var(--tile); }
+.adm-menu .mrow.on .mrow-name, .adm-menu button.mrow.on .mrow-name { color: var(--ink); font-weight: 600; }
+.adm-menu .mrow-ico { color: var(--muted); display: flex; flex: none; }
+.adm-menu .mdiv { height: 1px; background: var(--line); margin: 6px 12px; }
+
+.qa-grid {
+  display: flex; flex-wrap: wrap; justify-content: center;
+  gap: 22px; max-width: 1220px; margin: 12px auto 0;
+}
+.qa-tile {
+  position: relative; display: flex; flex-direction: column; gap: 10px;
+  flex: 0 0 276px; min-height: 216px; padding: 30px 28px 28px; cursor: pointer;
+  background: var(--paper); border: 1px solid var(--line);
+  transition: border-color .18s ease, transform .18s ease, box-shadow .18s ease;
+}
+.qa-tile:hover, .qa-tile:focus-visible { border-color: var(--ink); transform: translateY(-2px); box-shadow: 0 14px 34px rgba(35,34,32,.08); outline: none; }
+.qa-tile .qa-ico { color: var(--ink-soft); margin-bottom: auto; display: flex; }
+.qa-tile .qa-name { font-size: 22px; color: var(--ink); }
+.qa-tile .qa-blurb { font-size: 13px; line-height: 1.5; color: var(--muted); }
+.qa-tile--add { background: none; border-style: dashed; }
+.qa-tile--add .qa-name, .qa-tile--add .qa-ico { color: var(--muted); }
+.qa-tile--add:hover .qa-name, .qa-tile--add:hover .qa-ico { color: var(--ink); }
+.qa-pin {
+  position: absolute; top: 10px; right: 12px; background: none; border: 0; padding: 4px;
+  font-size: 17px; line-height: 1; color: var(--muted); cursor: pointer;
+  opacity: 0; transition: opacity .15s ease, color .15s ease;
+}
+.qa-tile:hover .qa-pin, .qa-pin:focus-visible, .adm-menu .qa-pin { opacity: 1; }
+.qa-pin:hover { color: var(--ink); }
+.adm-menu .qa-pin { position: static; flex: none; margin-right: 6px; opacity: .55; }
+.adm-menu .qa-pin.on { opacity: 1; color: var(--ink); }
+.qa-foot { text-align: center; font-size: 13px; color: var(--muted); margin: 32px 0 0; }
+@media (max-width: 700px) {
+  .qa-tile { flex: 1 1 100%; }
+  .qa-tile { min-height: 0; }
+  .qa-pin { opacity: 1; }
 }

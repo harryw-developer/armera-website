@@ -7,7 +7,7 @@
   if (!root || !cfg || !window.supabase) return;
   var sb = window.supabase.createClient(cfg.supabaseUrl, cfg.anonKey);
 
-  var state = { rows: {}, keys: [], tab: 'dashboard', catKey: null, rangeIdx: 0, editing: null, user: null };
+  var state = { rows: {}, keys: [], tab: 'home', menuOpen: false, catKey: null, rangeIdx: 0, editing: null, user: null };
 
   var el = function (tag, attrs, children) {
     var n = document.createElement(tag);
@@ -30,7 +30,7 @@
       'data-tip': tip, tabindex: '0', role: 'note', 'aria-label': 'Help: ' + tip, text: '?'
     });
   };
-  // lbl('Name', 'The product name as customers see it — e.g. “600mm 2 drawer wall hung unit”.') or lbl('Name', 'what this field does')
+  // lbl('Name') or lbl('Name')
   var lbl = function (text, tip, side) {
     var l = el('label', { text: text });
     if (tip) l.appendChild(hq(tip, side));
@@ -378,23 +378,41 @@
   function renderShell() {
     root.innerHTML = '';
     var wrap = el('div', { class: 'adm' });
+    var here = section(state.tab);
     var head = el('div', { class: 'adm-head' });
     var hd = el('div', {});
-    hd.appendChild(el('span', { class: 'eyebrow', text: 'ARMERA — Site admin' }));
-    hd.appendChild(el('h1', { style: 'margin-top:10px;font-size:34px', text: greeting() }));
+    if (here) {
+      var back = el('button', { class: 'adm-back', type: 'button', text: '‹  Quick access' });
+      back.addEventListener('click', function () { openSection('home'); });
+      hd.appendChild(back);
+      hd.appendChild(el('h1', { style: 'margin-top:8px;font-size:34px', text: here[1] }));
+    } else {
+      hd.appendChild(el('span', { class: 'eyebrow', text: 'ARMERA — Site admin' }));
+      hd.appendChild(el('h1', { style: 'margin-top:10px;font-size:34px', text: greeting() }));
+    }
     head.appendChild(hd);
-    var out = el('button', { class: 'abtn abtn--ghost abtn--sm', text: 'Sign out', onclick: function () { sb.auth.signOut().then(function () { renderLogin(); }); } });
-    head.appendChild(out);
-    wrap.appendChild(head);
 
-    var tabs = el('div', { class: 'adm-tabs' });
-    [['dashboard', 'Dashboard'], ['catalogue', 'Products'], ['pages', 'Pages'], ['retailers', 'Retailers'], ['instructions', 'Instructions'], ['videos', 'Videos'], ['gallery', 'Photo gallery'], ['guarantees', 'Guarantees'], ['brochure', 'Catalogue'], ['account', 'Account']].forEach(function (t) {
-      tabs.appendChild(el('button', {
-        class: state.tab === t[0] ? 'on' : '', text: t[1],
-        onclick: function () { state.tab = t[0]; state.editing = null; renderShell(); }
-      }));
+    var bar = el('div', { class: 'adm-bar' });
+    var menuWrap = el('div', { class: 'adm-menu-wrap' });
+    var menuBtn = el('button', {
+      class: 'abtn abtn--sm adm-menu-btn' + (state.menuOpen ? ' on' : ''), type: 'button',
+      'aria-expanded': state.menuOpen ? 'true' : 'false', text: 'Menu'
     });
-    wrap.appendChild(tabs);
+    menuBtn.addEventListener('click', function (e) {
+      e.stopPropagation();
+      state.menuOpen = !state.menuOpen;
+      renderShell();
+    });
+    menuWrap.appendChild(menuBtn);
+    if (state.menuOpen) {
+      var mp = menuPanel();
+      mp.addEventListener('click', function (e) { e.stopPropagation(); });
+      menuWrap.appendChild(mp);
+    }
+    bar.appendChild(menuWrap);
+    bar.appendChild(el('button', { class: 'abtn abtn--ghost abtn--sm', text: 'Sign out', onclick: function () { sb.auth.signOut().then(function () { renderLogin(); }); } }));
+    head.appendChild(bar);
+    wrap.appendChild(head);
 
     if (!displayName()) {
       var nameBox = el('div', { class: 'adm-panel', style: 'margin-bottom:26px;border:1px solid var(--line);background:var(--paper);padding:18px 22px;max-width:520px' });
@@ -418,6 +436,7 @@
     wrap.appendChild(panel);
     root.appendChild(wrap);
 
+    if (state.tab === 'home') renderHome(panel);
     if (state.tab === 'dashboard') renderDashboard(panel);
     if (state.tab === 'catalogue') renderCatalogue(panel);
     if (state.tab === 'pages') renderPages(panel);
@@ -428,6 +447,20 @@
     if (state.tab === 'retailers') renderRetailers(panel);
     if (state.tab === 'brochure') renderBrochure(panel);
     if (state.tab === 'account') renderAccount(panel);
+
+    // A click anywhere off the menu closes it, and so does Escape.
+    if (!state.menuBound) {
+      state.menuBound = true;
+      document.addEventListener('click', function (e) {
+        if (!state.menuOpen) return;
+        if (e.target && e.target.closest && e.target.closest('.adm-menu-wrap')) return;
+        state.menuOpen = false;
+        renderShell();
+      });
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && state.menuOpen) { state.menuOpen = false; renderShell(); }
+      });
+    }
   }
 
   // One-time setup for visitor recording (paste into Supabase → SQL Editor).
@@ -837,9 +870,7 @@
       rangeSel.appendChild(o);
     });
     row.appendChild(catSel);
-    row.appendChild(hq('The eight top-level sections of the site — Furniture & Basins, WCs, Taps and so on.', 'left'));
     row.appendChild(rangeSel);
-    row.appendChild(hq('The families inside the chosen category — Atoll, Palladium, Holloway and so on.', 'left'));
     row.appendChild(el('button', {
       class: 'abtn abtn--ghost abtn--sm', title: 'Create a new family of products inside the chosen category.', text: 'Add range',
       onclick: function () {
@@ -880,13 +911,13 @@
     var heroCap = el('textarea', { text: (range.hero && range.hero.caption) || '' });
     heroCap.style.minHeight = '60px';
     var heroFile = el('input', { type: 'file', accept: 'image/*' });
-    d.appendChild(lbl('Range name', 'The short name shown in menus and on tiles — e.g. “Atoll”. Keep it to the family name.')); d.appendChild(name);
+    d.appendChild(lbl('Range name')); d.appendChild(name);
     d.appendChild(lbl('Page title', 'The heading at the top of the range page — usually the range name plus the type, e.g. “Atoll furniture”.')); d.appendChild(title);
-    d.appendChild(lbl('Tagline', 'One line of description under the heading, and on the tile that links here. Straight from the catalogue is ideal.')); d.appendChild(tagline);
-    d.appendChild(lbl('Footnote (optional)', 'Small print shown under the products in this range — e.g. “These cabinets require handles to be ordered separately.”')); d.appendChild(footnote);
+    d.appendChild(lbl('Tagline')); d.appendChild(tagline);
+    d.appendChild(lbl('Footnote (optional)')); d.appendChild(footnote);
     d.appendChild(lbl('Hero image', 'The wide lifestyle photo across the top of the range page. Landscape photos work best. Current file: ' + ((range.hero && range.hero.img) || 'none') + '. Choosing a file replaces it.'));
     d.appendChild(heroFile);
-    d.appendChild(lbl('Hero caption', 'The small caption over the bottom-right of the hero photo, describing what is pictured.')); d.appendChild(heroCap);
+    d.appendChild(lbl('Hero caption')); d.appendChild(heroCap);
 
     /* swatches */
     d.appendChild(lbl('Colours', 'The round colour swatches on the range page. Code is a short label such as 11 or 23 — use the same code on a product option to link them. Name is what customers read. The image is a small square of the colour.'));
@@ -941,7 +972,7 @@
     panel.appendChild(d);
 
     /* products */
-    var ph = lbl('Products in ' + range.title, 'Every product in this range. “Edit” opens its details, prices and photos. “Remove” deletes it from the site.');
+    var ph = lbl('Products in ' + range.title);
     panel.appendChild(ph);
     ph.appendChild(el('a', {
       class: 'preview-link', style: 'margin-left:14px', target: '_blank', rel: 'noopener',
@@ -997,10 +1028,10 @@
     var dims = el('input', { type: 'text', value: p.dims || '' });
     var note = el('textarea', { text: p.note || '' }); note.style.minHeight = '60px';
     var footnote = el('textarea', { text: p.footnote || '' }); footnote.style.minHeight = '60px';
-    box.appendChild(lbl('Name', 'The product name as customers see it — e.g. “600mm 2 drawer wall hung unit”.')); box.appendChild(name);
+    box.appendChild(lbl('Name')); box.appendChild(name);
     box.appendChild(lbl('Dimensions', 'Shown under the product name. Use the catalogue format, e.g. 600w x 520h x 460d. “mm” is added automatically. Leave blank if not applicable.')); box.appendChild(dims);
-    box.appendChild(lbl('Note (optional)', 'A short note in a bordered box on the product page — e.g. “Price excludes ceramic basin.”')); box.appendChild(note);
-    box.appendChild(lbl('Footnote (optional)', 'Small print shown under the products in this range — e.g. “These cabinets require handles to be ordered separately.”')); box.appendChild(footnote);
+    box.appendChild(lbl('Note (optional)')); box.appendChild(note);
+    box.appendChild(lbl('Footnote (optional)')); box.appendChild(footnote);
 
     /* variants (drawn first — the photo slots below follow the option rows) */
     box.appendChild(lbl('Options & pricing', 'One row per version of this product. Code is the order code (AT.620.600.11). Finish/option is what customers read (Chrome, Matt white). Colour code links to a colour swatch — leave blank for brassware finishes. RRP is the price in pounds, numbers only.'));
@@ -1179,7 +1210,7 @@
 
     var bText = el('textarea', { text: b.text || '' });
     bText.style.minHeight = '60px';
-    panel.appendChild(lbl('Banner wording', 'Keep it to one short line — it is centred across the full width of the page.'));
+    panel.appendChild(lbl('Banner wording'));
     panel.appendChild(bText);
 
     var colRow = el('div', { class: 'adm-row', style: 'margin-top:18px' });
@@ -1189,13 +1220,13 @@
       var w = el('label', { class: 'colour-pick' });
       w.appendChild(el('span', { text: labelText }));
       w.appendChild(input);
-      w.appendChild(hq(tip));
+      if (tip) w.appendChild(hq(tip));
       return w;
     };
-    colRow.appendChild(mk('Background', bBg, 'The colour of the strip itself.'));
-    colRow.appendChild(mk('Text', bFg, 'The colour of the wording. Keep it well apart from the background so it stays easy to read.'));
+    colRow.appendChild(mk('Background', bBg));
+    colRow.appendChild(mk('Text', bFg));
     var bSize = el('input', { type: 'number', min: '11', max: '28', value: b.size || 14, style: 'max-width:90px' });
-    colRow.appendChild(mk('Size (px)', bSize, 'Text size in pixels. 14 is the default.'));
+    colRow.appendChild(mk('Size (px)', bSize));
     panel.appendChild(colRow);
 
     var contrastNote = el('p', { class: 'small', style: 'margin-top:10px' });
@@ -1298,9 +1329,18 @@
     }));
     panel.appendChild(heroRow);
     panel.appendChild(el('p', { class: 'hint', text: 'Landscape works best. For video, an MP4 of ten to twenty seconds under about 10 MB keeps the page quick to load — it plays without sound.' }));
+
+    var zoomRow = el('label', { class: 'switch-row' });
+    var zoomBox = el('input', { type: 'checkbox' });
+    zoomBox.checked = hero.zoom !== false;
+    zoomRow.appendChild(zoomBox);
+    zoomRow.appendChild(el('span', { text: 'Slowly zoom in on the photograph' }));
+    zoomRow.appendChild(hq('A gentle half-minute drift closer, once, when the page opens. Photographs only — it does nothing to a video.'));
+    panel.appendChild(zoomRow);
     panel.appendChild(el('button', {
       class: 'abtn abtn--ghost abtn--sm', text: 'Save top of homepage', style: 'margin-top:12px;display:block',
       onclick: function () {
+        hero.zoom = zoomBox.checked;
         if (picked) {
           hero.file = picked;
           hero.type = heroType.value;
@@ -1327,13 +1367,13 @@
 
     var hHeading = el('input', { type: 'text', value: pages.home.heading || '' });
     var hLede = el('textarea', { text: pages.home.lede || '' });
-    panel.appendChild(lbl('Main heading', 'The large headline over the photo at the top of the homepage.')); panel.appendChild(hHeading);
-    panel.appendChild(lbl('Intro sentence', 'The sentence under the homepage headline. One or two lines reads best.')); panel.appendChild(hLede);
+    panel.appendChild(lbl('Main heading')); panel.appendChild(hHeading);
+    panel.appendChild(lbl('Intro sentence')); panel.appendChild(hLede);
 
     panel.appendChild(el('hr', { class: 'rule' }));
     panel.appendChild(el('h3', { text: 'About page' }));
     var aHeading = el('input', { type: 'text', value: pages.about.heading || '' });
-    panel.appendChild(lbl('Heading', 'The main heading at the top of the About page.')); panel.appendChild(aHeading);
+    panel.appendChild(lbl('Heading')); panel.appendChild(aHeading);
     var sections = (pages.about.sections || []).map(function (s) { return { side: s.side, paras: (s.paras || []).slice() }; });
     var sWrap = el('div', {});
     var drawS = function () {
@@ -1361,10 +1401,10 @@
     var phone = el('input', { type: 'text', value: pages.contact.phone || '' });
     var email = el('input', { type: 'text', value: pages.contact.email || '' });
     var address = el('textarea', { text: pages.contact.address || '' }); address.style.minHeight = '60px';
-    panel.appendChild(lbl('Spares line', 'Shown on the Support page and the Contact page. Include the phone number you want people to ring for spares.')); panel.appendChild(spares);
-    panel.appendChild(lbl('Phone', 'Used in the top bar, footer and Contact page. Changing it here updates every one of them, and the click-to-call links.')); panel.appendChild(phone);
-    panel.appendChild(lbl('Email', 'Used in the top bar, footer and Contact page, including the click-to-email links.')); panel.appendChild(email);
-    panel.appendChild(lbl('Address', 'Shown in the footer and on the Contact page.')); panel.appendChild(address);
+    panel.appendChild(lbl('Spares line')); panel.appendChild(spares);
+    panel.appendChild(lbl('Phone')); panel.appendChild(phone);
+    panel.appendChild(lbl('Email')); panel.appendChild(email);
+    panel.appendChild(lbl('Address')); panel.appendChild(address);
 
     panel.appendChild(el('button', {
       class: 'abtn', text: 'Save page text', style: 'margin-top:24px;display:block',
@@ -1570,7 +1610,7 @@
       'it then shows in the picture strip on each of those product pages.' }));
 
     var up = el('div', { style: 'border:1px solid var(--line);background:var(--paper);padding:18px 22px' });
-    up.appendChild(lbl('Add photographs', 'Choose one or more images. They upload straight away, then you can tag them below.'));
+    up.appendChild(lbl('Add photographs'));
     var files = el('input', { type: 'file', accept: 'image/*', multiple: 'multiple' });
     up.appendChild(files);
     up.appendChild(el('button', {
@@ -1753,9 +1793,9 @@
     var title = el('input', { type: 'text', placeholder: 'How to remove a flow regulator' });
     var url = el('input', { type: 'text', placeholder: 'https://www.youtube.com/watch?v=…' });
     var thumbFile = el('input', { type: 'file', accept: 'image/*' });
-    panel.appendChild(lbl('Title', 'Shown across the top of the video card — e.g. “How to remove a flow regulator”.')); panel.appendChild(title);
-    panel.appendChild(lbl('YouTube link', 'Paste the full link from YouTube’s address bar, starting https://. Clicking the card opens it in a new tab.')); panel.appendChild(url);
-    panel.appendChild(lbl('Thumbnail image', 'The picture on the video card. A still from the video works well — landscape images are cropped to a tall card.')); panel.appendChild(thumbFile);
+    panel.appendChild(lbl('Title')); panel.appendChild(title);
+    panel.appendChild(lbl('YouTube link')); panel.appendChild(url);
+    panel.appendChild(lbl('Thumbnail image')); panel.appendChild(thumbFile);
     panel.appendChild(el('button', {
       class: 'abtn', text: 'Add video', style: 'margin-top:20px;display:block',
       onclick: function () {
@@ -1814,13 +1854,13 @@
       var website = el('input', { type: 'text', value: r.website || '' });
       var lat = el('input', { type: 'text', value: r.lat != null ? r.lat : '' });
       var lng = el('input', { type: 'text', value: r.lng != null ? r.lng : '' });
-      box.appendChild(lbl('Retailer name', 'The business name as it should appear on the map pin and in the list.')); box.appendChild(name);
-      box.appendChild(lbl('Street address', 'Street and building only — the town, county and postcode go in their own boxes below.')); box.appendChild(address);
-      box.appendChild(lbl('Town', 'Customers can search by town, so spell it as people would type it.')); box.appendChild(town);
-      box.appendChild(lbl('County', 'Optional. Shown after the town in the retailer’s address.')); box.appendChild(county);
+      box.appendChild(lbl('Retailer name')); box.appendChild(name);
+      box.appendChild(lbl('Street address')); box.appendChild(address);
+      box.appendChild(lbl('Town')); box.appendChild(town);
+      box.appendChild(lbl('County')); box.appendChild(county);
       box.appendChild(lbl('Postcode', 'Used to place the pin on the map. Type it, then press “Locate from postcode” below.')); box.appendChild(postcode);
-      box.appendChild(lbl('Phone', 'Shown on the retailer’s card and pin, as a tap-to-call link.')); box.appendChild(phone);
-      box.appendChild(lbl('Website', 'Full address including https:// — it opens in a new tab.')); box.appendChild(website);
+      box.appendChild(lbl('Phone')); box.appendChild(phone);
+      box.appendChild(lbl('Website')); box.appendChild(website);
       box.appendChild(lbl('Map position', 'Where the pin sits. Press “Locate from postcode” to fill this in automatically. Only type numbers here if the postcode is not recognised.'));
       var geo = el('div', { class: 'adm-row' });
       lat.style.maxWidth = '150px'; lng.style.maxWidth = '150px';
@@ -2251,7 +2291,7 @@
     panel.appendChild(el('h3', { text: 'Upload a new edition' }));
     var label = el('input', { type: 'text', value: cat.label || '', placeholder: 'e.g. September 2026 Collection' });
     var file = el('input', { type: 'file', accept: 'application/pdf' });
-    panel.appendChild(lbl('Edition name', 'Shown next to the catalogue across the site — e.g. “September 2026 Collection”.')); panel.appendChild(label);
+    panel.appendChild(lbl('Edition name')); panel.appendChild(label);
     panel.appendChild(lbl('Catalogue PDF', 'Upload the new catalogue and every “View the catalogue” link on the site points at it immediately. The cover picture is taken from page 1 automatically.')); panel.appendChild(file);
 
     var status = el('p', { class: 'small', style: 'margin-top:12px' });
@@ -2317,7 +2357,7 @@
     panel.appendChild(el('p', { class: 'tab-intro', text: 'Your sign-in details for this control panel.' }));
     panel.appendChild(el('h3', { text: 'Your name' }));
     var nm = el('input', { type: 'text', value: displayName() });
-    panel.appendChild(lbl('Display name', 'Just the name used to greet you at the top of this page.'));
+    panel.appendChild(lbl('Display name'));
     panel.appendChild(nm);
     panel.appendChild(el('button', {
       class: 'abtn abtn--ghost abtn--sm', text: 'Update name', style: 'margin-top:14px;display:block',
@@ -2333,8 +2373,9 @@
     panel.appendChild(el('h3', { text: 'Change password' }));
     var p1 = el('input', { type: 'password', autocomplete: 'new-password' });
     var p2 = el('input', { type: 'password', autocomplete: 'new-password' });
-    panel.appendChild(lbl('New password', 'At least 8 characters. You will use this with your email address to sign in next time.')); panel.appendChild(p1);
-    panel.appendChild(lbl('Repeat new password', 'Type the same password again so nothing is mistyped.')); panel.appendChild(p2);
+    panel.appendChild(lbl('New password')); panel.appendChild(p1);
+    panel.appendChild(el('p', { class: 'hint', text: 'At least 8 characters.' }));
+    panel.appendChild(lbl('Repeat new password')); panel.appendChild(p2);
     panel.appendChild(el('button', {
       class: 'abtn', text: 'Update password', style: 'margin-top:22px;display:block',
       onclick: function () {
@@ -2346,6 +2387,152 @@
         });
       }
     }));
+  }
+
+
+  /* ---------- sections, and the tiles you pin to the front ---------- */
+  // key, name, one line for the tile, and a thin line drawing.
+  var SECTIONS = [
+    ['catalogue', 'Products', 'Ranges, products, options and prices',
+      'M12 3l8 4v10l-8 4-8-4V7z|M4 7l8 4 8-4|M12 11v10'],
+    ['pages', 'Pages', 'Wording, the homepage picture and the news banner',
+      'M6 3h8l4 4v14H6z|M14 3v4h4|M9 12h6|M9 16h6'],
+    ['guarantees', 'Guarantees', 'Registrations sent in by customers',
+      'M12 3l7 3v6c0 4.5-3 7.8-7 9-4-1.2-7-4.5-7-9V6z|M9 12l2 2 4-4'],
+    ['instructions', 'Instructions', 'Fitting instruction PDFs',
+      'M5 6h14|M5 12h14|M5 18h9'],
+    ['retailers', 'Retailers', 'The stockists shown on the map',
+      'M12 21s7-6.2 7-11a7 7 0 1 0-14 0c0 4.8 7 11 7 11z|M12 12.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z'],
+    ['gallery', 'Photo gallery', 'Photographs, and which products they show',
+      'M3 5h18v14H3z|M3 16l5-5 4 4 3-3 6 6|M8.5 9.5a1.2 1.2 0 1 0 0-2.4 1.2 1.2 0 0 0 0 2.4z'],
+    ['videos', 'Videos', 'How-to films on the support pages',
+      'M3 6h18v12H3z|M10 9.5l5 2.5-5 2.5z'],
+    ['brochure', 'Catalogue', 'The catalogue PDF used by every link',
+      'M4 5h7v15H4z|M13 5h7v15h-7z'],
+    ['dashboard', 'Dashboard', 'Visitor figures and how the site is doing',
+      'M4 20V11|M10 20V4|M16 20v-6|M22 20H2'],
+    ['account', 'Account', 'Your name and your password',
+      'M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8z|M4 21c1.4-3.9 4.8-6 8-6s6.6 2.1 8 6']
+  ];
+  var DEFAULT_PINS = ['catalogue', 'pages', 'guarantees', 'instructions'];
+
+  function section(key) {
+    for (var i = 0; i < SECTIONS.length; i++) if (SECTIONS[i][0] === key) return SECTIONS[i];
+    return null;
+  }
+  function icon(paths, size) {
+    var ns = 'http://www.w3.org/2000/svg';
+    var svg = document.createElementNS(ns, 'svg');
+    svg.setAttribute('viewBox', '0 0 24 24');
+    svg.setAttribute('width', size || 26); svg.setAttribute('height', size || 26);
+    svg.setAttribute('fill', 'none'); svg.setAttribute('stroke', 'currentColor');
+    svg.setAttribute('stroke-width', '1.2'); svg.setAttribute('stroke-linecap', 'round');
+    svg.setAttribute('stroke-linejoin', 'round'); svg.setAttribute('aria-hidden', 'true');
+    paths.split('|').forEach(function (d) {
+      var p = document.createElementNS(ns, 'path');
+      p.setAttribute('d', d);
+      svg.appendChild(p);
+    });
+    return svg;
+  }
+  function pins() {
+    var m = (state.user && state.user.user_metadata) || {};
+    var list = m.admin_pins;
+    if (!Array.isArray(list)) return DEFAULT_PINS.slice();
+    return list.filter(section);
+  }
+  function setPins(list) {
+    // Show the change at once; the account record catches up behind it.
+    state.user = state.user || {};
+    state.user.user_metadata = state.user.user_metadata || {};
+    state.user.user_metadata.admin_pins = list;
+    renderShell();
+    sb.auth.updateUser({ data: { admin_pins: list } }).then(function (res) {
+      if (res.error) toast('Could not save your tiles: ' + res.error.message, 'err');
+    });
+  }
+  function togglePin(key) {
+    var list = pins(), i = list.indexOf(key);
+    if (i === -1) { list.push(key); toast(section(key)[1] + ' pinned to quick access', 'ok'); }
+    else { list.splice(i, 1); toast(section(key)[1] + ' removed from quick access', 'ok'); }
+    setPins(list);
+  }
+  function openSection(key) {
+    state.tab = key; state.editing = null; state.menuOpen = false;
+    renderShell();
+    window.scrollTo(0, 0);
+  }
+  function star(key, isPinned) {
+    var b = el('button', {
+      class: 'qa-pin' + (isPinned ? ' on' : ''), type: 'button',
+      title: isPinned ? 'Remove from quick access' : 'Pin to quick access',
+      'aria-label': (isPinned ? 'Remove ' : 'Pin ') + section(key)[1],
+      text: isPinned ? '★' : '☆'
+    });
+    b.addEventListener('click', function (e) { e.stopPropagation(); togglePin(key); });
+    return b;
+  }
+
+  /* ---------- quick access ---------- */
+  function renderHome(panel) {
+    var list = pins();
+    var grid = el('div', { class: 'qa-grid' });
+
+    list.forEach(function (key) {
+      var sec = section(key);
+      var tile = el('div', { class: 'qa-tile', role: 'button', tabindex: '0' });
+      tile.appendChild(el('span', { class: 'qa-ico' }, [icon(sec[3], 30)]));
+      tile.appendChild(el('span', { class: 'qa-name', text: sec[1] }));
+      tile.appendChild(el('span', { class: 'qa-blurb', text: sec[2] }));
+      tile.appendChild(star(key, true));
+      tile.addEventListener('click', function () { openSection(key); });
+      tile.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openSection(key); }
+      });
+      grid.appendChild(tile);
+    });
+
+    var add = el('div', { class: 'qa-tile qa-tile--add', role: 'button', tabindex: '0' });
+    add.appendChild(el('span', { class: 'qa-ico' }, [icon('M12 5v14|M5 12h14', 30)]));
+    add.appendChild(el('span', { class: 'qa-name', text: list.length ? 'Add a tile' : 'Choose your tiles' }));
+    add.appendChild(el('span', { class: 'qa-blurb', text: 'Pick the parts of the site you use most' }));
+    var openMenu = function () { state.menuOpen = true; renderShell(); };
+    add.addEventListener('click', openMenu);
+    add.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openMenu(); }
+    });
+    grid.appendChild(add);
+
+    panel.appendChild(grid);
+    panel.appendChild(el('p', { class: 'qa-foot', text: list.length
+      ? 'Everything else is under Menu, top right.'
+      : 'Everything is under Menu, top right — pin the parts you use often and they will appear here.' }));
+  }
+
+  /* ---------- the menu that holds everything ---------- */
+  function menuPanel() {
+    var m = el('div', { class: 'adm-menu' });
+    var list = pins();
+
+    var homeRow = el('button', { class: 'mrow' + (state.tab === 'home' ? ' on' : ''), type: 'button' });
+    homeRow.appendChild(el('span', { class: 'mrow-ico' }, [icon('M4 11l8-7 8 7|M6 10v10h12V10', 20)]));
+    homeRow.appendChild(el('span', { class: 'mrow-name', text: 'Quick access' }));
+    homeRow.addEventListener('click', function () { openSection('home'); });
+    m.appendChild(homeRow);
+    m.appendChild(el('div', { class: 'mdiv' }));
+
+    SECTIONS.forEach(function (sec) {
+      var pinned = list.indexOf(sec[0]) !== -1;
+      var row = el('div', { class: 'mrow' + (state.tab === sec[0] ? ' on' : '') });
+      var go = el('button', { class: 'mrow-go', type: 'button' });
+      go.appendChild(el('span', { class: 'mrow-ico' }, [icon(sec[3], 20)]));
+      go.appendChild(el('span', { class: 'mrow-name', text: sec[1] }));
+      go.addEventListener('click', function () { openSection(sec[0]); });
+      row.appendChild(go);
+      row.appendChild(star(sec[0], pinned));
+      m.appendChild(row);
+    });
+    return m;
   }
 
   /* ---------- boot ---------- */
