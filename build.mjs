@@ -95,6 +95,22 @@ const CFG = {
 // Catalogue: the filename lives in the Supabase `pages` row so the admin can
 // swap in a new edition; every link below is tagged data-catalogue and gets
 // its href rewritten at runtime by site.js.
+// Social accounts. Monochrome marks so they sit quietly with the rest.
+const SOCIAL = [
+  ['Facebook', 'https://www.facebook.com/armeraUK',
+   '<path d="M13.6 21v-8.2h2.76l.41-3.2h-3.17V7.55c0-.93.26-1.56 1.59-1.56h1.7V3.13c-.3-.04-1.3-.13-2.47-.13-2.44 0-4.12 1.49-4.12 4.23v2.37H7.5v3.2h2.8V21h3.3z"/>'],
+  ['LinkedIn', 'https://www.linkedin.com/company/armera/',
+   '<path d="M5 3.5a2 2 0 1 1 0 4 2 2 0 0 1 0-4zM3.2 9h3.6v11.8H3.2zM9.6 9h3.45v1.62h.05c.48-.9 1.65-1.85 3.4-1.85 3.63 0 4.3 2.39 4.3 5.5v6.53h-3.6v-5.79c0-1.38-.02-3.16-1.92-3.16-1.93 0-2.22 1.5-2.22 3.06v5.89H9.6z"/>'],
+  ['Instagram', 'https://www.instagram.com/armera_uk/',
+   '<rect x="3.1" y="3.1" width="17.8" height="17.8" rx="5.1" fill="none" stroke="currentColor" stroke-width="1.7"/>' +
+   '<circle cx="12" cy="12" r="4.1" fill="none" stroke="currentColor" stroke-width="1.7"/>' +
+   '<circle cx="16.9" cy="7.1" r="1.15"/>']
+];
+const socialMarkup = (cls = '') => `<ul class="social${cls ? ' ' + cls : ''}">` + SOCIAL.map(([name, href, art]) =>
+  `<li><a href="${href}" target="_blank" rel="noopener" aria-label="ARMERA on ${name}" title="${name}">` +
+  `<svg viewBox="0 0 24 24" width="19" height="19" fill="currentColor" aria-hidden="true">${art}</svg></a></li>`
+).join('') + '</ul>';
+
 const CATALOGUE_FILE = 'ARMERA-Catalogue-March-2026.pdf';
 const catHref = `${ASSETS}/documents/${CATALOGUE_FILE}`;
 const catLink = (text, cls = 'cat-inline') =>
@@ -202,6 +218,7 @@ ${body}
       <div class="brand">
         <img class="logo-img" src="${ASSETS}/brand/logo-light.png" alt="ARMERA">
         <p>A coordinated bathroomware collection, designed for everyday use and lasting appeal.</p>
+        ${socialMarkup('social--foot')}
       </div>
       <div>
         <h5>Products</h5>
@@ -864,6 +881,10 @@ ${crumbs([{ label: 'Home', href: '/' }, { label: 'Contact' }])}
       <div class="row">
         <div class="k">Catalogue</div>
         <div><a data-catalogue href="${catHref}" target="_blank" rel="noopener" style="border-bottom:1px solid var(--line-dark)" data-catalogue-title>March 2026 Collection</a></div>
+      </div>
+      <div class="row">
+        <div class="k">Follow</div>
+        <div>${socialMarkup()}</div>
       </div>
     </div>
   </div>
