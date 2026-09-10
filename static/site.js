@@ -138,7 +138,25 @@
       next.classList.add('on');
       var im = next.querySelector('img');
       if (im && !still) { im.classList.remove('kb'); void im.offsetWidth; im.classList.add('kb'); }
+      park(cur);
     }, 5000);
+  }
+
+  // Once a photograph has finished sliding out, put it back on the right-hand
+  // side and stop its drift, so nothing is left running off to the left.
+  function park(slide) {
+    var done = function () {
+      slide.removeEventListener('transitionend', done);
+      if (!slide.classList.contains('out')) return;
+      slide.style.transition = 'none';
+      slide.classList.remove('out');
+      void slide.offsetWidth;
+      slide.style.transition = '';
+      var im = slide.querySelector('img');
+      if (im) im.classList.remove('kb');
+    };
+    slide.addEventListener('transitionend', done);
+    setTimeout(done, 1600);   // in case the transition never reports back
   }
 
   // Some browsers pause a hero video when the tab is hidden, or refuse the

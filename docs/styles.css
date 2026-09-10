@@ -100,7 +100,9 @@ nav.primary div:hover .menu-drop, nav.primary div:focus-within .menu-drop { opac
    the height; each shot drifts slowly closer inside it. Speed is set in the
    admin; it stands down for anyone who has asked for less movement. */
 .hero-shuffle { position: relative; width: 100%; height: min(76vh, 760px); overflow: hidden; }
-.hero-slide { position: absolute; inset: 0; transform: translate3d(100%, 0, 0); }
+/* Each slide clips its own photograph: the drift scales it beyond the frame,
+   and without this an off-screen slide pokes a sliver back into view. */
+.hero-slide { position: absolute; inset: 0; overflow: hidden; transform: translate3d(100%, 0, 0); }
 .hero-slide.on { transform: translate3d(0, 0, 0); }
 .hero-slide.out { transform: translate3d(-100%, 0, 0); }
 .hero-slide.on, .hero-slide.out { transition: transform 1.15s cubic-bezier(.55,.06,.18,1); }
