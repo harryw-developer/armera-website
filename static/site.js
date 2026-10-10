@@ -39,6 +39,20 @@
   var marked = document.querySelectorAll('[data-ck], [data-ck-sections], [data-catalogue], [data-catalogue-title], [data-catalogue-cover]');
   if (!cfg || !marked.length) return;
 
+  /* ---------------- chosen crops ----------------
+     A photograph shown in a frame of a different shape has to lose something.
+     The admin picks which part stays; it is stored as a point in the picture
+     (per cent across, per cent down) and applied as object-position. Without a
+     choice the browser keeps the middle, as it always did. */
+  var FOCUS = {};
+  window.armeraFocus = function (root) {
+    var imgs = (root || document).querySelectorAll('img[data-img]');
+    [].forEach.call(imgs, function (im) {
+      var p = FOCUS[im.getAttribute('data-img')];
+      im.style.objectPosition = p ? (p.x + '% ' + p.y + '%') : '';
+    });
+  };
+
   /* ---------------- homepage hero ----------------
      The build bakes the chosen media into the page, so the browser fetches
      exactly the right file and nothing else. This keeps the photographs
@@ -178,6 +192,8 @@
   }).then(function (r) { return r.json(); }).then(function (rows) {
     var pages = rows && rows[0] && rows[0].data;
     if (!pages) return;
+    FOCUS = pages.focus || {};
+    window.armeraFocus();
 
     // News banner across the top of the homepage (homepage only).
     var banner = document.getElementById('news-banner');

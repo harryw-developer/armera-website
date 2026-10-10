@@ -4,3 +4,4 @@ dist/
 .tools/drawings/
 .tools/specs/
 .tools/imgcache/
+.tools/upload/

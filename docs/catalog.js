@@ -134,7 +134,7 @@
       '</section><section class="pad--tight"><div class="grid grid--2">' +
       cats.map(function (c) {
         return '<a class="tile" href="' + u('/products/' + c.slug + '/') + '">' +
-          '<div class="frame"><img src="' + lifeImg(c.hero.img) + '" alt="' + esc(c.name) + '" loading="lazy"></div>' +
+          '<div class="frame"><img src="' + lifeImg(c.hero.img) + '" data-img="' + esc(c.hero.img) + '" alt="' + esc(c.name) + '" loading="lazy"></div>' +
           '<div class="meta"><div class="name">' + esc(c.name) + '</div>' +
           '<div class="sub">' + c.ranges.map(function (r) { return esc(r.name); }).join(' · ') + '</div>' +
           '<span class="cue">View</span></div></a>';
@@ -150,7 +150,7 @@
       '</section><section class="pad--tight"><div class="grid grid--3">' +
       cat.ranges.map(function (r) {
         return '<a class="tile" href="' + u('/products/' + cat.slug + '/' + r.slug + '/') + '">' +
-          '<div class="frame"><img src="' + lifeImg(r.hero.img) + '" alt="' + esc(r.hero.caption || r.name) + '" loading="lazy"></div>' +
+          '<div class="frame"><img src="' + lifeImg(r.hero.img) + '" data-img="' + esc(r.hero.img) + '" alt="' + esc(r.hero.caption || r.name) + '" loading="lazy"></div>' +
           '<div class="meta"><div class="name">' + esc(r.title) + '</div>' +
           '<div class="sub">' + esc(r.tagline) + '</div>' +
           '<span class="cue">View range</span></div></a>';
@@ -174,7 +174,7 @@
     }
 
     return crumbs([{ label: 'Home', href: '/' }, { label: 'Products', href: '/products/' }, { label: cat.name, href: '/products/' + cat.slug + '/' }, { label: range.name }]) +
-      '<figure class="range-hero"><img src="' + lifeImg(range.hero.img) + '" alt="' + esc(range.hero.caption || range.name) + '">' +
+      '<figure class="range-hero"><img src="' + lifeImg(range.hero.img) + '" data-img="' + esc(range.hero.img) + '" alt="' + esc(range.hero.caption || range.name) + '">' +
       (range.hero.caption ? '<figcaption>' + esc(range.hero.caption) + '</figcaption>' : '') + '</figure>' +
       '<section class="pad--tight"><div class="range-intro"><div>' +
       '<span class="eyebrow">' + esc(cat.name) + '</span>' +
@@ -469,6 +469,7 @@
     root.innerHTML = html;
     bind(bound);
     if (bound) loadProductDocs(cats, segs, bound);
+    if (window.armeraFocus) window.armeraFocus(root);
     if (window.armeraTrack) {
       if (bound) window.armeraTrack({ page_type: 'product', item_ref: bound.slug, item_name: bound.name });
       else if (segs.length === 3) window.armeraTrack({ page_type: 'range', item_ref: segs[2], item_name: (rangeSeen && rangeSeen.title) || segs[2] });

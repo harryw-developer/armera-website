@@ -73,7 +73,7 @@ function heroMarkup() {
   const slides = files.map((f, i) => {
     const cls = 'hero-slide' + (i === 0 ? ' on' : '');
     const load = i === 0 ? ' fetchpriority="high"' : ' loading="lazy"';
-    return `<div class="${cls}"><img class="hero-shot${i === 0 ? drift : ''}" src="${heroUrl(f)}" alt="${i === 0 ? alt : ''}"${load}></div>`;
+    return `<div class="${cls}"><img class="hero-shot${i === 0 ? drift : ''}" src="${heroUrl(f)}" data-img="${esc(f)}" alt="${i === 0 ? alt : ''}"${load}></div>`;
   }).join('');
   return `<div id="hero-media" class="hero-shuffle" data-hero-files="${esc(files.join('|'))}"` +
     `${h.zoom === false ? ' data-hero-still=""' : ''} style="--hero-zoom:${speed}s">${slides}</div>`;
@@ -319,7 +319,7 @@ ${banner}
     <div class="grid grid--4">
       ${categories.map(c => `
       <a class="tile" href="/products/${c.slug}/">
-        <div class="frame"><img src="${lifeImg(c.hero.img)}" alt="${esc(c.name)}" loading="lazy"></div>
+        <div class="frame"><img src="${lifeImg(c.hero.img)}" data-img="${esc(c.hero.img)}" alt="${esc(c.name)}" loading="lazy"></div>
         <div class="meta">
           <div class="name">${esc(c.name)}</div>
           <div class="sub">${c.ranges.length} ${c.ranges.length === 1 ? 'range' : 'ranges'}</div>
@@ -333,7 +333,7 @@ ${banner}
 <section class="pad--tight">
   <div class="container">
     <div class="split">
-      <div class="imgwrap"><img src="${lifeImg('p013_01.png')}" alt="Palladium 600mm unit with hidden internal drawer and organiser in Natural oak" loading="lazy"></div>
+      <div class="imgwrap"><img src="${lifeImg('p013_01.png')}" data-img="p013_01.png" alt="Palladium 600mm unit with hidden internal drawer and organiser in Natural oak" loading="lazy"></div>
       <div class="copy">
         <span class="eyebrow">Built on experience</span>
         <h2>Details that make a bathroom work</h2>
@@ -376,7 +376,7 @@ ${banner}
         <p>Furniture colours and finishes, from Walnut Noir to Cavern Blue, give you the freedom to carry a scheme through the whole room.</p>
         <a class="btn" href="/products/taps/">Explore brassware</a>
       </div>
-      <div class="imgwrap"><img src="${lifeImg('p066_01.png')}" alt="Oculus wall mounted basin mixer in brushed gold with co-ordinated click clack waste" loading="lazy"></div>
+      <div class="imgwrap"><img src="${lifeImg('p066_01.png')}" data-img="p066_01.png" alt="Oculus wall mounted basin mixer in brushed gold with co-ordinated click clack waste" loading="lazy"></div>
     </div>
     <div class="gband" style="margin-top:clamp(60px,8vw,110px)">
       ${site.guarantee.map(g => `

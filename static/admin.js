@@ -935,6 +935,12 @@
     d.appendChild(lbl('Tagline')); d.appendChild(tagline);
     d.appendChild(lbl('Footnote (optional)')); d.appendChild(footnote);
     d.appendChild(lbl('Hero image', 'The wide lifestyle photo across the top of the range page. Landscape photos work best. Current file: ' + ((range.hero && range.hero.img) || 'none') + '. Choosing a file replaces it.'));
+    if (range.hero && range.hero.img) {
+      var heroCrop = el('div', { class: 'adm-row', style: 'margin:8px 0 2px' });
+      heroCrop.appendChild(cropButton(range.hero.img, 'lifestyle', function () { renderShell(); }));
+      heroCrop.appendChild(el('span', { class: 'hint', style: 'margin:0', text: 'This photo is taller than the banner, so some of it is always hidden — choose which part.' }));
+      d.appendChild(heroCrop);
+    }
     d.appendChild(heroFile);
     d.appendChild(lbl('Hero caption')); d.appendChild(heroCap);
 
@@ -1350,6 +1356,8 @@
           onclick: function () { shots.splice(i + 1, 0, shots.splice(i, 1)[0]); paintShots(); } }));
         tools.appendChild(el('button', { class: 'iconbtn iconbtn--x', type: 'button', title: 'Remove', text: '×',
           onclick: function () { shots.splice(i, 1); paintShots(); } }));
+        tools.appendChild(el('button', { class: 'iconbtn iconbtn--crop', type: 'button', title: 'Choose which part of this photo is shown', text: '⌗',
+          onclick: function () { cropPicker(f, 'lifestyle', paintShots); } }));
         card.appendChild(tools);
         if (i === 0) card.appendChild(el('span', { class: 'hero-shot-first', text: 'Shown first' }));
         shotBox.appendChild(card);
@@ -2559,6 +2567,138 @@
     });
     b.addEventListener('click', function (e) { e.stopPropagation(); togglePin(key); });
     return b;
+  }
+
+
+  /* ---------- choosing the crop ----------
+     A wide frame cannot show all of a tall photograph. Rather than always
+     keeping the middle, the admin drags the picture to the part that matters
+     and we store that point. The frames below are the real shapes used on
+     the site, so what you line up is what visitors see. */
+  var FRAMES = [
+    ['Banner across a range page', 1.38],
+    ['Top of the homepage', 1.9],
+    ['Square-ish tile', 0.87]
+  ];
+
+  function focusMap() {
+    var pages = state.rows.pages || {};
+    pages.focus = pages.focus || {};
+    return pages.focus;
+  }
+
+  // file: the image filename as the site refers to it; folder: where it lives.
+  function cropPicker(file, folder, onSaved) {
+    var map = focusMap();
+    var pt = map[file] ? { x: map[file].x, y: map[file].y } : { x: 50, y: 50 };
+    // lifestyle photography is stored as .jpg even where the catalogue data still says .png
+    var path = file.indexOf('/') !== -1 ? file : (folder || 'lifestyle') + '/' + file;
+    if (path.indexOf('lifestyle/') === 0) path = path.replace(/\.png$/i, '.jpg');
+    var url = cfg.assets + '/' + path.split('/').map(encodeURIComponent).join('/');
+
+    var back = el('div', { class: 'crop-back' });
+    var box = el('div', { class: 'crop-box' });
+    box.addEventListener('click', function (e) { e.stopPropagation(); });
+    box.appendChild(el('h3', { text: 'Choose what stays in frame' }));
+    box.appendChild(el('p', { class: 'hint', text:
+      'Drag the photograph. The frames are the real shapes the site uses, so whatever you line up is what people see. ' +
+      'Nothing is cut from the file itself — this only chooses which part of it is shown.' }));
+
+    var stageWrap = el('div', { class: 'crop-stages' });
+    var stages = FRAMES.map(function (f) {
+      var hold = el('div', { class: 'crop-stage' });
+      hold.appendChild(el('span', { class: 'crop-stage-name', text: f[0] }));
+      var frame = el('div', { class: 'crop-frame', style: 'aspect-ratio:' + f[1] });
+      var im = el('img', { src: url, alt: '', draggable: 'false' });
+      frame.appendChild(im);
+      hold.appendChild(frame);
+      stageWrap.appendChild(hold);
+      return { frame: frame, img: im };
+    });
+    box.appendChild(stageWrap);
+
+    var readout = el('p', { class: 'crop-readout' });
+    var paint = function () {
+      stages.forEach(function (s) { s.img.style.objectPosition = pt.x + '% ' + pt.y + '%'; });
+      readout.textContent = Math.round(pt.x) + '% across, ' + Math.round(pt.y) + '% down' +
+        (Math.round(pt.x) === 50 && Math.round(pt.y) === 50 ? ' — the middle, as before' : '');
+    };
+
+    // drag anywhere on a frame to move the picture behind it
+    stages.forEach(function (s) {
+      var dragging = false, last = null;
+      var start = function (e) {
+        dragging = true; last = point(e);
+        s.frame.classList.add('dragging');
+        e.preventDefault();
+      };
+      var point = function (e) {
+        var t = e.touches ? e.touches[0] : e;
+        return { x: t.clientX, y: t.clientY };
+      };
+      var move = function (e) {
+        if (!dragging) return;
+        var p = point(e), r = s.frame.getBoundingClientRect();
+        // dragging the full width or height of the frame walks the picture right across it
+        pt.x = Math.max(0, Math.min(100, pt.x - (p.x - last.x) / r.width * 100));
+        pt.y = Math.max(0, Math.min(100, pt.y - (p.y - last.y) / r.height * 100));
+        last = p;
+        paint();
+      };
+      var end = function () { dragging = false; s.frame.classList.remove('dragging'); };
+      s.frame.addEventListener('mousedown', start);
+      s.frame.addEventListener('touchstart', start, { passive: false });
+      document.addEventListener('mousemove', move);
+      document.addEventListener('touchmove', move, { passive: false });
+      document.addEventListener('mouseup', end);
+      document.addEventListener('touchend', end);
+    });
+
+    box.appendChild(readout);
+
+    var row = el('div', { class: 'adm-row', style: 'margin-top:18px' });
+    row.appendChild(el('button', {
+      class: 'abtn abtn--sm', type: 'button', text: 'Save this crop',
+      onclick: function () {
+        var pages = state.rows.pages || {};
+        pages.focus = pages.focus || {};
+        pages.focus[file] = { x: Math.round(pt.x), y: Math.round(pt.y) };
+        state.rows.pages = pages;
+        saveRow('pages', box, 'Crop saved for ' + file.split('/').pop() + '.').then(function () {
+          back.remove();
+          if (onSaved) onSaved();
+        });
+      }
+    }));
+    row.appendChild(el('button', {
+      class: 'abtn abtn--ghost abtn--sm', type: 'button', text: 'Back to the middle',
+      onclick: function () { pt.x = 50; pt.y = 50; paint(); }
+    }));
+    row.appendChild(el('button', {
+      class: 'abtn abtn--ghost abtn--sm', type: 'button', text: 'Cancel',
+      onclick: function () { back.remove(); }
+    }));
+    box.appendChild(row);
+
+    back.addEventListener('click', function () { back.remove(); });
+    document.addEventListener('keydown', function esc(e) {
+      if (e.key === 'Escape') { back.remove(); document.removeEventListener('keydown', esc); }
+    });
+    back.appendChild(box);
+    document.body.appendChild(back);
+    paint();
+  }
+
+  // A button that opens the picker for one image.
+  function cropButton(file, folder, onSaved) {
+    var map = focusMap();
+    var set = !!map[file];
+    return el('button', {
+      class: 'abtn abtn--ghost abtn--sm', type: 'button',
+      text: set ? 'Crop chosen ✓' : 'Choose crop',
+      title: 'Pick which part of this photograph is shown where the frame is a different shape',
+      onclick: function () { cropPicker(file, folder, onSaved); }
+    });
   }
 
   /* ---------- quick access ---------- */
