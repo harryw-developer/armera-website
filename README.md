@@ -58,6 +58,34 @@ Project: `pcouznwpyhtfrleedcsv` (ARMERA Website, London).
 
 Admin sign-in is at `/admin/` — manage the password in the admin's Account tab.
 
+## Where the live data lives, and what can destroy it
+
+The live site reads **Supabase**, not this repository. Everything editable in
+the admin — products, prices, page wording, retailers, videos, the photo
+gallery, instruction links, homepage hero, chosen crops — is rows in the
+`site_content` table. Uploaded files live in the storage buckets. Customer
+guarantee registrations and visitor figures are their own tables.
+
+**Safe — these never touch live data:**
+
+- `node build.mjs` — regenerates `docs/` only. It *reads* Supabase to bake the
+  homepage hero into the HTML; it never writes.
+- Editing anything in `static/`, `build.mjs` or `data/`, and deploying.
+- `node .tools/backup.mjs` — snapshots `site_content` into `backups/`.
+
+**The one thing that would destroy admin work:** applying the SQL printed by
+`seed-content.mjs`. It replaces every `site_content` row from `data/*.json`,
+which is the original catalogue transcription and drifts behind the live data
+the moment anyone edits anything in the admin. It was for first setup. Do not
+apply it to rebuild the site or to correct one product.
+
+**Direct SQL or storage writes** (bulk corrections like the Oct 2026 swap to
+approved photography) do change live data. Take a backup first, make the change
+targeted rather than wholesale, and count rows before and after.
+
+`data/categories/*.json` is the catalogue-of-record transcription (509 SKUs,
+price-verified). Treat it as history, not as a mirror of what is live.
+
 ## Custom domain
 
 To serve at www.armera.co.uk: add the domain in the repo's Pages settings, point DNS at GitHub

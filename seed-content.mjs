@@ -1,5 +1,18 @@
 #!/usr/bin/env node
-// Emits SQL that seeds/refreshes the site_content table from data/*.json.
+// ⚠️  DESTRUCTIVE IF APPLIED. Emits SQL that overwrites the site_content table
+// with the contents of data/*.json. The SQL it prints ends in
+// "on conflict (key) do update set data = excluded.data", so applying it
+// REPLACES every row — including everything changed in the admin since the
+// last seed (prices, page wording, retailers, videos, photo tagging, crops).
+//
+// data/*.json is the original catalogue transcription, NOT a mirror of what is
+// live. It drifts behind the moment anyone edits anything in the admin.
+//
+// This was for first setting the site up. Do not apply it to rebuild or to fix
+// one product — edit that product in the admin instead. If it ever is needed,
+// take a backup first (node .tools/backup.mjs) and expect to lose admin edits.
+//
+// Printing the SQL changes nothing; only applying it does.
 // Run: node seed-content.mjs > /tmp/seed.sql  (then apply via Supabase SQL)
 import { readFileSync, readdirSync } from 'node:fs';
 import { join, dirname, basename } from 'node:path';
