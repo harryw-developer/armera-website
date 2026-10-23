@@ -33,25 +33,76 @@ const assetVersions = Object.fromEntries(STATIC_FILES.map(f => [
 ]));
 const v = f => `/${f}?v=${assetVersions[f]}`;
 
-const site = JSON.parse(readFileSync(join(ROOT, 'data/site.json'), 'utf8'));
-const categories = readdirSync(join(ROOT, 'data/categories')).sort()
-  .map(f => JSON.parse(readFileSync(join(ROOT, 'data/categories', f), 'utf8')));
+// ---------------------------------------------------------------------------
+// Everything editable in the admin is read LIVE from Supabase at build time.
+// Nothing editable is hard-coded here: the catalogue of products, the page
+// wording, the contact details and the catalogue PDF all come from the
+// site_content table, exactly as the running site sees them. data/*.json is
+// the original transcription kept for reference, and is only consulted for
+// things the admin cannot change (the inspiration page, the guarantee table,
+// finish names) — never for products.
+// ---------------------------------------------------------------------------
+const localSite = JSON.parse(readFileSync(join(ROOT, 'data/site.json'), 'utf8'));
 const inspiration = JSON.parse(readFileSync(join(ROOT, 'data/inspiration.json'), 'utf8'));
+const ALLOW_STALE = process.env.ALLOW_STALE === '1';
 
-// The homepage hero is chosen in the admin. Bake the current choice straight
-// into the HTML so the browser requests that file and nothing else — otherwise
-// it loads a default image first and swaps, which shows the wrong picture.
-let livePages = {};
+let live = {};
 try {
-  const res = await fetch(`${SUPABASE_URL}/rest/v1/site_content?key=eq.pages&select=data`, {
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/site_content?select=key,data`, {
     headers: { apikey: ANON_KEY, Authorization: `Bearer ${ANON_KEY}` }
   });
-  const rows = await res.json();
-  livePages = (rows && rows[0] && rows[0].data) || {};
-  console.log('Homepage hero:', livePages?.home?.hero ? `${livePages.home.hero.type} — ${livePages.home.hero.file}` : 'default photograph');
+  if (!res.ok) throw new Error(`Supabase replied ${res.status}`);
+  for (const row of await res.json()) live[row.key] = row.data;
 } catch (e) {
-  console.log('Could not reach Supabase for page settings; using the default hero.');
+  const why = `Could not read the live content from Supabase (${e.message}).`;
+  if (!ALLOW_STALE) {
+    throw new Error(`${why}\n\n` +
+      'Refusing to build: the pages would be generated from the repository copy\n' +
+      'of the catalogue, which is older than the live data and would publish a\n' +
+      'site missing anything changed in the admin since. Fix the connection and\n' +
+      'build again, or run with ALLOW_STALE=1 if you understand the pages will\n' +
+      'be built from data/*.json.\n' +
+      'This affects the generated pages only — nothing is written back, so no\n' +
+      'live data is at risk either way.');
+  }
+  console.log(`${why} ALLOW_STALE=1 — building from the repository copy.`);
 }
+
+const liveCategoryKeys = Object.keys(live).filter(k => /^\d\d-/.test(k)).sort();
+const categories = liveCategoryKeys.length
+  ? liveCategoryKeys.map(k => live[k])
+  : readdirSync(join(ROOT, 'data/categories')).sort()
+      .map(f => JSON.parse(readFileSync(join(ROOT, 'data/categories', f), 'utf8')));
+
+// A malformed row would publish a broken catalogue, so check the shape before
+// generating anything. Refusing to build is always recoverable; publishing a
+// site with products missing is not.
+for (const k of liveCategoryKeys) {
+  const c = live[k];
+  if (!c || typeof c.slug !== 'string' || !Array.isArray(c.ranges)) {
+    throw new Error(`Live content row "${k}" is not a category (expected a slug and a ranges array). Nothing has been written; fix the row and build again.`);
+  }
+  for (const r of c.ranges) {
+    if (!r || typeof r.slug !== 'string' || !Array.isArray(r.products)) {
+      throw new Error(`Range "${r && r.slug}" in "${k}" has no products array. Nothing has been written; fix the row and build again.`);
+    }
+  }
+}
+
+const livePages = live.pages || {};
+
+// Contact details and the spares line are edited on the admin's Pages tab.
+const site = {
+  ...localSite,
+  ...(livePages.contact || {}),
+  spares: (livePages.support && livePages.support.spares) || localSite.spares
+};
+
+console.log(categories === undefined ? '' :
+  `Catalogue: ${liveCategoryKeys.length ? 'live from Supabase' : 'REPOSITORY COPY (stale)'} — ` +
+  `${categories.length} categories, ` +
+  `${categories.reduce((n, c) => n + c.ranges.reduce((m, r) => m + r.products.length, 0), 0)} products`);
+console.log('Homepage hero:', livePages?.home?.hero ? `${livePages.home.hero.type} — ${livePages.home.hero.file}` : 'default photograph');
 
 const DEFAULT_HERO_ALT = 'Two Palladium wall hung units in Walnut glow with Vaere monobasin mixers in brushed gold';
 const DEFAULT_HERO_FILE = 'p008_01.png';
@@ -111,8 +162,13 @@ const socialMarkup = (cls = '') => `<ul class="social${cls ? ' ' + cls : ''}">` 
   `<svg viewBox="0 0 24 24" width="19" height="19" fill="currentColor" aria-hidden="true">${art}</svg></a></li>`
 ).join('') + '</ul>';
 
-const CATALOGUE_FILE = 'ARMERA-Catalogue-March-2026.pdf';
-const catHref = `${ASSETS}/documents/${CATALOGUE_FILE}`;
+// Uploaded and named in the admin's Catalogue tab; site.js re-points these
+// links at runtime too, so a fresh upload needs no rebuild.
+const liveCat = livePages.catalogue || {};
+const CATALOGUE_FILE = liveCat.file || 'ARMERA-Catalogue-March-2026.pdf';
+const CATALOGUE_LABEL = liveCat.label || 'The ARMERA collection';
+const catHref = `${ASSETS}/documents/${encodeURIComponent(CATALOGUE_FILE)}`;
+const telHref = p => 'tel:' + String(p || '').replace(/[^0-9+]/g, '');
 const catLink = (text, cls = 'cat-inline') =>
   `<a class="${cls}" data-catalogue href="${catHref}" target="_blank" rel="noopener">${esc(text)}</a>`;
 const catBand = ({ dark = false } = {}) => `
@@ -122,7 +178,7 @@ const catBand = ({ dark = false } = {}) => `
       <div class="cover"><span class="ph" data-catalogue-cover>Catalogue</span></div>
       <div class="copy">
         <span class="eyebrow">The catalogue</span>
-        <h2 data-catalogue-title>March 2026 Collection</h2>
+        <h2 data-catalogue-title>${esc(CATALOGUE_LABEL)}</h2>
         <p>The complete ARMERA collection in one volume — every range, finish and dimension, with recommended retail pricing throughout.</p>
         <a class="btn${dark ? '' : ' btn--solid'}" data-catalogue href="${catHref}" target="_blank" rel="noopener">View the catalogue</a>
       </div>
@@ -173,7 +229,7 @@ ${extraHead}
   <div class="container">
     <span class="hide-m">Considered design in form &amp; function</span>
     <span class="hide-m"><a data-catalogue href="${catHref}" target="_blank" rel="noopener">View the catalogue</a><span style="margin:0 12px;color:#4c463b">|</span><a href="/retailers/">Find a retailer</a></span>
-    <span><a class="tel" href="tel:01225251204" data-ck="contact.phone">${site.phone}</a><span style="margin:0 12px;color:#4c463b">|</span><a href="mailto:${site.email}" data-ck="contact.email">${site.email}</a></span>
+    <span><a class="tel" href="${telHref(site.phone)}" data-ck="contact.phone">${site.phone}</a><span style="margin:0 12px;color:#4c463b">|</span><a href="mailto:${site.email}" data-ck="contact.email">${site.email}</a></span>
   </div>
 </div>
 <header class="site">
@@ -241,7 +297,7 @@ ${body}
       <div>
         <h5>Contact</h5>
         <ul>
-          <li><a href="tel:01225251204" data-ck="contact.phone">${site.phone}</a></li>
+          <li><a href="${telHref(site.phone)}" data-ck="contact.phone">${site.phone}</a></li>
           <li><a href="mailto:${site.email}" data-ck="contact.email">${site.email}</a></li>
           <li style="margin-top:14px;font-size:13.5px;line-height:1.7;color:#8d8677" data-ck="contact.address">${esc(site.address)}</li>
         </ul>
@@ -300,8 +356,8 @@ ${banner}
   <div class="veil"></div>
   <div class="content">
     <div class="container">
-      <h1 data-ck="home.heading">Designed to inspire</h1>
-      <p class="lede" data-ck="home.lede">A coordinated bathroomware collection for rooms with a clear point of view — from furniture and ceramics to brassware and showering.</p>
+      <h1 data-ck="home.heading">${esc((livePages.home && livePages.home.heading) || 'Designed to inspire')}</h1>
+      <p class="lede" data-ck="home.lede">${esc((livePages.home && livePages.home.lede) || 'A coordinated bathroomware collection for rooms with a clear point of view — from furniture and ceramics to brassware and showering.')}</p>
       <a class="btn" href="/products/">Explore the collection</a>
     </div>
   </div>
@@ -534,7 +590,7 @@ ${crumbs([{ label: 'Home', href: '/' }, { label: 'About' }])}
 <section class="pad--tight">
   <div class="container">
     <span class="eyebrow">About ARMERA</span>
-    <h1 style="margin:14px 0 26px;max-width:18ch" data-ck="about.heading">Bathroomware, brought together</h1>
+    <h1 style="margin:14px 0 26px;max-width:18ch" data-ck="about.heading">${esc((livePages.about && livePages.about.heading) || 'Bathroomware, brought together')}</h1>
   </div>
 </section>
 <div class="container">
@@ -544,7 +600,11 @@ ${crumbs([{ label: 'Home', href: '/' }, { label: 'About' }])}
 </div>
 <section class="pad--tight">
   <div class="container container--mid" data-ck-sections="about.sections">
-    ${aboutBodySections(aboutSections)}
+    ${aboutBodySections(
+      (livePages.about && Array.isArray(livePages.about.sections) && livePages.about.sections.length)
+        ? livePages.about.sections
+        : aboutSections
+    )}
   </div>
 </section>
 ${catBand()}
@@ -587,8 +647,8 @@ ${crumbs([{ label: 'Home', href: '/' }, { label: 'Support' }])}
       <div class="info-card">
         <span class="eyebrow">Spares</span>
         <h3>Spares &amp; advice</h3>
-        <p data-ck="support.spares">For spares, please contact us on 01225 251204 for advice on spares.</p>
-        <a class="link" href="tel:01225251204">Call us</a>
+        <p data-ck="support.spares">${esc(site.spares || 'For spares, please contact us on 01225 251204 for advice on spares.')}</p>
+        <a class="link" href="${telHref(site.phone)}">Call us</a>
       </div>
       <div class="info-card">
         <span class="eyebrow">Documentation</span>
@@ -613,7 +673,7 @@ ${crumbs([{ label: 'Home', href: '/' }, { label: 'Support' }])}
       <div class="info-card" style="min-height:0;flex-direction:row;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap">
         <div>
           <span class="eyebrow">Brochure</span>
-          <h3 style="margin-bottom:6px" data-catalogue-title>March 2026 Collection</h3>
+          <h3 style="margin-bottom:6px" data-catalogue-title>${esc(CATALOGUE_LABEL)}</h3>
           <p style="flex-grow:0">The complete ARMERA collection with pricing, finishes and dimensions.</p>
         </div>
         <a class="btn btn--solid" style="margin-top:0" data-catalogue href="${catHref}" target="_blank" rel="noopener">Download catalogue</a>
@@ -624,7 +684,7 @@ ${crumbs([{ label: 'Home', href: '/' }, { label: 'Support' }])}
 
   write('support/index.html', layout({
     title: 'Support — ARMERA',
-    desc: 'ARMERA support: spares advice on 01225 251204, product instructions and guarantee registration.',
+    desc: `ARMERA support: spares advice on ${site.phone}, product instructions and guarantee registration.`,
     path: '/support/',
     body
   }));
@@ -649,7 +709,7 @@ ${crumbs([{ label: 'Home', href: '/' }, { label: 'Support', href: '/support/' },
     <div class="pdf-grid" id="pdf-grid"></div>
     <p class="empty-note" id="pdf-none" style="display:none">No instructions match that search.</p>
     <div class="empty-note" id="pdf-empty" style="display:none">
-      Instruction documents are being added. In the meantime, please call <a href="tel:01225251204" style="border-bottom:1px solid var(--line-dark)" data-ck="contact.phone">${site.phone}</a> or email <a href="mailto:${site.email}" style="border-bottom:1px solid var(--line-dark)" data-ck="contact.email">${site.email}</a> and we will gladly help.
+      Instruction documents are being added. In the meantime, please call <a href="${telHref(site.phone)}" style="border-bottom:1px solid var(--line-dark)" data-ck="contact.phone">${site.phone}</a> or email <a href="mailto:${site.email}" style="border-bottom:1px solid var(--line-dark)" data-ck="contact.email">${site.email}</a> and we will gladly help.
     </div>
   </div>
 </section>`;
@@ -677,7 +737,7 @@ ${crumbs([{ label: 'Home', href: '/' }, { label: 'Support', href: '/support/' },
   <div class="container">
     <div class="video-grid" id="video-grid"></div>
     <div class="empty-note" id="video-empty" style="display:none">
-      Videos are being added. In the meantime, please call <a href="tel:01225251204" style="border-bottom:1px solid var(--line-dark)" data-ck="contact.phone">${site.phone}</a> and we will gladly talk you through it.
+      Videos are being added. In the meantime, please call <a href="${telHref(site.phone)}" style="border-bottom:1px solid var(--line-dark)" data-ck="contact.phone">${site.phone}</a> and we will gladly talk you through it.
     </div>
   </div>
 </section>`;
@@ -725,9 +785,9 @@ ${crumbs([{ label: 'Home', href: '/' }, { label: 'Find a retailer' }])}
       <div class="retailer-list" id="retailer-list"></div>
     </div>
     <div class="empty-note" id="retailer-empty" style="display:none;margin-top:22px">
-      No retailers found for that search. Try a nearby town or a wider area, or call <a href="tel:01225251204" style="border-bottom:1px solid var(--line-dark)" data-ck="contact.phone">${site.phone}</a> and we will help you find your nearest stockist.
+      No retailers found for that search. Try a nearby town or a wider area, or call <a href="${telHref(site.phone)}" style="border-bottom:1px solid var(--line-dark)" data-ck="contact.phone">${site.phone}</a> and we will help you find your nearest stockist.
     </div>
-    <p class="small" style="margin-top:22px">Interested in stocking ARMERA? Call <a href="tel:01225251204" style="border-bottom:1px solid var(--line-dark)" data-ck="contact.phone">${site.phone}</a> or email <a href="mailto:${site.email}" style="border-bottom:1px solid var(--line-dark)" data-ck="contact.email">${site.email}</a> to speak with our team.</p>
+    <p class="small" style="margin-top:22px">Interested in stocking ARMERA? Call <a href="${telHref(site.phone)}" style="border-bottom:1px solid var(--line-dark)" data-ck="contact.phone">${site.phone}</a> or email <a href="mailto:${site.email}" style="border-bottom:1px solid var(--line-dark)" data-ck="contact.email">${site.email}</a> to speak with our team.</p>
   </div>
 </section>
 ${catBand()}`;
@@ -855,12 +915,12 @@ ${crumbs([{ label: 'Home', href: '/' }, { label: 'Contact' }])}
   <div class="container">
     <span class="eyebrow">Contact us</span>
     <h1 style="margin:14px 0 30px">Talk to us<br>about your bathroom.</h1>
-    <p class="bigline"><a href="tel:01225251204" data-ck="contact.phone">${site.phone}</a></p>
+    <p class="bigline"><a href="${telHref(site.phone)}" data-ck="contact.phone">${site.phone}</a></p>
     <p class="bigline" style="margin-top:6px"><a href="mailto:${site.email}" data-ck="contact.email">${site.email}</a></p>
     <div class="contact-list" style="max-width:860px">
       <div class="row">
         <div class="k">Telephone</div>
-        <div><a href="tel:01225251204" data-ck="contact.phone">${site.phone}</a></div>
+        <div><a href="${telHref(site.phone)}" data-ck="contact.phone">${site.phone}</a></div>
       </div>
       <div class="row">
         <div class="k">Email</div>
@@ -872,7 +932,7 @@ ${crumbs([{ label: 'Home', href: '/' }, { label: 'Contact' }])}
       </div>
       <div class="row">
         <div class="k">Spares</div>
-        <div data-ck="support.spares">For spares, please contact us on 01225 251204 for advice on spares.</div>
+        <div data-ck="support.spares">${esc(site.spares || 'For spares, please contact us on 01225 251204 for advice on spares.')}</div>
       </div>
       <div class="row">
         <div class="k">Where to buy</div>
@@ -880,7 +940,7 @@ ${crumbs([{ label: 'Home', href: '/' }, { label: 'Contact' }])}
       </div>
       <div class="row">
         <div class="k">Catalogue</div>
-        <div><a data-catalogue href="${catHref}" target="_blank" rel="noopener" style="border-bottom:1px solid var(--line-dark)" data-catalogue-title>March 2026 Collection</a></div>
+        <div><a data-catalogue href="${catHref}" target="_blank" rel="noopener" style="border-bottom:1px solid var(--line-dark)" data-catalogue-title>${esc(CATALOGUE_LABEL)}</a></div>
       </div>
       <div class="row">
         <div class="k">Follow</div>

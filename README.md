@@ -83,8 +83,28 @@ apply it to rebuild the site or to correct one product.
 approved photography) do change live data. Take a backup first, make the change
 targeted rather than wholesale, and count rows before and after.
 
-`data/categories/*.json` is the catalogue-of-record transcription (509 SKUs,
-price-verified). Treat it as history, not as a mirror of what is live.
+### The build reads live data
+
+`node build.mjs` fetches `site_content` from Supabase and generates the pages
+from that — the products, the page wording, the contact details, the spares
+line, the catalogue PDF and its edition name, the homepage hero. Nothing the
+admin can change is hard-coded. A rebuild therefore always publishes what is
+live, and a range added in the admin gets real pages rather than relying on the
+`404.html` fallback.
+
+If Supabase cannot be reached the build **stops** rather than quietly falling
+back to the repository copy, which would publish a site missing anything
+changed in the admin since. `ALLOW_STALE=1 node build.mjs` overrides that
+deliberately. Malformed category rows also stop the build. Either way nothing is
+written back, so live data is never at risk.
+
+`data/categories/*.json` is the original catalogue transcription (509 SKUs,
+price-verified). It is history and the emergency fallback — not a mirror of
+what is live, and no longer the source for any published page.
+
+Still deliberately static, because the admin cannot edit them: the inspiration
+page (`data/inspiration.json`), the guarantee-years table and the strapline
+(`data/site.json`).
 
 ## Custom domain
 
