@@ -13,3 +13,5 @@ backups/migration/page_views.sql
 backups/migration/site_content.sql
 backups/migration/d1_*.json
 backups/migration/r2_*.json
+backups/migration/tbl_*.json
+backups/migration/catalogue.sql
