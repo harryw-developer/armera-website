@@ -5,3 +5,11 @@ dist/
 .tools/specs/
 .tools/imgcache/
 .tools/upload/
+# Migration working files: bulky generated SQL, and analytics that should not
+# sit in a public repo. The data itself lives in Supabase and in D1; the
+# site_content snapshots in backups/ are the restore point worth keeping.
+backups/migration/page_views.json
+backups/migration/page_views.sql
+backups/migration/site_content.sql
+backups/migration/d1_*.json
+backups/migration/r2_*.json

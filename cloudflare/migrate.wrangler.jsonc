@@ -1,0 +1,9 @@
+{
+  "name": "armera-migrate",
+  "main": "migrate-worker.js",
+  "compatibility_date": "2026-10-23",
+  "r2_buckets": [
+    { "binding": "ASSETS", "bucket_name": "armera-assets" },
+    { "binding": "INSTRUCTIONS", "bucket_name": "armera-instructions" }
+  ]
+}
