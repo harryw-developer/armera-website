@@ -9,7 +9,20 @@
 // minutes as a safety net. The sync only ever copies Supabase -> D1 and never
 // deletes, so a stray call can do no harm.
 
+import { requireAuth, hashPassword, checkPassword, issueSession,
+         tooManyAttempts, recordAttempt } from './auth.js';
+
 const SUPABASE = 'https://pcouznwpyhtfrleedcsv.supabase.co';
+
+// Only these origins may send credentials. Anything else gets the public,
+// credential-free CORS used for reads.
+const TRUSTED = [
+  'https://armera-website.harry-01f.workers.dev',
+  'https://harryw-developer.github.io',
+  'https://armera.co.uk',
+  'https://www.armera.co.uk',
+  'http://localhost:4173'
+];
 
 const CORS = {
   'access-control-allow-origin': '*',
@@ -238,9 +251,77 @@ export default {
       return json(await sync(env));
     }
 
+    /* ---------- signing in ---------- */
+
+    const origin = request.headers.get('Origin') || '';
+    const credCors = TRUSTED.includes(origin)
+      ? { 'access-control-allow-origin': origin, 'access-control-allow-credentials': 'true',
+          'vary': 'Origin' }
+      : {};
+
+    if (path === '/auth/login' && request.method === 'POST') {
+      const { email, password } = await request.json().catch(() => ({}));
+      const addr = String(email || '').trim().toLowerCase();
+      if (!addr || !password) return json({ error: 'Email and password are required.' }, 400, credCors);
+      if (await tooManyAttempts(env.DB, addr)) {
+        return json({ error: 'Too many attempts. Try again in fifteen minutes.' }, 429, credCors);
+      }
+      const row = await env.DB.prepare('select email, display_name, password_hash, disabled from admin_users where email = ?')
+        .bind(addr).first();
+      const ok = row && !row.disabled && await checkPassword(password, row.password_hash);
+      await recordAttempt(env.DB, addr, ok);
+      if (!ok) return json({ error: 'Those details were not recognised.' }, 401, credCors);
+      const token = await issueSession(row.email, env.SESSION_SECRET);
+      await env.DB.prepare('update admin_users set last_seen = ? where email = ?')
+        .bind(new Date().toISOString(), row.email).run();
+      return json({ email: row.email, display_name: row.display_name, token }, 200, {
+        ...credCors,
+        'set-cookie': `armera_session=${token}; Path=/; HttpOnly; Secure; SameSite=None; Max-Age=${14 * 86400}`
+      });
+    }
+
+    if (path === '/auth/logout') {
+      return json({ ok: true }, 200, {
+        ...credCors,
+        'set-cookie': 'armera_session=; Path=/; HttpOnly; Secure; SameSite=None; Max-Age=0'
+      });
+    }
+
+    if (path === '/auth/me') {
+      const who = await requireAuth(request, env);
+      if (!who) return json({ error: 'not signed in' }, 401, credCors);
+      return json({ email: who.email, display_name: who.display_name,
+                    prefs: JSON.parse(who.prefs || '{}'), via: who.via }, 200, credCors);
+    }
+
+    // Bridge: while the admin still signs in with Supabase, let a signed-in
+    // person set their Cloudflare password without needing a reset email.
+    // The Supabase token is verified with Supabase, so no secret is needed here.
+    if (path === '/auth/set-password' && request.method === 'POST') {
+      const { password } = await request.json().catch(() => ({}));
+      const bearer = (request.headers.get('Authorization') || '').replace(/^Bearer /, '');
+      if (!bearer) return json({ error: 'Sign in first.' }, 401, credCors);
+      if (!password || String(password).length < 10) {
+        return json({ error: 'Use at least 10 characters.' }, 400, credCors);
+      }
+      const who = await fetch(`${SUPABASE}/auth/v1/user`, {
+        headers: { apikey: env.SUPABASE_ANON_KEY, Authorization: `Bearer ${bearer}` }
+      });
+      if (!who.ok) return json({ error: 'That session was not accepted.' }, 401, credCors);
+      const user = await who.json();
+      const addr = (user.email || '').toLowerCase();
+      const known = await env.DB.prepare('select email from admin_users where email = ?').bind(addr).first();
+      if (!known) return json({ error: 'That account is not set up here yet.' }, 403, credCors);
+      await env.DB.prepare('update admin_users set password_hash = ? where email = ?')
+        .bind(await hashPassword(password), addr).run();
+      return json({ ok: true, email: addr }, 200, credCors);
+    }
+
     if (path === '/health') {
       const n = await env.DB.prepare('select count(*) as n from catalogue_products').first();
-      return json({ ok: true, products: n.n });
+      const u = await env.DB.prepare('select count(*) as n, sum(password_hash is not null) as withpw from admin_users').first();
+      return json({ ok: true, products: n.n, users: u.n, users_with_password: u.withpw || 0,
+                    access_configured: Boolean(env.ACCESS_TEAM_DOMAIN && env.ACCESS_AUD) });
     }
 
     return new Response('not found', { status: 404, headers: CORS });
