@@ -516,6 +516,7 @@
     if (state.tab === 'guarantees') renderGuarantees(panel);
     if (state.tab === 'retailers') renderRetailers(panel);
     if (state.tab === 'brochure') renderBrochure(panel);
+    if (state.tab === 'team') renderTeam(panel);
     if (state.tab === 'account') renderAccount(panel);
 
     // A click anywhere off the menu closes it, and so does Escape.
@@ -2558,6 +2559,8 @@
       'M4 5h7v15H4z|M13 5h7v15h-7z'],
     ['dashboard', 'Dashboard', 'Visitor figures and how the site is doing',
       'M4 20V11|M10 20V4|M16 20v-6|M22 20H2'],
+    ['team', 'Team', 'Who can sign in to this admin',
+      'M9 11a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z|M2 20c1.2-3.4 4-5.2 7-5.2s5.8 1.8 7 5.2|M16.5 11.2a3 3 0 1 0 0-6|M17 14.9c2.4.4 4.3 2 5 5.1'],
     ['account', 'Account', 'Your name and your password',
       'M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8z|M4 21c1.4-3.9 4.8-6 8-6s6.6 2.1 8 6']
   ];
@@ -2812,6 +2815,138 @@
       m.appendChild(row);
     });
     return m;
+  }
+
+
+  /* ---------- team ---------- */
+  function renderTeam(panel) {
+    panel.appendChild(el('p', { class: 'tab-intro', text:
+      'Everyone who can sign in to this admin. Adding someone creates a one-time link for them to choose their own password — you never see it, and the link stops working once used.' }));
+
+    var list = el('div', { class: 'team-list' });
+    panel.appendChild(list);
+
+    function linkFor(token) {
+      return location.origin + location.pathname.replace(/[^/]*$/, '') + '?setup=' + token;
+    }
+
+    function showLink(email, token) {
+      var box = el('div', { class: 'team-link' });
+      box.appendChild(el('p', { class: 'small', text: 'One-time link for ' + email + ' — send it to them. It works once, and expires in seven days.' }));
+      var field = el('input', { type: 'text', readonly: 'readonly', value: linkFor(token) });
+      field.addEventListener('focus', function () { field.select(); });
+      box.appendChild(field);
+      var copy = el('button', { class: 'abtn abtn--sm', type: 'button', text: 'Copy link', style: 'margin-top:10px' });
+      copy.addEventListener('click', function () {
+        field.select();
+        if (navigator.clipboard) navigator.clipboard.writeText(field.value);
+        else document.execCommand('copy');
+        toast('Link copied', 'ok');
+      });
+      box.appendChild(copy);
+      list.insertBefore(box, list.firstChild);
+    }
+
+    function paint() {
+      list.innerHTML = '';
+      fetch(cfg.dataUrl + '/admin/users', { credentials: 'include', headers: authHeader() })
+        .then(function (r) { return r.json(); })
+        .then(function (rows) {
+          if (!Array.isArray(rows)) { list.appendChild(el('p', { class: 'hint', text: 'Could not load the list.' })); return; }
+          var table = el('table', { class: 'team-table' });
+          var head = el('tr', {});
+          ['Name', 'Email', 'Can sign in', 'Last seen', ''].forEach(function (h) {
+            head.appendChild(el('th', { text: h }));
+          });
+          table.appendChild(head);
+          rows.forEach(function (u) {
+            var tr = el('tr', { class: u.disabled ? 'off' : '' });
+            tr.appendChild(el('td', { text: u.display_name || '—' }));
+            tr.appendChild(el('td', {}, [el('span', { text: u.email }),
+              u.you ? el('span', { class: 'team-you', text: 'you' }) : null]));
+            tr.appendChild(el('td', { text: u.disabled ? 'switched off'
+              : u.has_password ? 'yes'
+              : u.has_link ? 'link sent, not used yet' : 'no password yet' }));
+            tr.appendChild(el('td', { text: u.last_seen ? niceDate(new Date(u.last_seen)) : '—' }));
+
+            var tools = el('td', { class: 'team-tools' });
+            tools.appendChild(el('button', {
+              class: 'abtn abtn--ghost abtn--sm', type: 'button', text: 'New link',
+              title: 'Issue a fresh one-time link, for someone who has forgotten their password',
+              onclick: function () {
+                post('/admin/users/' + encodeURIComponent(u.email) + '/link', {}).then(function (res) {
+                  if (res.error) { toast(res.error, 'err'); return; }
+                  showLink(u.email, res.token);
+                });
+              }
+            }));
+            if (!u.you) {
+              tools.appendChild(el('button', {
+                class: 'abtn abtn--ghost abtn--sm', type: 'button',
+                text: u.disabled ? 'Switch on' : 'Switch off',
+                onclick: function () {
+                  post('/admin/users/' + encodeURIComponent(u.email), { disabled: u.disabled ? 0 : 1 })
+                    .then(function (res) {
+                      if (res.error) { toast(res.error, 'err'); return; }
+                      toast(u.email + (u.disabled ? ' can sign in again' : ' can no longer sign in'), 'ok');
+                      paint();
+                    });
+                }
+              }));
+              tools.appendChild(el('button', {
+                class: 'abtn abtn--ghost abtn--sm iconbtn--x', type: 'button', text: 'Remove',
+                onclick: function () {
+                  if (!confirm('Remove ' + u.email + ' from the admin?')) return;
+                  post('/admin/users/' + encodeURIComponent(u.email), null, 'DELETE').then(function (res) {
+                    if (res.error) { toast(res.error, 'err'); return; }
+                    toast(u.email + ' removed', 'ok');
+                    paint();
+                  });
+                }
+              }));
+            }
+            tr.appendChild(tools);
+            table.appendChild(tr);
+          });
+          list.appendChild(table);
+        });
+    }
+
+    function authHeader() {
+      var t = sb._token && sb._token();
+      return t ? { 'Authorization': 'Bearer ' + t, 'Content-Type': 'application/json' }
+               : { 'Content-Type': 'application/json' };
+    }
+    function post(path, body, method) {
+      return fetch(cfg.dataUrl + path, {
+        method: method || 'POST', credentials: 'include', headers: authHeader(),
+        body: body ? JSON.stringify(body) : undefined
+      }).then(function (r) { return r.json(); })
+        .catch(function (e) { return { error: String(e) }; });
+    }
+
+    panel.appendChild(el('hr', { class: 'rule' }));
+    panel.appendChild(el('h3', { text: 'Add someone' }));
+    var nameIn = el('input', { type: 'text', placeholder: 'Their name' });
+    var mailIn = el('input', { type: 'email', placeholder: 'their.name@armera.co.uk' });
+    panel.appendChild(lbl('Name')); panel.appendChild(nameIn);
+    panel.appendChild(lbl('Email')); panel.appendChild(mailIn);
+    panel.appendChild(el('button', {
+      class: 'abtn abtn--sm', type: 'button', text: 'Add and create their link', style: 'margin-top:14px',
+      onclick: function () {
+        var email = mailIn.value.trim();
+        if (!email) { toast('An email address is needed', 'err'); return; }
+        post('/admin/users', { email: email, display_name: nameIn.value.trim() }).then(function (res) {
+          if (res.error) { toast(res.error, 'err'); return; }
+          nameIn.value = ''; mailIn.value = '';
+          paint();
+          showLink(res.email, res.token);
+          toast(res.email + ' added', 'ok');
+        });
+      }
+    }));
+
+    paint();
   }
 
   /* ---------- boot ---------- */

@@ -467,6 +467,78 @@ const handler = {
         return serveFile(bucket, key, request);
       }
 
+      /* ---- who may sign in ---- */
+
+      if (path === '/admin/users' && request.method === 'GET') {
+        const rows = await env.DB.prepare(
+          `select email, display_name, password_hash is not null as has_password,
+                  setup_token is not null as has_link, setup_expires, last_seen, disabled
+             from admin_users order by email`).all();
+        return json(rows.results.map(r => ({ ...r, you: r.email === who.email })), 200, credCors);
+      }
+
+      if (path === '/admin/users' && request.method === 'POST') {
+        const { email, display_name } = await request.json().catch(() => ({}));
+        const addr = String(email || '').trim().toLowerCase();
+        if (!addr || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(addr)) {
+          return json({ error: 'That does not look like an email address.' }, 400, credCors);
+        }
+        const existing = await env.DB.prepare('select email from admin_users where email = ?').bind(addr).first();
+        if (existing) return json({ error: 'That person is already on the list.' }, 409, credCors);
+        const token = crypto.randomUUID().replace(/-/g, '') + crypto.randomUUID().replace(/-/g, '');
+        const expires = new Date(Date.now() + 7 * 86400000).toISOString();
+        await env.DB.prepare(
+          'insert into admin_users (email, display_name, prefs, setup_token, setup_expires) values (?,?,?,?,?)')
+          .bind(addr, (display_name || '').trim() || addr.split('@')[0], '{}', token, expires).run();
+        return json({ ok: true, email: addr, token, expires }, 200, credCors);
+      }
+
+      if (path.startsWith('/admin/users/')) {
+        const rest = path.slice('/admin/users/'.length);
+        const makeLink = rest.endsWith('/link');
+        const addr = decodeURIComponent(makeLink ? rest.slice(0, -5) : rest).toLowerCase();
+        const target = await env.DB.prepare('select email, disabled from admin_users where email = ?')
+          .bind(addr).first();
+        if (!target) return json({ error: 'No such person.' }, 404, credCors);
+
+        // a new one-time link, for someone who never set a password or forgot it
+        if (makeLink && request.method === 'POST') {
+          const token = crypto.randomUUID().replace(/-/g, '') + crypto.randomUUID().replace(/-/g, '');
+          const expires = new Date(Date.now() + 7 * 86400000).toISOString();
+          await env.DB.prepare('update admin_users set setup_token = ?, setup_expires = ? where email = ?')
+            .bind(token, expires, addr).run();
+          return json({ ok: true, email: addr, token, expires }, 200, credCors);
+        }
+
+        if (request.method === 'POST') {
+          const { display_name, disabled } = await request.json().catch(() => ({}));
+          if (disabled === 1 && addr === who.email) {
+            return json({ error: 'You cannot switch off your own access.' }, 400, credCors);
+          }
+          if (disabled === 1) {
+            const left = await env.DB.prepare(
+              'select count(*) as n from admin_users where disabled = 0 and password_hash is not null and email != ?')
+              .bind(addr).first();
+            if (left.n === 0) return json({ error: 'That is the last person who can sign in.' }, 400, credCors);
+          }
+          await env.DB.prepare(
+            'update admin_users set display_name = coalesce(?, display_name), disabled = coalesce(?, disabled) where email = ?')
+            .bind(display_name ?? null, disabled ?? null, addr).run();
+          return json({ ok: true }, 200, credCors);
+        }
+
+        if (request.method === 'DELETE') {
+          if (addr === who.email) return json({ error: 'You cannot remove yourself.' }, 400, credCors);
+          const left = await env.DB.prepare(
+            'select count(*) as n from admin_users where disabled = 0 and password_hash is not null and email != ?')
+            .bind(addr).first();
+          if (left.n === 0) return json({ error: 'That is the last person who can sign in.' }, 400, credCors);
+          await env.DB.prepare('delete from admin_users where email = ?').bind(addr).run();
+          await env.DB.prepare('delete from auth_attempts where email = ?').bind(addr).run();
+          return json({ ok: true }, 200, credCors);
+        }
+      }
+
       if (path === '/prefs' && request.method === 'POST') {
         const body = await request.json();
         const prefs = { ...JSON.parse(who.prefs || '{}'), ...(body.prefs || {}) };

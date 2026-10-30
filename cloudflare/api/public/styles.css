@@ -988,3 +988,25 @@ table.guar-products td { padding: 8px 10px 8px 0; border-bottom: 1px solid var(-
 .crop-frame img { width: 100%; height: 100%; object-fit: cover; display: block; user-select: none; -webkit-user-drag: none; }
 .crop-readout { font-size: 13px; color: var(--muted); margin-top: 14px; }
 .adm .iconbtn--crop:hover { border-color: var(--ink); color: var(--ink); }
+
+/* ---- Admin: the team list ---- */
+.team-list { margin-top: 6px; }
+.team-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+.team-table th { text-align: left; font-size: 11px; letter-spacing: .16em; text-transform: uppercase;
+  color: var(--muted); font-weight: 400; padding: 0 14px 10px 0; border-bottom: 1px solid var(--line); }
+.team-table td { padding: 13px 14px 13px 0; border-bottom: 1px solid var(--line); vertical-align: middle; }
+.team-table tr.off td { color: var(--muted); }
+.team-you { margin-left: 9px; font-size: 10.5px; letter-spacing: .12em; text-transform: uppercase;
+  background: var(--ink); color: var(--paper); padding: 2px 7px; border-radius: 2px; }
+.team-tools { display: flex; gap: 7px; justify-content: flex-end; flex-wrap: wrap; }
+.team-link { border: 1px solid var(--ink); border-radius: 3px; padding: 16px 18px; margin-bottom: 18px;
+  background: var(--paper); }
+.team-link input { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12.5px; }
+.adm .abtn.iconbtn--x:hover { border-color: #a4402f; color: #a4402f; }
+@media (max-width: 760px) {
+  .team-table, .team-table tr, .team-table td, .team-table th { display: block; width: 100%; }
+  .team-table th { display: none; }
+  .team-table td { border: 0; padding: 4px 0; }
+  .team-table tr { border-bottom: 1px solid var(--line); padding: 14px 0; }
+  .team-tools { justify-content: flex-start; margin-top: 8px; }
+}
