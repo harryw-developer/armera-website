@@ -60,3 +60,31 @@ cd cloudflare && npx wrangler deploy -c migrate.wrangler.jsonc
 `migrate-worker.js` is copy-only — it never deletes from either side. It is
 deployed temporarily, protected by a `MIGRATE_TOKEN` secret, and deleted once a
 copy is verified so no public endpoint with bucket access is left running.
+
+## Signing in
+
+Two ways in, both ending at the same identity. `requireAuth()` accepts either,
+so nothing else in the Worker needs to know which was used.
+
+**Cloudflare Access.** Cloudflare authenticates the person and passes a signed
+assertion; no password is stored or checked here. The code verifies that
+assertion against the team's published keys, checks audience and expiry, then
+still requires the address to exist and be enabled in `admin_users` — Access
+says who you are, we decide whether you may. It stays dormant until
+`ACCESS_TEAM_DOMAIN` and `ACCESS_AUD` are set, which needs armera.co.uk on
+Cloudflare. That is the only thing here waiting on the domain.
+
+**Email and password.** Works today on workers.dev. PBKDF2-SHA256 at 100,000
+iterations, which is the most Workers permits — it rejects anything higher
+outright. Sessions are HMAC-signed tokens in an HttpOnly, Secure cookie, valid
+fourteen days. Eight failed attempts in fifteen minutes locks an address out,
+and unknown accounts return the same message as wrong passwords so the form
+cannot be used to find out who has an account.
+
+The four admin accounts exist with no password set, and a null hash can never
+match. `/auth/set-password` accepts a current Supabase session — verified by
+asking Supabase, so no secret is shared — and writes the new hash. That bridge
+exists so nobody needs reset emails during the changeover, and goes away when
+the admin stops signing in through Supabase.
+
+Credentialed endpoints accept only known origins; reads stay open.
