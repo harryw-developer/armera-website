@@ -12,7 +12,11 @@ import { createHash } from 'node:crypto';
 
 const ROOT = dirname(fileURLToPath(import.meta.url));
 // Output to docs/ (served by GitHub Pages from the main branch).
-const DIST = join(ROOT, 'docs');
+// Where the generated site is written. Defaults to docs/ (what GitHub Pages
+// serves); set OUT_DIR to build elsewhere without disturbing it.
+const DIST = process.env.OUT_DIR
+  ? (process.env.OUT_DIR.startsWith('/') ? process.env.OUT_DIR : join(ROOT, process.env.OUT_DIR))
+  : join(ROOT, 'docs');
 // Site base path. '' for a custom domain / root site; '/<repo>' for GitHub project pages.
 const BASE = process.env.BASE_PATH ?? '';
 
@@ -1004,4 +1008,4 @@ guaranteePage();
 contactPage();
 adminPage();
 
-console.log(`Built site into docs/${BASE ? ` (base path ${BASE})` : ''}`);
+console.log(`Built site into ${DIST}${BASE ? ` (base path ${BASE})` : ''}`);
