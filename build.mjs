@@ -1014,6 +1014,9 @@ videosPage();
 retailersPage();
 guaranteePage();
 contactPage();
-adminPage();
+// The admin belongs on its own protected hostname, not on the public site.
+// Public builds leave it out entirely, so there is one door rather than three.
+if (process.env.INCLUDE_ADMIN === '1') adminPage();
+else console.log('Admin page: omitted (set INCLUDE_ADMIN=1 to include it)');
 
 console.log(`Built site into ${DIST}${BASE ? ` (base path ${BASE})` : ''}`);

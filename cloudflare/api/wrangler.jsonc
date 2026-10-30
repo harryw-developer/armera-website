@@ -11,5 +11,14 @@
     { "binding": "PROOF", "bucket_name": "armera-guarantee-proof" }
   ],
   "triggers": { "crons": ["*/5 * * * *"] },
-  "observability": { "enabled": true }
+  "observability": { "enabled": true },
+  // The public site reads from the workers.dev address; adding a route
+  // switches it off unless it is asked for explicitly.
+  "workers_dev": true,
+  // Serves the admin same-origin with its own API, so a Cloudflare Access
+  // assertion is present on every request including the data calls.
+  "assets": { "directory": "./public" },
+  "routes": [
+    { "pattern": "admin.hayesbrow.com", "custom_domain": true }
+  ]
 }
