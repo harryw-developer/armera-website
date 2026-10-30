@@ -282,7 +282,7 @@
 
   Promise.all([
     fetch(cfg.dataUrl + '/rest/v1/site_content?key=eq.retailers&select=data', {
-      headers: { apikey: cfg.anonKey, Authorization: 'Bearer ' + cfg.anonKey }
+      headers: {}
     }).then(function (r) { return r.json(); }),
     loadLeaflet()
   ]).then(function (res) {

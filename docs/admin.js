@@ -4,8 +4,9 @@
 (function () {
   var cfg = window.ARMERA;
   var root = document.getElementById('admin-root');
-  if (!root || !cfg || !window.supabase) return;
-  var sb = window.supabase.createClient(cfg.supabaseUrl, cfg.anonKey);
+  if (!root || !cfg || !window.armeraClient) return;
+  // Same surface the admin was written against, talking to the Cloudflare API.
+  var sb = window.armeraClient(cfg);
 
   var state = { rows: {}, keys: [], tab: 'home', menuOpen: false, catKey: null, rangeIdx: 0, editing: null, user: null };
 
@@ -321,10 +322,11 @@
       var token = r && r.data && r.data.session && r.data.session.access_token;
       return new Promise(function (resolve, reject) {
         var xhr = new XMLHttpRequest();
-        xhr.open('POST', cfg.supabaseUrl + '/storage/v1/object/' + bucket + '/' + path.split('/').map(encodeURIComponent).join('/'), true);
-        xhr.setRequestHeader('apikey', cfg.anonKey);
+              xhr.open('PUT', cfg.dataUrl + '/admin/upload/' +
+        (bucket === cfg.instructionsBucket ? 'instructions' : bucket) + '/' +
+        path.split('/').map(encodeURIComponent).join('/'));
         xhr.setRequestHeader('Authorization', 'Bearer ' + token);
-        xhr.setRequestHeader('x-upsert', 'true');
+      xhr.withCredentials = true;
         xhr.setRequestHeader('cache-control', 'max-age=3600');
         if (contentType || file.type) xhr.setRequestHeader('Content-Type', contentType || file.type);
         xhr.upload.onprogress = function (e) {
@@ -350,6 +352,41 @@
   }
 
   /* ---------- login ---------- */
+  // Someone arriving with a one-time link sets their password instead of
+  // signing in. The link only ever works once, and only for its own address.
+  function renderClaim(token) {
+    root.innerHTML = '';
+    var form = el('form', { class: 'adm', style: 'max-width:420px' });
+    form.appendChild(el('span', { class: 'eyebrow', text: 'ARMERA' }));
+    form.appendChild(el('h1', { style: 'margin:12px 0 6px;font-size:34px', text: 'Choose a password' }));
+    form.appendChild(el('p', { class: 'small', text:
+      'This link works once. Pick something only you know — at least 10 characters.' }));
+    form.appendChild(el('label', { text: 'New password' }));
+    var p1 = el('input', { type: 'password', autocomplete: 'new-password' });
+    form.appendChild(p1);
+    form.appendChild(el('label', { text: 'Repeat it' }));
+    var p2 = el('input', { type: 'password', autocomplete: 'new-password' });
+    form.appendChild(p2);
+    var go = el('button', { class: 'abtn', type: 'submit', text: 'Save password', style: 'margin-top:18px' });
+    form.appendChild(go);
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      if (p1.value !== p2.value) { msg(form, 'Those two do not match.', 'err'); return; }
+      if (p1.value.length < 10) { msg(form, 'Use at least 10 characters.', 'err'); return; }
+      go.disabled = true;
+      fetch(cfg.dataUrl + '/auth/claim', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token: token, password: p1.value })
+      }).then(function (r) { return r.json(); }).then(function (res) {
+        go.disabled = false;
+        if (res.error) { msg(form, res.error, 'err'); return; }
+        history.replaceState({}, '', location.pathname);
+        renderLogin('Password saved. Sign in with ' + res.email + '.');
+      }).catch(function (err) { go.disabled = false; msg(form, String(err), 'err'); });
+    });
+    root.appendChild(form);
+  }
+
   function renderLogin(note) {
     root.innerHTML = '';
     var form = el('form', { class: 'adm', style: 'max-width:420px' });
@@ -1668,7 +1705,7 @@
           }));
           item.appendChild(el('button', {
             class: 'abtn abtn--ghost abtn--sm', text: 'View',
-            onclick: function () { window.open(cfg.supabaseUrl + '/storage/v1/object/public/' + cfg.instructionsBucket + '/' + encodeURIComponent(f.name), '_blank'); }
+            onclick: function () { window.open(cfg.instructionsUrl + '/' + encodeURIComponent(f.name), '_blank'); }
           }));
           item.appendChild(el('button', {
             class: 'abtn abtn--danger abtn--sm', text: 'Remove',
@@ -2788,8 +2825,13 @@
     });
   }
 
-  sb.auth.getSession().then(function (res) {
-    if (res.data && res.data.session) boot();
-    else renderLogin();
-  });
+  var setupToken = new URLSearchParams(location.search).get('setup');
+  if (setupToken) {
+    renderClaim(setupToken);
+  } else {
+    sb.auth.getSession().then(function (res) {
+      if (res.data && res.data.session) boot();
+      else renderLogin();
+    });
+  }
 })();

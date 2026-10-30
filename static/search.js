@@ -31,11 +31,11 @@
     if (building) return building;
     building = Promise.all([
       fetch(cfg.dataUrl + '/rest/v1/site_content?select=key,data', {
-        headers: { apikey: cfg.anonKey, Authorization: 'Bearer ' + cfg.anonKey }
+        headers: {}
       }).then(function (r) { return r.json(); }).catch(function () { return []; }),
       fetch(cfg.dataUrl + '/storage/v1/object/list/' + cfg.instructionsBucket, {
         method: 'POST',
-        headers: { apikey: cfg.anonKey, Authorization: 'Bearer ' + cfg.anonKey, 'Content-Type': 'application/json' },
+        headers: {  'Content-Type': 'application/json' },
         body: JSON.stringify({ prefix: '', limit: 500, sortBy: { column: 'name', order: 'asc' } })
       }).then(function (r) { return r.json(); }).catch(function () { return []; })
     ]).then(function (res) {

@@ -7,7 +7,8 @@
   ],
   "r2_buckets": [
     { "binding": "ASSETS", "bucket_name": "armera-assets" },
-    { "binding": "INSTRUCTIONS", "bucket_name": "armera-instructions" }
+    { "binding": "INSTRUCTIONS", "bucket_name": "armera-instructions" },
+    { "binding": "PROOF", "bucket_name": "armera-guarantee-proof" }
   ],
   "triggers": { "crons": ["*/5 * * * *"] },
   "observability": { "enabled": true }

@@ -36,7 +36,7 @@ const CARTO_KEY = 'cb1_30vv_1_debcb48eb777bc52077e4a38';
 
 // Short content hashes for cache-busting: a changed file gets a new URL, so a
 // browser can never pair a stale stylesheet with fresh scripts.
-const STATIC_FILES = ['styles.css', 'site.js', 'search.js', 'track.js', 'guarantee.js', 'catalog.js', 'instructions.js', 'videos.js', 'retailers.js', 'admin.js'];
+const STATIC_FILES = ['styles.css', 'site.js', 'armera-client.js', 'search.js', 'track.js', 'guarantee.js', 'catalog.js', 'instructions.js', 'videos.js', 'retailers.js', 'admin.js'];
 const assetVersions = Object.fromEntries(STATIC_FILES.map(f => [
   f, createHash('sha1').update(readFileSync(join(ROOT, 'static', f))).digest('hex').slice(0, 8)
 ]));
@@ -143,9 +143,10 @@ function heroMarkup() {
 const esc = s => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 const lifeImg = f => `${ASSETS}/lifestyle/${f.replace(/\.png$/, '.jpg')}`;
 
+// The site no longer talks to Supabase, so its URL and key are not shipped to
+// visitors any more. The admin's bridge for setting a Cloudflare password is
+// the last thing that needs them, and it only loads on /admin/.
 const CFG = {
-  supabaseUrl: SUPABASE_URL,
-  anonKey: ANON_KEY,
   assets: ASSETS,
   base: BASE,
   instructionsBucket: INSTRUCTIONS_BUCKET,
@@ -988,7 +989,7 @@ function adminPage() {
     path: '/admin/',
     body,
     noindex: true,
-    extraBody: `<script src="${ASSETS}/vendor/supabase/supabase.js"></script><script src="${v('admin.js')}" defer></script>`
+    extraBody: `<script src="${v('armera-client.js')}"></script><script src="${v('admin.js')}" defer></script>`
   }));
 }
 
@@ -999,7 +1000,7 @@ writeFileSync(join(DIST, '.nojekyll'), '');
 
 const css = readFileSync(join(ROOT, 'static/styles.css'), 'utf8').replaceAll('ASSETS', ASSETS);
 writeFileSync(join(DIST, 'styles.css'), css);
-for (const f of ['site.js', 'search.js', 'track.js', 'guarantee.js', 'catalog.js', 'instructions.js', 'videos.js', 'retailers.js', 'admin.js']) {
+for (const f of ['site.js', 'search.js', 'track.js', 'guarantee.js', 'catalog.js', 'instructions.js', 'videos.js', 'retailers.js', 'admin.js', 'armera-client.js']) {
   writeFileSync(join(DIST, f), readFileSync(join(ROOT, 'static', f)));
 }
 

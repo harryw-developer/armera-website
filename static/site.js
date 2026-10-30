@@ -188,7 +188,7 @@
   nudgeVideo(document.getElementById('hero-media'));
 
   fetch(cfg.dataUrl + '/rest/v1/site_content?key=eq.pages&select=data', {
-    headers: { apikey: cfg.anonKey, Authorization: 'Bearer ' + cfg.anonKey }
+    headers: {}
   }).then(function (r) { return r.json(); }).then(function (rows) {
     var pages = rows && rows[0] && rows[0].data;
     if (!pages) return;

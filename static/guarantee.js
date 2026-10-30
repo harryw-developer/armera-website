@@ -45,9 +45,9 @@
     proofState.textContent = 'Uploading…';
     var name = 'proof-' + Date.now() + '-' + Math.random().toString(36).slice(2, 8) +
       (f.name.match(/\.[a-z0-9]+$/i) || ['.jpg'])[0].toLowerCase();
-    fetch(cfg.supabaseUrl + '/storage/v1/object/guarantee-proof/' + encodeURIComponent(name), {
+    fetch(cfg.dataUrl + '/guarantee-proof/' + encodeURIComponent(name), {
       method: 'POST',
-      headers: { apikey: cfg.anonKey, Authorization: 'Bearer ' + cfg.anonKey, 'Content-Type': f.type || 'application/octet-stream' },
+      headers: {  'Content-Type': f.type || 'application/octet-stream' },
       body: f
     }).then(function (r) {
       if (r.ok) { proofName = name; proofState.textContent = 'Attached: ' + f.name; }
@@ -99,10 +99,9 @@
 
     send.disabled = true;
     msg.textContent = 'Sending…';
-    fetch(cfg.supabaseUrl + '/rest/v1/guarantee_registrations', {
+    fetch(cfg.dataUrl + '/guarantee', {
       method: 'POST',
       headers: {
-        apikey: cfg.anonKey, Authorization: 'Bearer ' + cfg.anonKey,
         'Content-Type': 'application/json', Prefer: 'return=minimal'
       },
       body: JSON.stringify(payload)

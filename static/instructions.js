@@ -12,8 +12,6 @@
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        apikey: cfg.anonKey,
-        Authorization: 'Bearer ' + cfg.anonKey
       },
       body: JSON.stringify({ prefix: '', limit: 500, sortBy: { column: 'name', order: 'asc' } })
     });
@@ -61,11 +59,11 @@
   var linkText = {};
   try {
     var linkRows = await fetch(cfg.dataUrl + '/rest/v1/site_content?key=eq.instruction_links&select=data', {
-      headers: { apikey: cfg.anonKey, Authorization: 'Bearer ' + cfg.anonKey }
+      headers: {}
     }).then(function (r) { return r.json(); });
     var links = (linkRows && linkRows[0] && linkRows[0].data) || {};
     var catRows = await fetch(cfg.dataUrl + '/rest/v1/site_content?select=key,data', {
-      headers: { apikey: cfg.anonKey, Authorization: 'Bearer ' + cfg.anonKey }
+      headers: {}
     }).then(function (r) { return r.json(); });
     var nameOf = {};
     (catRows || []).filter(function (r) { return /^\d\d-/.test(r.key); }).forEach(function (row) {

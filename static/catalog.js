@@ -307,7 +307,7 @@
     paint();
 
     fetch(cfg.dataUrl + '/rest/v1/site_content?key=in.(instruction_links,gallery)&select=key,data', {
-      headers: { apikey: cfg.anonKey, Authorization: 'Bearer ' + cfg.anonKey }
+      headers: {}
     }).then(function (r) { return r.json(); }).then(function (rows) {
       rows = rows || [];
       var links = (rows.filter(function (r) { return r.key === 'instruction_links'; })[0] || {}).data || {};
@@ -435,7 +435,7 @@
 
   /* ---------- route + render ---------- */
   fetch(cfg.dataUrl + '/rest/v1/site_content?select=key,data&order=key', {
-    headers: { apikey: cfg.anonKey, Authorization: 'Bearer ' + cfg.anonKey }
+    headers: {}
   }).then(function (r) { return r.json(); }).then(function (rows) {
     var cats = rows.filter(function (r) { return /^\d\d-/.test(r.key); }).map(function (r) { return r.data; });
     if (!cats.length) { root.innerHTML = notFound(); return; }

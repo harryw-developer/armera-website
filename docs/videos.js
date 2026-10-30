@@ -7,7 +7,7 @@
   if (!grid || !cfg) return;
 
   fetch(cfg.dataUrl + '/rest/v1/site_content?key=eq.videos&select=data', {
-    headers: { apikey: cfg.anonKey, Authorization: 'Bearer ' + cfg.anonKey }
+    headers: {}
   }).then(function (r) { return r.json(); }).then(function (rows) {
     var videos = (rows && rows[0] && rows[0].data) || [];
     if (!Array.isArray(videos) || !videos.length) {

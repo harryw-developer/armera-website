@@ -67,11 +67,9 @@
     if (row.item_name) row.item_name = String(row.item_name).slice(0, 160);
 
     try {
-      fetch(cfg.supabaseUrl + '/rest/v1/page_views', {
+      fetch(cfg.dataUrl + '/track', {
         method: 'POST',
         headers: {
-          apikey: cfg.anonKey,
-          Authorization: 'Bearer ' + cfg.anonKey,
           'Content-Type': 'application/json',
           Prefer: 'return=minimal'
         },
