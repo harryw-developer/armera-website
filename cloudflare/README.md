@@ -1,8 +1,31 @@
 # Cloudflare
 
-The site's data was copied from Supabase to Cloudflare on 30 Oct 2026. Supabase
-is still live and still serving the site — this is a verified copy, not a
-switchover. Nothing here is wired into the live site yet.
+The public site reads its content and files from Cloudflare (30 Oct 2026).
+Supabase is still the place the admin writes to, and still holds everything —
+nothing has been deleted from it.
+
+## How it hangs together now
+
+```
+  admin  --writes-->  Supabase  --/sync-->  D1  --reads-->  the site
+                                   ^                         |
+                                   |                    R2 (files)
+                          cron every 5 minutes
+```
+
+The admin saves to Supabase exactly as before, then pings the API's `/sync`,
+which copies the content into D1 and rebuilds the catalogue tables from it. A
+cron repeats that every five minutes, so a failed ping self-heals. Edits appear
+on the site straight away.
+
+Still on Supabase, because the admin reads them from there: analytics
+(`page_views`) and guarantee registrations. They move when the admin's writes
+and sign-in do.
+
+**New uploads are the one gap.** The admin uploads files to Supabase Storage,
+and the site now reads files from R2, so a newly uploaded image will 404 until
+it is copied across. Re-run the file copy, or move uploads to R2, before the
+admin is used for new photography.
 
 | What | Where | Contents |
 |---|---|---|
