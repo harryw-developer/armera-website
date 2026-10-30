@@ -22,7 +22,12 @@ const BASE = process.env.BASE_PATH ?? '';
 
 const SUPABASE_URL = 'https://pcouznwpyhtfrleedcsv.supabase.co';
 const ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBjb3V6bndweWh0ZnJsZWVkY3N2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM4NjM3NzIsImV4cCI6MjA5OTQzOTc3Mn0.pNRCs82pde-0vMnaTh6ygtQNeWKgFS2s3lrIkhM8uZU';
-const ASSETS = `${SUPABASE_URL}/storage/v1/object/public/site-assets`;
+// The site reads its content and files from Cloudflare. The admin still writes
+// to Supabase, and the API syncs those writes back into D1 — so there is one
+// place to edit and one place the site reads from.
+const DATA_URL = process.env.DATA_URL ?? 'https://armera-api.harry-01f.workers.dev';
+const ASSETS = `${DATA_URL}/assets`;
+const INSTRUCTIONS_URL = `${DATA_URL}/instructions`;
 const INSTRUCTIONS_BUCKET = 'instructions';
 // CARTO basemap key (browser key — travels in every tile request, so it is
 // public by design). Free to 5m tiles/month; the CARTO + OpenStreetMap
@@ -144,6 +149,8 @@ const CFG = {
   assets: ASSETS,
   base: BASE,
   instructionsBucket: INSTRUCTIONS_BUCKET,
+  dataUrl: DATA_URL,
+  instructionsUrl: INSTRUCTIONS_URL,
   cartoKey: CARTO_KEY
 };
 

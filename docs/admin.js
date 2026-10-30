@@ -57,21 +57,35 @@
       if (!state.catKey) state.catKey = state.keys[0];
     });
   }
+  // The admin writes to Supabase; the site reads Cloudflare. Nudge the API to
+  // pull the change straight across so edits appear at once rather than waiting
+  // for its five-minute sync. Failure here is not an error worth showing: the
+  // cron will catch it.
+  function pushLive() {
+    if (!cfg.dataUrl) return Promise.resolve();
+    return fetch(cfg.dataUrl + '/sync', { method: 'POST' })
+      .catch(function () { /* the scheduled sync will pick it up */ });
+  }
+
   function saveRow(key, target, okText) {
     return sb.from('site_content')
       .update({ data: state.rows[key], updated_at: new Date().toISOString() })
       .eq('key', key)
       .then(function (res) {
-        if (res.error) msg(target, 'Could not save: ' + res.error.message, 'err');
-        else msg(target, okText || 'Saved. Changes are live on the site.', 'ok');
+        if (res.error) { msg(target, 'Could not save: ' + res.error.message, 'err'); return; }
+        return pushLive().then(function () {
+          msg(target, okText || 'Saved. Changes are live on the site.', 'ok');
+        });
       });
   }
   function saveRowUpsert(key, target, okText) {
     return sb.from('site_content')
       .upsert({ key: key, data: state.rows[key], updated_at: new Date().toISOString() })
       .then(function (res) {
-        if (res.error) msg(target, 'Could not save: ' + res.error.message, 'err');
-        else msg(target, okText || 'Saved. Changes are live on the site.', 'ok');
+        if (res.error) { msg(target, 'Could not save: ' + res.error.message, 'err'); return; }
+        return pushLive().then(function () {
+          msg(target, okText || 'Saved. Changes are live on the site.', 'ok');
+        });
       });
   }
   function thisKey(range, p) {

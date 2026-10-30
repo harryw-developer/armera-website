@@ -30,10 +30,10 @@
     if (index) return Promise.resolve(index);
     if (building) return building;
     building = Promise.all([
-      fetch(cfg.supabaseUrl + '/rest/v1/site_content?select=key,data', {
+      fetch(cfg.dataUrl + '/rest/v1/site_content?select=key,data', {
         headers: { apikey: cfg.anonKey, Authorization: 'Bearer ' + cfg.anonKey }
       }).then(function (r) { return r.json(); }).catch(function () { return []; }),
-      fetch(cfg.supabaseUrl + '/storage/v1/object/list/' + cfg.instructionsBucket, {
+      fetch(cfg.dataUrl + '/storage/v1/object/list/' + cfg.instructionsBucket, {
         method: 'POST',
         headers: { apikey: cfg.anonKey, Authorization: 'Bearer ' + cfg.anonKey, 'Content-Type': 'application/json' },
         body: JSON.stringify({ prefix: '', limit: 500, sortBy: { column: 'name', order: 'asc' } })
@@ -83,7 +83,7 @@
         var title = f.name.replace(/\.pdf$/i, '').replace(/^\s*\d+[\s._-]+/, '').replace(/_+/g, ' ').trim();
         items.push({
           title: title, sub: 'Instruction document', kind: 'Instructions',
-          href: cfg.supabaseUrl + '/storage/v1/object/public/' + cfg.instructionsBucket + '/' + encodeURIComponent(f.name),
+          href: cfg.instructionsUrl + '/' + encodeURIComponent(f.name),
           external: true, terms: title + ' instructions manual installation'
         });
       });

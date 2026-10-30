@@ -8,7 +8,7 @@
 
   var files = [];
   try {
-    var res = await fetch(cfg.supabaseUrl + '/storage/v1/object/list/' + cfg.instructionsBucket, {
+    var res = await fetch(cfg.dataUrl + '/storage/v1/object/list/' + cfg.instructionsBucket, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -42,7 +42,7 @@
   }
 
   var cards = files.map(function (f) {
-    var url = cfg.supabaseUrl + '/storage/v1/object/public/' + cfg.instructionsBucket + '/' + encodeURIComponent(f.name);
+    var url = cfg.instructionsUrl + '/' + encodeURIComponent(f.name);
     var a = document.createElement('a');
     a.className = 'pdf-card';
     a.href = url;
@@ -60,11 +60,11 @@
   // Filter by document name or by the products an instruction is linked to.
   var linkText = {};
   try {
-    var linkRows = await fetch(cfg.supabaseUrl + '/rest/v1/site_content?key=eq.instruction_links&select=data', {
+    var linkRows = await fetch(cfg.dataUrl + '/rest/v1/site_content?key=eq.instruction_links&select=data', {
       headers: { apikey: cfg.anonKey, Authorization: 'Bearer ' + cfg.anonKey }
     }).then(function (r) { return r.json(); });
     var links = (linkRows && linkRows[0] && linkRows[0].data) || {};
-    var catRows = await fetch(cfg.supabaseUrl + '/rest/v1/site_content?select=key,data', {
+    var catRows = await fetch(cfg.dataUrl + '/rest/v1/site_content?select=key,data', {
       headers: { apikey: cfg.anonKey, Authorization: 'Bearer ' + cfg.anonKey }
     }).then(function (r) { return r.json(); });
     var nameOf = {};

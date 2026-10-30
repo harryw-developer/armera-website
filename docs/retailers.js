@@ -281,7 +281,7 @@
   }
 
   Promise.all([
-    fetch(cfg.supabaseUrl + '/rest/v1/site_content?key=eq.retailers&select=data', {
+    fetch(cfg.dataUrl + '/rest/v1/site_content?key=eq.retailers&select=data', {
       headers: { apikey: cfg.anonKey, Authorization: 'Bearer ' + cfg.anonKey }
     }).then(function (r) { return r.json(); }),
     loadLeaflet()

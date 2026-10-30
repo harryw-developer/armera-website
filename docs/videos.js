@@ -6,7 +6,7 @@
   var empty = document.getElementById('video-empty');
   if (!grid || !cfg) return;
 
-  fetch(cfg.supabaseUrl + '/rest/v1/site_content?key=eq.videos&select=data', {
+  fetch(cfg.dataUrl + '/rest/v1/site_content?key=eq.videos&select=data', {
     headers: { apikey: cfg.anonKey, Authorization: 'Bearer ' + cfg.anonKey }
   }).then(function (r) { return r.json(); }).then(function (rows) {
     var videos = (rows && rows[0] && rows[0].data) || [];

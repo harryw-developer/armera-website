@@ -306,7 +306,7 @@
     }
     paint();
 
-    fetch(cfg.supabaseUrl + '/rest/v1/site_content?key=in.(instruction_links,gallery)&select=key,data', {
+    fetch(cfg.dataUrl + '/rest/v1/site_content?key=in.(instruction_links,gallery)&select=key,data', {
       headers: { apikey: cfg.anonKey, Authorization: 'Bearer ' + cfg.anonKey }
     }).then(function (r) { return r.json(); }).then(function (rows) {
       rows = rows || [];
@@ -317,7 +317,7 @@
         return (links[f] || []).indexOf(key) !== -1;
       }).sort(function (a, b) { return a.localeCompare(b, undefined, { numeric: true }); })
         .forEach(function (f) {
-          docs.push(docRow(cfg.supabaseUrl + '/storage/v1/object/public/' + cfg.instructionsBucket + '/' + encodeURIComponent(f), title(f), 'Instructions'));
+          docs.push(docRow(cfg.instructionsUrl + '/' + encodeURIComponent(f), title(f), 'Instructions'));
         });
       paint();
 
@@ -434,7 +434,7 @@
   }
 
   /* ---------- route + render ---------- */
-  fetch(cfg.supabaseUrl + '/rest/v1/site_content?select=key,data&order=key', {
+  fetch(cfg.dataUrl + '/rest/v1/site_content?select=key,data&order=key', {
     headers: { apikey: cfg.anonKey, Authorization: 'Bearer ' + cfg.anonKey }
   }).then(function (r) { return r.json(); }).then(function (rows) {
     var cats = rows.filter(function (r) { return /^\d\d-/.test(r.key); }).map(function (r) { return r.data; });
