@@ -326,12 +326,15 @@
       var links = (rows.filter(function (r) { return r.key === 'instruction_links'; })[0] || {}).data || {};
       var gallery = (rows.filter(function (r) { return r.key === 'gallery'; })[0] || {}).data || [];
 
-      Object.keys(links).filter(function (f) {
+      // Listed simply as "Instructions" — the filenames are internal and mean
+      // nothing to a customer. Numbered only if a product ever has more than one.
+      var sheets = Object.keys(links).filter(function (f) {
         return (links[f] || []).indexOf(key) !== -1;
-      }).sort(function (a, b) { return a.localeCompare(b, undefined, { numeric: true }); })
-        .forEach(function (f) {
-          docs.push(docRow(cfg.instructionsUrl + '/' + encodeURIComponent(f), title(f), 'Instructions'));
-        });
+      }).sort(function (a, b) { return a.localeCompare(b, undefined, { numeric: true }); });
+      sheets.forEach(function (f, i) {
+        var label = sheets.length > 1 ? 'Instructions ' + (i + 1) : 'Instructions';
+        docs.push(docRow(cfg.instructionsUrl + '/' + encodeURIComponent(f), label, 'PDF'));
+      });
       paint();
 
       // Photo-gallery shots tagged with this product join the image strip
