@@ -331,25 +331,21 @@ const handler = {
       if (await tooManyAttempts(env.DB, addr)) {
         return json({ error: 'Too many attempts. Try again in fifteen minutes.' }, 429, credCors);
       }
-      const row = await env.DB.prepare('select email, display_name, password_hash, disabled from admin_users where email = ?')
+      const row = await env.DB.prepare(
+        'select email, display_name, password_hash, disabled, session_epoch from admin_users where email = ?')
         .bind(addr).first();
       const ok = row && !row.disabled && await checkPassword(password, row.password_hash);
       await recordAttempt(env.DB, addr, ok);
       if (!ok) return json({ error: 'Those details were not recognised.' }, 401, credCors);
-      const token = await issueSession(row.email, env.SESSION_SECRET);
+      const token = await issueSession(row.email, env.SESSION_SECRET, 14, row.session_epoch || 0);
       await env.DB.prepare('update admin_users set last_seen = ? where email = ?')
         .bind(new Date().toISOString(), row.email).run();
-      return json({ email: row.email, display_name: row.display_name, token }, 200, {
-        ...credCors,
-        'set-cookie': `armera_session=${token}; Path=/; HttpOnly; Secure; SameSite=None; Max-Age=${14 * 86400}`
-      });
+      // The token goes back in the body only. No cookie: see requireAuth.
+      return json({ email: row.email, display_name: row.display_name, token }, 200, credCors);
     }
 
     if (path === '/auth/logout') {
-      return json({ ok: true }, 200, {
-        ...credCors,
-        'set-cookie': 'armera_session=; Path=/; HttpOnly; Secure; SameSite=None; Max-Age=0'
-      });
+      return json({ ok: true }, 200, credCors);
     }
 
     if (path === '/auth/me') {
@@ -372,7 +368,8 @@ const handler = {
       if (!row.setup_expires || new Date(row.setup_expires) < new Date()) {
         return json({ error: 'That link has expired. Ask for a new one.' }, 401, credCors);
       }
-      await env.DB.prepare('update admin_users set password_hash = ?, setup_token = null, setup_expires = null where email = ?')
+      await env.DB.prepare(`update admin_users set password_hash = ?, setup_token = null,
+          setup_expires = null, session_epoch = session_epoch + 1 where email = ?`)
         .bind(await hashPassword(password), row.email).run();
       return json({ ok: true, email: row.email }, 200, credCors);
     }
@@ -385,9 +382,10 @@ const handler = {
       if (!password || String(password).length < 10) {
         return json({ error: 'Use at least 10 characters.' }, 400, credCors);
       }
-      await env.DB.prepare('update admin_users set password_hash = ? where email = ?')
+      await env.DB.prepare(
+        'update admin_users set password_hash = ?, session_epoch = session_epoch + 1 where email = ?')
         .bind(await hashPassword(password), who.email).run();
-      return json({ ok: true }, 200, credCors);
+      return json({ ok: true, note: 'Other sessions have been signed out.' }, 200, credCors);
     }
 
     /* ===== BEGIN admin + public write routes (keep together) ===== */

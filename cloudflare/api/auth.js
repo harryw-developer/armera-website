@@ -63,9 +63,9 @@ async function hmacKey(secret) {
                                  false, ['sign', 'verify']);
 }
 
-export async function issueSession(email, secret, days = 14) {
+export async function issueSession(email, secret, days = 14, epoch = 0) {
   const payload = b64(enc.encode(JSON.stringify({
-    email, exp: Date.now() + days * 86400000
+    email, epoch, exp: Date.now() + days * 86400000
   })));
   const sig = b64(await crypto.subtle.sign('HMAC', await hmacKey(secret), enc.encode(payload)));
   return `${payload}.${sig}`;
@@ -131,13 +131,20 @@ export async function requireAuth(request, env) {
     return { ...row, via: 'access' };
   }
 
-  const token = cookie(request.headers.get('Cookie'), 'armera_session')
-             || (request.headers.get('Authorization') || '').replace(/^Bearer /, '');
+  // Deliberately the Authorization header only, never the cookie. The admin is
+  // on a different origin from this API, so the cookie would have to be
+  // SameSite=None — which means any website could make your browser send it on
+  // a write. A custom header cannot be set cross-site without a preflight that
+  // this Worker refuses, so requiring it closes that off.
+  const token = (request.headers.get('Authorization') || '').replace(/^Bearer /, '');
   const session = await readSession(token, env.SESSION_SECRET);
   if (!session) return null;
-  const row = await env.DB.prepare('select email, display_name, prefs, disabled from admin_users where email = ?')
+  const row = await env.DB.prepare(
+    'select email, display_name, prefs, disabled, session_epoch from admin_users where email = ?')
     .bind(session.email).first();
   if (!row || row.disabled) return null;
+  // A password change bumps the epoch, which retires every token issued before it.
+  if ((session.epoch || 0) !== (row.session_epoch || 0)) return null;
   return { ...row, via: 'password' };
 }
 
@@ -153,4 +160,8 @@ export async function tooManyAttempts(db, email) {
 export async function recordAttempt(db, email, ok) {
   await db.prepare('insert into auth_attempts (email, at, ok) values (?, ?, ?)')
     .bind(email, new Date().toISOString(), ok ? 1 : 0).run();
+  // Keep the log from growing without limit; a day is far longer than the
+  // fifteen-minute window the lockout actually looks at.
+  await db.prepare("delete from auth_attempts where at < ?")
+    .bind(new Date(Date.now() - 86400000).toISOString()).run();
 }
