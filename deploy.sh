@@ -1,22 +1,24 @@
 #!/bin/sh
-# Two builds, two places.
-#   public  — the site, reading the API across at armera-api.workers.dev, no admin
-#   admin   — the same site plus the admin, same-origin with its own API, on
-#             admin.hayesbrow.com where Cloudflare Access can gate it
+# One site, two places it is published.
+#
+#   armera-website  — the Worker that serves the site, including /admin
+#   docs/           — the same site for GitHub Pages, under /armera-website
+#
+# Both read their content and files from armera-api, which is data only:
+# D1, R2, auth and the admin's write endpoints. It serves no pages.
 set -e
 cd "$(dirname "$0")"
 
-echo "— admin bundle (same-origin, includes the admin) —"
-INCLUDE_ADMIN=1 DATA_URL='' OUT_DIR=cloudflare/api/public node build.mjs
-printf '/*\n  X-Robots-Tag: noindex\n  X-Content-Type-Options: nosniff\n  Referrer-Policy: strict-origin-when-cross-origin\n' > cloudflare/api/public/_headers
-(cd cloudflare/api && npx -y wrangler@latest deploy)
+API=${API:-https://armera-api.harry-01f.workers.dev}
 
-echo "— public site on Cloudflare —"
+echo "— building —"
 rm -rf /tmp/armera-public
-OUT_DIR=/tmp/armera-public node build.mjs
+INCLUDE_ADMIN=1 DATA_URL="$API" OUT_DIR=/tmp/armera-public node build.mjs
 printf '/*\n  X-Robots-Tag: noindex\n  X-Content-Type-Options: nosniff\n  Referrer-Policy: strict-origin-when-cross-origin\n' > /tmp/armera-public/_headers
+
+echo "— publishing to Cloudflare —"
 npx -y wrangler@latest deploy --assets=/tmp/armera-public --name armera-website --compatibility-date 2026-10-23
 
-echo "— public site for GitHub Pages —"
-BASE_PATH=/armera-website node build.mjs
+echo "— building for GitHub Pages —"
+INCLUDE_ADMIN=1 DATA_URL="$API" BASE_PATH=/armera-website node build.mjs
 echo "docs/ rebuilt — commit and push to publish"
