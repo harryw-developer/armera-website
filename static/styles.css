@@ -1010,3 +1010,12 @@ table.guar-products td { padding: 8px 10px 8px 0; border-bottom: 1px solid var(-
   .team-table tr { border-bottom: 1px solid var(--line); padding: 14px 0; }
   .team-tools { justify-content: flex-start; margin-top: 8px; }
 }
+
+/* ---- Admin: choosing the tile photo ---- */
+.adm .tile-pick { display: flex; gap: 20px; align-items: flex-start; margin: 14px 0 4px; flex-wrap: wrap; }
+.adm .tile-pick-frame { width: 170px; height: 150px; border: 1px solid var(--line); border-radius: 3px;
+  background: var(--tile); display: flex; align-items: center; justify-content: center; flex: none; padding: 10px; }
+.adm .tile-pick-frame img { max-width: 100%; max-height: 100%; object-fit: contain; mix-blend-mode: multiply; }
+.adm .tile-pick-frame .ph { font-size: 11px; letter-spacing: .18em; text-transform: uppercase; color: var(--line-dark); }
+.adm .tile-pick-side { flex: 1 1 260px; min-width: 240px; }
+.adm .tile-pick-side .abtn.on { background: var(--ink); color: var(--paper); border-color: var(--ink); }

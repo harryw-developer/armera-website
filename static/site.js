@@ -48,7 +48,12 @@
   window.armeraFocus = function (root) {
     var imgs = (root || document).querySelectorAll('img[data-img]');
     [].forEach.call(imgs, function (im) {
-      var p = FOCUS[im.getAttribute('data-img')];
+      var saved = FOCUS[im.getAttribute('data-img')];
+      if (!saved) { im.style.objectPosition = ''; return; }
+      // Each frame shape is cropped separately; data-frame says which this is.
+      // A single point saved before that change still applies to every frame.
+      var frame = im.getAttribute('data-frame');
+      var p = (frame && saved[frame]) || (typeof saved.x === 'number' ? saved : null);
       im.style.objectPosition = p ? (p.x + '% ' + p.y + '%') : '';
     });
   };

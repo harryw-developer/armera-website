@@ -342,13 +342,52 @@
     });
   }
 
+  // Browsers will happily hand us a 9 MB bitmap. Anything that is not already
+  // a web-friendly format, or is simply too big, gets redrawn as a JPEG first
+  // so the site is not asked to serve it as-is.
+  function webReady(file) {
+    var fine = /^image\/(jpeg|png|webp|gif|svg\+xml)$/.test(file.type);
+    if (fine && file.size <= 2 * 1024 * 1024) return Promise.resolve(file);
+    if (!/^image\//.test(file.type)) return Promise.resolve(file);   // not an image: leave alone
+    return new Promise(function (resolve) {
+      var img = new Image();
+      img.onload = function () {
+        var max = 1600;
+        var scale = Math.min(1, max / Math.max(img.width, img.height));
+        var c = document.createElement('canvas');
+        c.width = Math.round(img.width * scale);
+        c.height = Math.round(img.height * scale);
+        var ctx = c.getContext('2d');
+        ctx.fillStyle = '#fff';
+        ctx.fillRect(0, 0, c.width, c.height);
+        ctx.drawImage(img, 0, 0, c.width, c.height);
+        c.toBlob(function (blob) {
+          if (!blob) { resolve(file); return; }
+          var name = file.name.replace(/\.[^.]+$/, '') + '.jpg';
+          var out = new File([blob], name, { type: 'image/jpeg' });
+          if (out.size < file.size) {
+            toast('Converted ' + file.name + ' to JPEG (' +
+                  Math.round(file.size / 102400) / 10 + ' MB → ' +
+                  Math.round(out.size / 102400) / 10 + ' MB)', 'ok');
+            resolve(out);
+          } else resolve(file);
+        }, 'image/jpeg', 0.88);
+        URL.revokeObjectURL(img.src);
+      };
+      img.onerror = function () { resolve(file); };
+      img.src = URL.createObjectURL(file);
+    });
+  }
+
   function uploadTo(folder, file, label) {
-    var name = slugify(file.name.replace(/\.[^.]+$/, '')) + file.name.match(/\.[^.]+$/)[0].toLowerCase();
-    return uploadWithProgress('site-assets', folder + '/' + name, file, label || ('Uploading ' + file.name))
-      .then(function (t) {
-        t.finish('Uploaded ' + file.name, true);
-        return name;
-      });
+    return webReady(file).then(function (ready) {
+      var name = slugify(ready.name.replace(/\.[^.]+$/, '')) + ready.name.match(/\.[^.]+$/)[0].toLowerCase();
+      return uploadWithProgress('site-assets', folder + '/' + name, ready, label || ('Uploading ' + file.name))
+        .then(function (t) {
+          t.finish('Uploaded ' + ready.name, true);
+          return name;
+        });
+    });
   }
 
   /* ---------- login ---------- */
@@ -1177,6 +1216,62 @@
       onclick: function () { variants.push({ sku: '', finish: '', price: 0 }); drawV(); drawImages(); }
     }));
     box.appendChild(el('p', { class: 'hint', text: 'Each option gets its own photo slot below, so every variation can show its own preview. The colour code links a furniture option to its colour swatch under Range details → Colours.' }));
+
+    /* ---- the tile photo ---- */
+    box.appendChild(el('hr', { class: 'rule' }));
+    box.appendChild(lbl('Tile photo', 'The single photo used wherever this product is listed — range pages, search results, “looks good with”. Without one the first option’s photo is used instead.'));
+    var tileWrap = el('div', { class: 'tile-pick' });
+
+    function drawTile() {
+      tileWrap.innerHTML = '';
+      var shown = p.image || (p.variants || []).map(function (v) { return v.image; }).filter(Boolean)[0];
+      var frame = el('div', { class: 'tile-pick-frame' });
+      if (shown) frame.appendChild(el('img', { src: cfg.assets + '/products/' + encodeURIComponent(shown), alt: '' }));
+      else frame.appendChild(el('span', { class: 'ph', text: 'none' }));
+      tileWrap.appendChild(frame);
+
+      var side = el('div', { class: 'tile-pick-side' });
+      side.appendChild(el('p', { class: 'small', text: p.image
+        ? 'Using ' + p.image
+        : shown ? 'No tile photo chosen — using the first option’s photo (' + shown + ').'
+                : 'No photo at all yet.' }));
+
+      // choose one of the option photos
+      var opts = (p.variants || []).filter(function (v) { return v.image; });
+      if (opts.length) {
+        var row = el('div', { class: 'adm-row', style: 'margin-top:8px;flex-wrap:wrap' });
+        opts.forEach(function (v) {
+          row.appendChild(el('button', {
+            class: 'abtn abtn--ghost abtn--sm' + (p.image === v.image ? ' on' : ''),
+            type: 'button', text: v.finish || v.sku,
+            title: 'Use the ' + (v.finish || v.sku) + ' photo as the tile',
+            onclick: function () { p.image = v.image; drawTile(); }
+          }));
+        });
+        side.appendChild(row);
+      }
+
+      var up = el('input', { type: 'file', accept: 'image/*', style: 'margin-top:10px' });
+      up.addEventListener('change', function () {
+        if (!up.files[0]) return;
+        uploadTo('products', up.files[0], 'Uploading the tile photo').then(function (name) {
+          p.image = name;
+          drawTile();
+          msg(box, 'Tile photo set — press Save product to keep it.', 'ok');
+        }).catch(function (e) { msg(box, 'Upload failed: ' + e.message, 'err'); });
+      });
+      side.appendChild(up);
+
+      if (p.image) {
+        side.appendChild(el('button', {
+          class: 'abtn abtn--ghost abtn--sm', type: 'button', text: 'Clear', style: 'margin-top:10px',
+          onclick: function () { delete p.image; drawTile(); }
+        }));
+      }
+      tileWrap.appendChild(side);
+    }
+    drawTile();
+    box.appendChild(tileWrap);
 
     box.appendChild(lbl('Photos — one per option', 'Each option can have its own photo. Customers click a row in the pricing table (or a colour swatch) and the main picture changes to that one. Options without their own photo fall back to the shared product photo.'));
     box.appendChild(imgWrap);
@@ -2630,9 +2725,9 @@
      and we store that point. The frames below are the real shapes used on
      the site, so what you line up is what visitors see. */
   var FRAMES = [
-    ['Banner across a range page', 1.38],
-    ['Top of the homepage', 1.9],
-    ['Square-ish tile', 0.87]
+    ['banner', 'Banner across a range page', 1.38],
+    ['hero', 'Top of the homepage', 1.9],
+    ['tile', 'Square-ish tile', 0.87]
   ];
 
   function focusMap() {
@@ -2644,7 +2739,15 @@
   // file: the image filename as the site refers to it; folder: where it lives.
   function cropPicker(file, folder, onSaved) {
     var map = focusMap();
-    var pt = map[file] ? { x: map[file].x, y: map[file].y } : { x: 50, y: 50 };
+    // Each frame keeps its own point. An older single point, saved when they
+    // all moved together, is used as the starting position for every frame.
+    var saved = map[file] || {};
+    var legacy = (typeof saved.x === 'number') ? { x: saved.x, y: saved.y } : { x: 50, y: 50 };
+    var pts = {};
+    FRAMES.forEach(function (f) {
+      var own = saved[f[0]];
+      pts[f[0]] = own ? { x: own.x, y: own.y } : { x: legacy.x, y: legacy.y };
+    });
     // lifestyle photography is stored as .jpg even where the catalogue data still says .png
     var path = file.indexOf('/') !== -1 ? file : (folder || 'lifestyle') + '/' + file;
     if (path.indexOf('lifestyle/') === 0) path = path.replace(/\.png$/i, '.jpg');
@@ -2655,27 +2758,38 @@
     box.addEventListener('click', function (e) { e.stopPropagation(); });
     box.appendChild(el('h3', { text: 'Choose what stays in frame' }));
     box.appendChild(el('p', { class: 'hint', text:
-      'Drag the photograph. The frames are the real shapes the site uses, so whatever you line up is what people see. ' +
-      'Nothing is cut from the file itself — this only chooses which part of it is shown.' }));
+      'Drag each photograph on its own. The frames are the real shapes the site uses, so whatever you line up ' +
+      'in each is what people see there. Nothing is cut from the file itself — this only chooses which part is shown.' }));
 
     var stageWrap = el('div', { class: 'crop-stages' });
     var stages = FRAMES.map(function (f) {
       var hold = el('div', { class: 'crop-stage' });
-      hold.appendChild(el('span', { class: 'crop-stage-name', text: f[0] }));
-      var frame = el('div', { class: 'crop-frame', style: 'aspect-ratio:' + f[1] });
+      hold.appendChild(el('span', { class: 'crop-stage-name', text: f[1] }));
+      var frame = el('div', { class: 'crop-frame', style: 'aspect-ratio:' + f[2] });
       var im = el('img', { src: url, alt: '', draggable: 'false' });
       frame.appendChild(im);
       hold.appendChild(frame);
+      var note = el('span', { class: 'crop-stage-note' });
+      hold.appendChild(note);
+      hold.appendChild(el('button', {
+        class: 'abtn abtn--ghost abtn--sm', type: 'button', text: 'Centre this one',
+        style: 'margin-top:8px',
+        onclick: function () { pts[f[0]] = { x: 50, y: 50 }; paint(); }
+      }));
       stageWrap.appendChild(hold);
-      return { frame: frame, img: im };
+      return { key: f[0], frame: frame, img: im, note: note };
     });
     box.appendChild(stageWrap);
 
     var readout = el('p', { class: 'crop-readout' });
     var paint = function () {
-      stages.forEach(function (s) { s.img.style.objectPosition = pt.x + '% ' + pt.y + '%'; });
-      readout.textContent = Math.round(pt.x) + '% across, ' + Math.round(pt.y) + '% down' +
-        (Math.round(pt.x) === 50 && Math.round(pt.y) === 50 ? ' — the middle, as before' : '');
+      stages.forEach(function (st) {
+        var pt = pts[st.key];
+        st.img.style.objectPosition = pt.x + '% ' + pt.y + '%';
+        st.note.textContent = Math.round(pt.x) + '% across, ' + Math.round(pt.y) + '% down' +
+          (Math.round(pt.x) === 50 && Math.round(pt.y) === 50 ? ' (middle)' : '');
+      });
+      readout.textContent = 'Each frame is cropped on its own — drag them separately.';
     };
 
     // drag anywhere on a frame to move the picture behind it
@@ -2692,7 +2806,7 @@
       };
       var move = function (e) {
         if (!dragging) return;
-        var p = point(e), r = s.frame.getBoundingClientRect();
+        var p = point(e), r = s.frame.getBoundingClientRect(), pt = pts[s.key];
         // dragging the full width or height of the frame walks the picture right across it
         pt.x = Math.max(0, Math.min(100, pt.x - (p.x - last.x) / r.width * 100));
         pt.y = Math.max(0, Math.min(100, pt.y - (p.y - last.y) / r.height * 100));
@@ -2716,7 +2830,11 @@
       onclick: function () {
         var pages = state.rows.pages || {};
         pages.focus = pages.focus || {};
-        pages.focus[file] = { x: Math.round(pt.x), y: Math.round(pt.y) };
+        var entry = {};
+        FRAMES.forEach(function (f) {
+          entry[f[0]] = { x: Math.round(pts[f[0]].x), y: Math.round(pts[f[0]].y) };
+        });
+        pages.focus[file] = entry;
         state.rows.pages = pages;
         saveRow('pages', box, 'Crop saved for ' + file.split('/').pop() + '.').then(function () {
           back.remove();
@@ -2725,8 +2843,8 @@
       }
     }));
     row.appendChild(el('button', {
-      class: 'abtn abtn--ghost abtn--sm', type: 'button', text: 'Back to the middle',
-      onclick: function () { pt.x = 50; pt.y = 50; paint(); }
+      class: 'abtn abtn--ghost abtn--sm', type: 'button', text: 'Centre them all',
+      onclick: function () { FRAMES.forEach(function (f) { pts[f[0]] = { x: 50, y: 50 }; }); paint(); }
     }));
     row.appendChild(el('button', {
       class: 'abtn abtn--ghost abtn--sm', type: 'button', text: 'Cancel',

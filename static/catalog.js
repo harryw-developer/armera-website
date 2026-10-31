@@ -24,7 +24,17 @@
     return s.single ? money(s.min) : 'From ' + money(s.min);
   }
   function mainImage(p) {
-    return p.image || (p.imagesByCode ? p.imagesByCode[Object.keys(p.imagesByCode)[0]] : null);
+    // The tile photo, if one has been chosen. Otherwise fall back through the
+    // colour photos to the first option's photo, so a product added in the
+    // admin shows something rather than a blank tile.
+    if (p.image) return p.image;
+    if (p.imagesByCode) {
+      var codes = Object.keys(p.imagesByCode);
+      for (var i = 0; i < codes.length; i++) if (p.imagesByCode[codes[i]]) return p.imagesByCode[codes[i]];
+    }
+    var vs = p.variants || [];
+    for (var j = 0; j < vs.length; j++) if (vs[j].image) return vs[j].image;
+    return null;
   }
   var BLANK = 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==';
   function prodImgSafe(f) { return f ? prodImg(f) : BLANK; }
@@ -134,7 +144,7 @@
       '</section><section class="pad--tight"><div class="grid grid--2">' +
       cats.map(function (c) {
         return '<a class="tile" href="' + u('/products/' + c.slug + '/') + '">' +
-          '<div class="frame"><img src="' + lifeImg(c.hero.img) + '" data-img="' + esc(c.hero.img) + '" alt="' + esc(c.name) + '" loading="lazy"></div>' +
+          '<div class="frame"><img data-frame="tile" src="' + lifeImg(c.hero.img) + '" data-img="' + esc(c.hero.img) + '" alt="' + esc(c.name) + '" loading="lazy"></div>' +
           '<div class="meta"><div class="name">' + esc(c.name) + '</div>' +
           '<div class="sub">' + c.ranges.map(function (r) { return esc(r.name); }).join(' · ') + '</div>' +
           '<span class="cue">View</span></div></a>';
@@ -150,7 +160,7 @@
       '</section><section class="pad--tight"><div class="grid grid--3">' +
       cat.ranges.map(function (r) {
         return '<a class="tile" href="' + u('/products/' + cat.slug + '/' + r.slug + '/') + '">' +
-          '<div class="frame"><img src="' + lifeImg(r.hero.img) + '" data-img="' + esc(r.hero.img) + '" alt="' + esc(r.hero.caption || r.name) + '" loading="lazy"></div>' +
+          '<div class="frame"><img data-frame="tile" src="' + lifeImg(r.hero.img) + '" data-img="' + esc(r.hero.img) + '" alt="' + esc(r.hero.caption || r.name) + '" loading="lazy"></div>' +
           '<div class="meta"><div class="name">' + esc(r.title) + '</div>' +
           '<div class="sub">' + esc(r.tagline) + '</div>' +
           '<span class="cue">View range</span></div></a>';
@@ -174,7 +184,7 @@
     }
 
     return crumbs([{ label: 'Home', href: '/' }, { label: 'Products', href: '/products/' }, { label: cat.name, href: '/products/' + cat.slug + '/' }, { label: range.name }]) +
-      '<figure class="range-hero"><img src="' + lifeImg(range.hero.img) + '" data-img="' + esc(range.hero.img) + '" alt="' + esc(range.hero.caption || range.name) + '">' +
+      '<figure class="range-hero"><img data-frame="banner" src="' + lifeImg(range.hero.img) + '" data-img="' + esc(range.hero.img) + '" alt="' + esc(range.hero.caption || range.name) + '">' +
       (range.hero.caption ? '<figcaption>' + esc(range.hero.caption) + '</figcaption>' : '') + '</figure>' +
       '<section class="pad--tight"><div class="range-intro"><div>' +
       '<span class="eyebrow">' + esc(cat.name) + '</span>' +
