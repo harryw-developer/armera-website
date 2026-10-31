@@ -17,13 +17,31 @@ const SUPABASE = 'https://pcouznwpyhtfrleedcsv.supabase.co';
 
 // Only these origins may send credentials. Anything else gets the public,
 // credential-free CORS used for reads.
+// Origins allowed to send credentials. Anything else still gets the open,
+// credential-free CORS used for public reads.
+//
+// Listing hostnames one by one meant adding a domain silently broke the admin
+// login — the browser refuses a wildcard origin on a credentialed request, and
+// the only symptom is "Load Failed". Any host on a domain ARMERA controls is
+// accepted instead, so a new subdomain works without a deploy.
+const OWN_DOMAINS = ['armera.co.uk', 'hayesbrow.com'];
 const TRUSTED = [
   'https://armera-website.harry-01f.workers.dev',
   'https://harryw-developer.github.io',
-  'https://armera.co.uk',
-  'https://www.armera.co.uk',
   'http://localhost:4173'
 ];
+
+function trusted(origin) {
+  if (!origin) return false;
+  if (TRUSTED.includes(origin)) return true;
+  let host;
+  try {
+    const u = new URL(origin);
+    if (u.protocol !== 'https:') return false;
+    host = u.hostname.toLowerCase();
+  } catch { return false; }
+  return OWN_DOMAINS.some(d => host === d || host.endsWith('.' + d));
+}
 
 const CORS = {
   'access-control-allow-origin': '*',
@@ -267,7 +285,7 @@ const handler = {
     // preflight has to name the origin back when we trust it.
     const reqOrigin = request.headers.get('Origin') || '';
     if (request.method === 'OPTIONS') {
-      const headers = TRUSTED.includes(reqOrigin)
+      const headers = trusted(reqOrigin)
         ? { ...CORS, 'access-control-allow-origin': reqOrigin,
             'access-control-allow-credentials': 'true', 'vary': 'Origin',
             'access-control-max-age': '86400' }
@@ -320,7 +338,7 @@ const handler = {
 
     /* ---------- signing in ---------- */
 
-    const credCors = TRUSTED.includes(reqOrigin)
+    const credCors = trusted(reqOrigin)
       ? { 'access-control-allow-origin': reqOrigin, 'access-control-allow-credentials': 'true',
           'vary': 'Origin' }
       : {};
@@ -619,7 +637,7 @@ const handler = {
   async fetch(request, env) {
     const res = await handler.handle(request, env);
     const origin = request.headers.get('Origin') || '';
-    if (!TRUSTED.includes(origin)) return res;
+    if (!trusted(origin)) return res;
     const headers = new Headers(res.headers);
     headers.set('access-control-allow-origin', origin);
     headers.set('access-control-allow-credentials', 'true');
