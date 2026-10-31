@@ -305,7 +305,10 @@
 
     // Documents that come straight from the product record
     var docs = [];
-    if (p.spec) docs.push(docRow(cfg.assets + '/spec-sheets/' + encodeURIComponent(p.spec), 'Specification sheet', 'PDF'));
+    // Built on request from the catalogue as it stands, so it is never stale
+    // and a newly added product has one straight away.
+    docs.push(docRow(cfg.dataUrl + '/spec/' + segs.slice(1, 4).map(encodeURIComponent).join('/') + '.pdf',
+                     'Specification sheet', 'PDF'));
     if (p.drawing) docs.push(docRow(cfg.assets + '/drawings/' + encodeURIComponent(p.drawing), 'Dimensional drawing', 'PDF'));
 
     function paint() {

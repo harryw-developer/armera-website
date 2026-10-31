@@ -11,6 +11,7 @@
 
 import { requireAuth, hashPassword, checkPassword, issueSession,
          tooManyAttempts, recordAttempt } from './auth.js';
+import { specSubject, buildSpecSheet } from './spec.js';
 
 const SUPABASE = 'https://pcouznwpyhtfrleedcsv.supabase.co';
 
@@ -581,6 +582,27 @@ const handler = {
     }
 
     /* ===== END admin + public write routes ===== */
+
+    // A specification sheet, built from the catalogue as it stands right now.
+    //   /spec/<category>/<range>/<product>.pdf   (optionally ?sku=…)
+    if (path.startsWith('/spec/') && path.endsWith('.pdf')) {
+      const parts = path.slice('/spec/'.length, -4).split('/');
+      if (parts.length !== 3) return new Response('not found', { status: 404, headers: CORS });
+      const subject = await specSubject(env.DB, parts[0], parts[1], parts[2]);
+      if (!subject) return new Response('not found', { status: 404, headers: CORS });
+      try {
+        const bytes = await buildSpecSheet(env, subject, url.searchParams.get('sku'));
+        const name = (subject.name || 'specification').replace(/[^A-Za-z0-9]+/g, '-').replace(/^-|-$/g, '');
+        return new Response(bytes, { headers: {
+          ...CORS,
+          'content-type': 'application/pdf',
+          'content-disposition': `inline; filename="ARMERA-${name}.pdf"`,
+          'cache-control': 'public, max-age=300'
+        } });
+      } catch (e) {
+        return json({ error: 'Could not build that sheet: ' + String(e).slice(0, 160) }, 500);
+      }
+    }
 
     if (path === '/health') {
       const n = await env.DB.prepare('select count(*) as n from catalogue_products').first();
