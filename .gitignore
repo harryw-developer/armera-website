@@ -15,3 +15,4 @@ backups/migration/d1_*.json
 backups/migration/r2_*.json
 backups/migration/tbl_*.json
 backups/migration/catalogue.sql
+cloudflare/site/public/

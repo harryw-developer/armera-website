@@ -1,0 +1,14 @@
+{
+  "name": "armera-website",
+  "compatibility_date": "2026-10-23",
+  "assets": {
+    "directory": "./public",
+    // Product pages are generated at build time, so a product added in the
+    // admin has no page of its own until the next build. Serving 404.html for
+    // unknown paths lets it render from live data instead — which is what
+    // GitHub Pages has always done. Without this Cloudflare returned an empty
+    // 404 with no content type, and browsers saved that as a file.
+    "not_found_handling": "404-page"
+  },
+  "workers_dev": true
+}
