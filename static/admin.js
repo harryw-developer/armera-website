@@ -538,6 +538,7 @@
     if (state.tab === 'videos') renderVideos(panel);
     if (state.tab === 'gallery') renderGallery(panel);
     if (state.tab === 'guarantees') renderGuarantees(panel);
+    if (state.tab === 'swatches') renderSwatchRequests(panel);
     if (state.tab === 'retailers') renderRetailers(panel);
     if (state.tab === 'brochure') renderBrochure(panel);
     if (state.tab === 'team') renderTeam(panel);
@@ -1292,6 +1293,106 @@
       }).catch(function (e) { msg(box, 'Upload failed: ' + e.message, 'err'); });
     });
 
+    /* ---- flow rates ---- */
+    // Type the figures in; the chart is drawn from them, here, on the product
+    // page and in the specification sheet. No figures, no chart.
+    box.appendChild(el('hr', { class: 'rule' }));
+    box.appendChild(lbl('Flow rates', 'Litres per minute at each water pressure. Add a line for each outlet or setting that has its own figures — for example “Spout” and “Hand shower”, or “With flow restrictor” and “Without”. A product with a single set of figures needs no line name. Leave a box empty where there is no figure.'));
+    var flowNow = (window.armeraFlow && window.armeraFlow.clean(p.flow)) || { series: [], note: '' };
+    var flowBars = [0.2, 0.5, 1, 2, 3];
+    flowNow.series.forEach(function (s) { s.points.forEach(function (pt) { if (flowBars.indexOf(pt[0]) === -1) flowBars.push(pt[0]); }); });
+    flowBars.sort(function (a, b) { return a - b; });
+    var flowRows = flowNow.series.map(function (s) {
+      var vals = {};
+      s.points.forEach(function (pt) { vals[pt[0]] = String(pt[1]); });
+      return { label: s.label, vals: vals };
+    });
+    var barsIn = el('input', { type: 'text', value: flowBars.join(', '), style: 'max-width:260px' });
+    var flowTable = el('div', {});
+    var flowPreview = el('div', { class: 'flow-preview' });
+    var flowNote = el('input', { type: 'text', maxlength: '400', value: flowNow.note || '', placeholder: 'Optional — shown under the figures' });
+    var readFlow = function () {
+      var series = flowRows.map(function (r) {
+        var pts = [];
+        flowBars.forEach(function (b) {
+          var raw = String(r.vals[b] == null ? '' : r.vals[b]).trim();
+          if (raw === '' || !isFinite(+raw) || +raw < 0) return;
+          pts.push([b, +raw]);
+        });
+        var o = { points: pts };
+        if (r.label && r.label.trim()) o.label = r.label.trim();
+        return o;
+      }).filter(function (x) { return x.points.length; });
+      if (!series.length) return null;
+      var out = { series: series };
+      if (flowNote.value.trim()) out.note = flowNote.value.trim();
+      return out;
+    };
+    var drawFlowPreview = function () {
+      var f = readFlow();
+      flowPreview.innerHTML = '';
+      if (!f || !window.armeraFlow) { flowPreview.style.display = 'none'; return; }
+      flowPreview.style.display = '';
+      // built by the same code as the product page, from numbers only
+      flowPreview.innerHTML = window.armeraFlow.svg(f) + window.armeraFlow.legend(f);
+    };
+    var drawFlowTable = function () {
+      flowTable.innerHTML = '';
+      if (!flowRows.length) { drawFlowPreview(); return; }
+      var t = el('table', { class: 'flow-edit' });
+      var hr = el('tr');
+      hr.appendChild(el('th', { text: 'Line name' }));
+      flowBars.forEach(function (b) { hr.appendChild(el('th', { text: b + ' bar' })); });
+      hr.appendChild(el('th', { text: '' }));
+      t.appendChild(hr);
+      flowRows.forEach(function (r, i) {
+        var tr = el('tr');
+        var nameTd = el('td');
+        var nameIn = el('input', { type: 'text', maxlength: '80', value: r.label || '', placeholder: flowRows.length > 1 ? 'e.g. Spout' : 'Not needed for a single line' });
+        nameIn.addEventListener('input', function () { r.label = nameIn.value; drawFlowPreview(); });
+        nameTd.appendChild(nameIn);
+        tr.appendChild(nameTd);
+        flowBars.forEach(function (b) {
+          var td = el('td', { class: 'n' });
+          var inp = el('input', { type: 'text', inputmode: 'decimal', value: r.vals[b] == null ? '' : r.vals[b], 'aria-label': 'Litres per minute at ' + b + ' bar' });
+          inp.addEventListener('input', function () { r.vals[b] = inp.value.replace(',', '.'); drawFlowPreview(); });
+          td.appendChild(inp);
+          tr.appendChild(td);
+        });
+        var x = el('td', { class: 'x' });
+        x.appendChild(el('button', { class: 'abtn abtn--ghost abtn--sm', type: 'button', text: '×', title: 'Remove this line',
+          onclick: function () { flowRows.splice(i, 1); drawFlowTable(); } }));
+        tr.appendChild(x);
+        t.appendChild(tr);
+      });
+      flowTable.appendChild(t);
+      drawFlowPreview();
+    };
+    barsIn.addEventListener('change', function () {
+      var list = barsIn.value.split(/[,;\s]+/).map(function (x) { return +x; })
+        .filter(function (n, i, a) { return isFinite(n) && n > 0 && n <= 20 && a.indexOf(n) === i; })
+        .sort(function (a, b) { return a - b; }).slice(0, 12);
+      if (!list.length) list = [0.2, 0.5, 1, 2, 3];
+      flowBars = list;
+      barsIn.value = flowBars.join(', ');
+      drawFlowTable();
+    });
+    box.appendChild(flowTable);
+    box.appendChild(el('button', {
+      class: 'abtn abtn--ghost abtn--sm', type: 'button', text: 'Add a line of figures',
+      onclick: function () {
+        if (flowRows.length >= 6) { msg(box, 'A chart can show up to six lines.', 'err'); return; }
+        flowRows.push({ label: '', vals: {} }); drawFlowTable();
+      }
+    }));
+    box.appendChild(flowPreview);
+    box.appendChild(lbl('Pressures measured at (bar)', 'The columns above. Change these only if a product was tested at different pressures — separate them with commas.'));
+    box.appendChild(barsIn);
+    box.appendChild(lbl('Note under the figures'));
+    box.appendChild(flowNote);
+    flowNote.addEventListener('input', drawFlowPreview);
+    drawFlowTable();
+
     /* ---- looks good with ---- */
     box.appendChild(el('hr', { class: 'rule' }));
     box.appendChild(lbl('Looks good with…', 'Tick other products to show underneath this one as suggested pairings. Leave all unticked to hide the section.'));
@@ -1330,6 +1431,8 @@
           return o;
         });
         if (!p.variants.length) { msg(box, 'A product needs at least one priced option.', 'err'); return; }
+        var flowOut = readFlow();
+        if (flowOut) p.flow = flowOut; else delete p.flow;
         // persist photos: each option keeps its own, with a shared fallback
         var okText;
         p.variants.forEach(function (nv, i) {
@@ -2226,6 +2329,80 @@
     "  for select to authenticated using (bucket_id = 'guarantee-proof');"
   ].join('\n');
 
+  /* ---------- swatch requests ---------- */
+  function renderSwatchRequests(panel) {
+    panel.appendChild(el('h3', { text: 'Swatch requests' }));
+    panel.appendChild(el('p', { class: 'tab-intro', text:
+      'Colour samples asked for on the Order a colour swatch page, newest first. Mark each one as sent once it is in the post.' }));
+    var tools = el('div', { class: 'adm-row' });
+    var showAll = false;
+    var count = el('span', { class: 'lp-tally' });
+    var toggle = el('button', { class: 'abtn abtn--ghost abtn--sm', type: 'button', text: 'Show sent as well' });
+    tools.appendChild(count); tools.appendChild(toggle);
+    panel.appendChild(tools);
+    var host = el('div', { class: 'guar-wrap' });
+    panel.appendChild(host);
+    host.appendChild(el('p', { class: 'small', text: 'Loading requests…' }));
+    var rows = [];
+    var fmtDate = function (d) {
+      var t = new Date(d);
+      return isNaN(t) ? '' : t.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+    };
+
+    function draw() {
+      host.innerHTML = '';
+      var waiting = rows.filter(function (r) { return r.status !== 'sent'; });
+      count.textContent = waiting.length + ' waiting · ' + rows.length + ' in all';
+      toggle.textContent = showAll ? 'Show waiting only' : 'Show sent as well';
+      var list = showAll ? rows : waiting;
+      if (!list.length) {
+        host.appendChild(el('div', { class: 'dash-note', text: rows.length ? 'Nothing waiting — every request has been sent.' : 'No requests yet. They will appear here the moment a customer sends one.' }));
+        return;
+      }
+      list.forEach(function (r) {
+        var card = el('div', { class: 'guar-detail-inner', style: 'margin-bottom:14px;background:#faf9f6' });
+        var head = el('p', {});
+        head.appendChild(el('b', { text: r.name || '' }));
+        head.appendChild(el('span', { class: 'small', text: '  ·  ' + fmtDate(r.created_at) + (r.status === 'sent' ? '  ·  sent' : '') +
+          (r.emailed ? '' : '  ·  not emailed to sales') }));
+        card.appendChild(head);
+        var ul = el('ul', { style: 'margin:10px 0 10px 18px' });
+        (r.swatches || []).forEach(function (s) {
+          ul.appendChild(el('li', { text: (s.range || '') + ' — ' + (s.name || '') + (s.code ? ' (' + s.code + ')' : '') }));
+        });
+        card.appendChild(ul);
+        var addr = [r.name, r.company, r.address1, r.address2, r.town, r.postcode].filter(Boolean);
+        card.appendChild(el('p', { class: 'small', style: 'white-space:pre-line', text: addr.join('\n') }));
+        card.appendChild(el('p', { class: 'small', style: 'margin-top:8px', text: [r.email, r.phone].filter(Boolean).join('  ·  ') }));
+        if (r.notes) card.appendChild(el('p', { class: 'small', style: 'margin-top:8px', text: 'Note: ' + r.notes }));
+        var actions = el('div', { class: 'adm-row', style: 'margin-top:12px' });
+        actions.appendChild(el('button', { class: 'abtn abtn--sm', type: 'button',
+          text: r.status === 'sent' ? 'Mark as waiting' : 'Mark as sent',
+          onclick: function () {
+            var next = r.status === 'sent' ? 'new' : 'sent';
+            sb.from('swatch_requests').update({ status: next }).eq('id', r.id).then(function (res) {
+              if (res.error) return toast('Could not update: ' + res.error.message, 'err');
+              r.status = next; draw();
+            });
+          } }));
+        actions.appendChild(el('button', { class: 'abtn abtn--ghost abtn--sm', type: 'button', text: 'Copy address',
+          onclick: function () {
+            navigator.clipboard.writeText(addr.join('\n')).then(function () { toast('Address copied', 'ok'); });
+          } }));
+        actions.appendChild(el('a', { class: 'abtn abtn--ghost abtn--sm',
+          href: 'mailto:' + encodeURIComponent(String(r.email || '')).replace(/%40/g, '@'), text: 'Email customer' }));
+        card.appendChild(actions);
+        host.appendChild(card);
+      });
+    }
+    toggle.addEventListener('click', function () { showAll = !showAll; draw(); });
+    sb.from('swatch_requests').select('*').then(function (res) {
+      if (res.error) { host.innerHTML = ''; host.appendChild(el('div', { class: 'dash-note warn', text: 'Could not load requests: ' + (res.error.message || 'unknown error') })); return; }
+      rows = res.data || [];
+      draw();
+    });
+  }
+
   function renderGuarantees(panel) {
     panel.appendChild(el('h3', { text: 'Guarantee registrations' }));
     panel.appendChild(el('p', { class: 'tab-intro', html:
@@ -2642,6 +2819,8 @@
       'M6 3h8l4 4v14H6z|M14 3v4h4|M9 12h6|M9 16h6'],
     ['guarantees', 'Guarantees', 'Registrations sent in by customers',
       'M12 3l7 3v6c0 4.5-3 7.8-7 9-4-1.2-7-4.5-7-9V6z|M9 12l2 2 4-4'],
+    ['swatches', 'Swatch requests', 'Colour samples customers have asked for',
+      'M4 4h7v7H4z|M13 4h7v7h-7z|M4 13h7v7H4z|M13 13h7v7h-7z'],
     ['instructions', 'Instructions', 'Fitting instruction PDFs',
       'M5 6h14|M5 12h14|M5 18h9'],
     ['retailers', 'Retailers', 'The stockists shown on the map',

@@ -66,6 +66,9 @@
         if (name === 'guarantee_registrations') {
           return call('/admin/guarantees');
         }
+        if (name === 'swatch_requests') {
+          return call('/admin/swatch-requests');
+        }
         return Promise.resolve({ data: [], error: null });
       };
 
@@ -81,6 +84,9 @@
             }
             if (name === 'guarantee_registrations') {
               return call('/admin/guarantees/' + val, { method: 'POST', body: JSON.stringify(patch) });
+            }
+            if (name === 'swatch_requests') {
+              return call('/admin/swatch-requests/' + encodeURIComponent(val), { method: 'POST', body: JSON.stringify(patch) });
             }
             return Promise.resolve({ data: null, error: null });
           }

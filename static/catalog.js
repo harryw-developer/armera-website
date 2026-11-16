@@ -129,6 +129,12 @@
     }).join('') + '</nav>';
   }
 
+  // Ranges that come in colours can have a sample posted out.
+  function swatchLink(range) {
+    if (!range.swatches || !range.swatches.some(function (s) { return s && s.img; })) return '';
+    return '<p class="swatch-order"><a href="' + u('/order-swatch/') + '?range=' + seg(range.slug) + '">Order a colour swatch</a></p>';
+  }
+
   function addonBlock(addons) {
     if (!addons || !addons.length) return '';
     return '<div class="addons"><span class="eyebrow">Complete the look</span><h3 style="margin-top:12px">Why not add…</h3>' +
@@ -199,7 +205,7 @@
       '<span class="eyebrow">' + esc(cat.name) + '</span>' +
       '<h1 style="margin:14px 0 18px">' + esc(range.title) + '</h1>' +
       '<p class="lede" style="max-width:48ch">' + esc(range.tagline) + '</p></div>' +
-      '<div>' + swatches + '</div></div></section>' +
+      '<div>' + swatches + swatchLink(range) + '</div></div></section>' +
       '<section class="pad--tight"><div class="grid grid--3">' +
       range.products.map(function (p) {
         return '<a class="tile" href="' + u('/products/' + cat.slug + '/' + range.slug + '/' + p.slug + '/') + '">' +
@@ -289,10 +295,11 @@
       '<h1>' + esc(p.name) + '</h1>' +
       (p.dims ? '<p class="dims">' + esc(p.dims) + (/x/.test(p.dims) ? ' mm' : '') + '</p>' : '') +
       '<p class="from">' + fromLabel(p) + '<span class="inc">RRP inc. VAT</span></p>' +
-      swatchButtons + table + notes + basinNote +
+      swatchButtons + (hasColours ? swatchLink(range) : '') + table + notes + basinNote +
       (p.footnote ? '<p class="footnote">' + esc(p.footnote) + '</p>' : '') +
       assure + '</div>' +
       '<div id="product-docs"></div></div>' +
+      (window.armeraFlow ? window.armeraFlow.block(p.flow) : '') +
       '<div id="product-pairs"></div>' +
       addonBlock(range.addons) +
       (range.footnote ? '<p class="small" style="margin-top:30px;max-width:90ch">' + esc(range.footnote) + '</p>' : '') +

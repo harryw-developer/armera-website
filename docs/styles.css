@@ -1034,3 +1034,55 @@ table.guar-products td { padding: 8px 10px 8px 0; border-bottom: 1px solid var(-
 .plain-list { list-style: none; padding: 0; margin: 22px 0 0; }
 .plain-list li { padding: 9px 0; border-bottom: 1px solid var(--line); color: var(--muted); }
 .plain-list a { color: var(--ink); }
+
+/* ---------- flow-rate chart (product page, admin preview) ---------- */
+.flow { margin-top: clamp(44px, 6vw, 80px); padding-top: clamp(28px, 4vw, 44px); border-top: 1px solid var(--line); }
+.flow h3 { margin: 12px 0 clamp(18px, 2.6vw, 30px); }
+.flow-grid { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: clamp(24px, 4vw, 60px); align-items: start; }
+.flow-chart { width: 100%; height: auto; display: block; font-family: var(--sans); }
+.flow-chart .fc-grid { stroke: var(--line); stroke-width: 1; }
+.flow-chart .fc-base, .flow-chart .fc-tick { stroke: var(--line-dark); stroke-width: 1; }
+.flow-chart .fc-ax { font-size: 12px; fill: var(--muted); }
+.flow-chart .fc-title { font-size: 10.5px; letter-spacing: .18em; text-transform: uppercase; fill: var(--muted); }
+.flow-key { list-style: none; display: flex; flex-wrap: wrap; gap: 8px 26px; margin: 12px 0 0; padding-left: 54px; font-size: 13.5px; color: var(--ink-soft); }
+.flow-key li { display: flex; align-items: center; gap: 9px; }
+.flow-key svg { width: 34px; height: 8px; flex: none; }
+.flow-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+.flow-table th, .flow-table td { padding: 9px 10px 9px 0; border-bottom: 1px solid var(--line); text-align: right; white-space: nowrap; font-weight: 300; }
+.flow-table thead th { font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); border-bottom-color: var(--line-dark); }
+.flow-table th:first-child { text-align: left; white-space: normal; color: var(--ink-soft); padding-right: 14px; }
+.flow-table td:last-child, .flow-table th:last-child { padding-right: 0; }
+.flow-unit { font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); margin-top: 10px; }
+.flow-note { font-size: 13.5px; color: var(--ink-soft); margin-top: 16px; }
+.flow-figs { overflow-x: auto; }
+@media (max-width: 860px) { .flow-grid { grid-template-columns: 1fr; } .flow-key { padding-left: 0; } }
+
+/* admin: entering the figures */
+.flow-edit { width: 100%; border-collapse: collapse; margin: 10px 0 6px; }
+.flow-edit th { font-size: 10.5px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); font-weight: 400; text-align: left; padding: 0 8px 6px 0; }
+.flow-edit td { padding: 0 8px 8px 0; }
+.flow-edit input { width: 100%; min-width: 0; }
+.flow-edit td.n { width: 84px; }
+.flow-edit td.x { width: 40px; }
+.flow-preview { max-width: 620px; margin-top: 14px; padding: 16px 18px 12px; background: #fff; border: 1px solid var(--line); }
+
+/* ---------- order a colour swatch ---------- */
+.swatch-order { margin-top: 18px; font-size: 13.5px; }
+.swatch-order a { border-bottom: 1px solid var(--line-dark); color: var(--ink-soft); padding-bottom: 2px; }
+.swatch-order a:hover { color: var(--ink); border-color: var(--ink); }
+.sw-range { margin-bottom: 30px; }
+.sw-range-name { font-size: 17px; margin-bottom: 14px; }
+.sw-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(132px, 1fr)); gap: 16px; }
+.sw-pick { display: flex; flex-direction: column; gap: 9px; cursor: pointer; position: relative; }
+.sw-pick input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.sw-chip { display: block; aspect-ratio: 1 / 1; border: 1px solid var(--line); padding: 5px; background: #fff; transition: border-color .18s; }
+.sw-chip img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.sw-pick:hover .sw-chip { border-color: var(--line-dark); }
+.sw-pick input:checked + .sw-chip { border-color: var(--ink); box-shadow: inset 0 0 0 1px var(--ink); }
+.sw-pick input:focus-visible + .sw-chip { outline: 2px solid var(--ink); outline-offset: 2px; }
+.sw-pick input:disabled + .sw-chip { opacity: .4; }
+.sw-name { font-size: 13.5px; color: var(--ink-soft); }
+.sw-pick input:checked ~ .sw-name { color: var(--ink); }
+.sw-pick input:checked ~ .sw-name::after { content: ' — chosen'; color: var(--muted); }
+.gf textarea { font-family: var(--sans); font-size: 15px; font-weight: 300; padding: 12px 14px; border: 1px solid var(--line-dark); background: var(--paper); color: var(--ink); resize: vertical; border-radius: 0; }
+.gf textarea:focus { outline: none; border-color: var(--ink); }

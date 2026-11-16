@@ -12,6 +12,7 @@
 import { requireAuth, hashPassword, checkPassword, issueSession,
          tooManyAttempts, recordAttempt, tokenDigest } from './auth.js';
 import { specSubject, buildSpecSheet } from './spec.js';
+import { sendSwatchEmail } from './mail.js';
 
 // Origins allowed to send credentials. Anything else still gets the open,
 // credential-free CORS used for public reads.
@@ -108,6 +109,25 @@ const MAX_PROOF = 10 * 1024 * 1024;
 // What a saved category must look like before its tables are rebuilt from it.
 // Returns a sentence describing the first problem, or null if it is sound.
 const SLUG = /^[a-z0-9][a-z0-9-]{0,119}$/;
+
+// Flow-rate figures, if a product has them: up to six lines, each a short
+// label and up to twelve [pressure in bar, litres per minute] pairs.
+function flowProblem(flow) {
+  if (flow === undefined || flow === null) return null;
+  if (typeof flow !== 'object' || !Array.isArray(flow.series)) return 'they are not in a form that can be saved.';
+  if (flow.series.length > 6) return 'no more than six lines can be shown on one chart.';
+  if (flow.note !== undefined && (typeof flow.note !== 'string' || flow.note.length > 400)) return 'the note is too long.';
+  for (const s of flow.series) {
+    if (!s || typeof s !== 'object' || !Array.isArray(s.points)) return 'a line has no figures.';
+    if (s.label !== undefined && (typeof s.label !== 'string' || s.label.length > 80)) return 'a line’s name is too long.';
+    if (s.points.length > 12) return 'a line has too many figures.';
+    for (const pt of s.points) {
+      if (!Array.isArray(pt) || pt.length !== 2 || !pt.every(n => typeof n === 'number' && Number.isFinite(n))) return 'a figure is not a number.';
+      if (pt[0] <= 0 || pt[0] > 20 || pt[1] < 0 || pt[1] > 500) return 'a figure is outside what is possible.';
+    }
+  }
+  return null;
+}
 function categoryProblem(doc) {
   if (!doc || typeof doc !== 'object' || Array.isArray(doc)) return 'The category is not an object.';
   if (!SLUG.test(doc.slug || '')) return 'The category has no valid address (slug).';
@@ -129,6 +149,8 @@ function categoryProblem(doc) {
       productSlugs.add(p.slug);
       if (typeof p.name !== 'string' || !p.name.trim()) return `A product in “${r.name}” has no name.`;
       if (p.variants !== undefined && !Array.isArray(p.variants)) return `The options for “${p.name}” are not a list.`;
+      const flowFault = flowProblem(p.flow);
+      if (flowFault) return `The flow rates for “${p.name}”: ${flowFault}`;
       for (const v of (p.variants || [])) {
         if (!v || typeof v !== 'object') return `An option of “${p.name}” is not an object.`;
         if (typeof v.sku !== 'string' || !v.sku.trim()) return `An option of “${p.name}” has no code.`;
@@ -538,6 +560,20 @@ const handler = {
         return json({ ok: true }, 200, credCors);
       }
 
+      if (path === '/admin/swatch-requests' && request.method === 'GET') {
+        const rows = await env.DB.prepare('select * from swatch_requests order by created_at desc limit 5000').all();
+        return json(rows.results.map(r => ({ ...r, swatches: JSON.parse(r.swatches || '[]') })), 200, credCors);
+      }
+      if (path.startsWith('/admin/swatch-requests/') && request.method === 'POST') {
+        const id = Number(path.split('/').pop());
+        const { status } = await readJson(request, 1024) || {};
+        if (!Number.isInteger(id) || !['new', 'sent'].includes(status)) {
+          return json({ error: 'That status is not one we use.' }, 400, credCors);
+        }
+        await env.DB.prepare('update swatch_requests set status = ? where id = ?').bind(status, id).run();
+        return json({ ok: true }, 200, credCors);
+      }
+
       const pickBucket = which =>
         which === 'instructions' ? env.INSTRUCTIONS : which === 'guarantee-proof' ? env.PROOF : env.ASSETS;
 
@@ -748,6 +784,55 @@ const handler = {
                     'installer_country','products','proof_file','notes'];
       await env.DB.prepare(`insert into guarantee_registrations (${cols.join(',')}) values (${cols.map(() => '?').join(',')})`)
         .bind(...cols.map(c => row[c] ?? null)).run();
+      return json({ ok: true });
+    }
+
+    // A request for furniture colour swatches. Kept in the database first, so
+    // it is never lost; then emailed to sales if email sending is set up. The
+    // colours are checked against the catalogue — only ones that exist count.
+    if (path === '/swatch-request' && request.method === 'POST') {
+      if (await tooFast(env.RL_FORM, clientIp(request))) return slowDown();
+      const g = await readJson(request, 16 * 1024);
+      if (!g || typeof g !== 'object') return json({ error: 'That could not be read.' }, 400);
+      if (text(g.website, 200)) return json({ ok: true });          // the trap field: not a person
+
+      const LIMITS = { name: 120, company: 160, email: 160, phone: 40, address1: 160, address2: 160,
+                       town: 80, postcode: 16, notes: 1000 };
+      const row = {};
+      for (const [field, max] of Object.entries(LIMITS)) row[field] = text(g[field], max);
+      if (['name', 'email', 'address1', 'town', 'postcode'].some(k => !row[k])) {
+        return json({ error: 'Some required details are missing.' }, 400);
+      }
+      if (!isEmail(row.email)) return json({ error: 'That email address does not look right.' }, 400);
+
+      const ranges = await env.DB.prepare('select slug, name, swatches from catalogue_ranges where swatches is not null').all();
+      const known = new Map();
+      for (const r of ranges.results) {
+        for (const sw of (JSON.parse(r.swatches || '[]') || [])) {
+          if (sw && sw.name) known.set(`${r.slug}|${sw.code || ''}|${sw.name}`, { range: r.name, name: sw.name, code: sw.code || '' });
+        }
+      }
+      const chosen = [];
+      for (const item of (Array.isArray(g.swatches) ? g.swatches : []).slice(0, 40)) {
+        const hit = item && known.get(`${item.range}|${item.code || ''}|${item.name}`);
+        if (hit && !chosen.some(c => c.range === hit.range && c.name === hit.name)) chosen.push(hit);
+      }
+      if (!chosen.length) return json({ error: 'Please choose at least one colour.' }, 400);
+      if (chosen.length > 12) return json({ error: 'Please choose no more than twelve colours.' }, 400);
+      row.swatches = JSON.stringify(chosen);
+
+      const cols = ['name', 'company', 'email', 'phone', 'address1', 'address2', 'town', 'postcode', 'swatches', 'notes'];
+      const saved = await env.DB.prepare(
+        `insert into swatch_requests (${cols.join(',')}) values (${cols.map(() => '?').join(',')}) returning id`)
+        .bind(...cols.map(c => row[c] ?? null)).first();
+
+      // The email is a courtesy on top of the saved record. If it fails, the
+      // request is still in the admin, marked as not emailed.
+      try {
+        if (await sendSwatchEmail(env, { ...row, id: saved.id, swatches: chosen })) {
+          await env.DB.prepare('update swatch_requests set emailed = 1 where id = ?').bind(saved.id).run();
+        }
+      } catch (e) { console.error('swatch email', e); }
       return json({ ok: true });
     }
 

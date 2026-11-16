@@ -35,7 +35,7 @@ const CARTO_KEY = 'cb1_30vv_1_debcb48eb777bc52077e4a38';
 
 // Short content hashes for cache-busting: a changed file gets a new URL, so a
 // browser can never pair a stale stylesheet with fresh scripts.
-const STATIC_FILES = ['styles.css', 'site.js', 'armera-client.js', 'search.js', 'track.js', 'guarantee.js', 'catalog.js', 'instructions.js', 'videos.js', 'retailers.js', 'admin.js'];
+const STATIC_FILES = ['styles.css', 'site.js', 'armera-client.js', 'search.js', 'track.js', 'guarantee.js', 'catalog.js', 'instructions.js', 'videos.js', 'retailers.js', 'admin.js', 'flowchart.js', 'swatch.js'];
 const assetVersions = Object.fromEntries(STATIC_FILES.map(f => [
   f, createHash('sha1').update(readFileSync(join(ROOT, 'static', f))).digest('hex').slice(0, 8)
 ]));
@@ -552,7 +552,7 @@ ${catBand()}`;
     title, desc, path: '/products/', body,
     canonicalPath: urlPath === undefined ? null : urlPath,
     structured, ogImage, ogType, noindex,
-    extraBody: `<script src="${v('catalog.js')}" defer></script>`
+    extraBody: `<script src="${v('flowchart.js')}" defer></script><script src="${v('catalog.js')}" defer></script>`
   }));
 }
 
@@ -657,6 +657,12 @@ ${crumbs([{ label: 'Home', href: '/' }, { label: 'Privacy' }])}
     <p><strong>Our legal basis:</strong> it is necessary for the guarantee, which is a contract between us and you. We also have a legitimate interest in keeping accurate records of the products we have guaranteed.</p>
     <p><strong>How long:</strong> for as long as the guarantee lasts — up to 25 years, depending on the product — and for up to six years after it ends, which is the period in which a legal claim could be brought.</p>
     <p>If you give us your installer’s details, please make sure they are happy for you to do so. We use them only in connection with your guarantee.</p>
+
+    <h3>When you order a colour swatch</h3>
+    <p><strong>What:</strong> your name, postal address and email address, the colours you asked for and, if you choose to give them, your company, telephone number and any note you add.</p>
+    <p><strong>Why:</strong> to post the samples to you and to contact you about your request.</p>
+    <p><strong>Our legal basis:</strong> it is necessary to do what you have asked us to do.</p>
+    <p><strong>How long:</strong> normally for no more than two years after your request.</p>
 
     <h3>When you contact us</h3>
     <p><strong>What:</strong> your contact details and whatever you tell us, whether by email, telephone or post.</p>
@@ -947,6 +953,7 @@ ${crumbs([{ label: 'Home', href: '/' }, { label: 'Support', href: '/support/' },
     title: 'Instructions — Support — ARMERA',
     desc: 'Installation and product instructions for the ARMERA collection, available as PDF downloads.',
     path: '/support/',
+    canonicalPath: '/support/instructions/',
     body,
     extraBody: `<script src="${v('instructions.js')}" type="module"></script>`
   }));
@@ -975,6 +982,7 @@ ${crumbs([{ label: 'Home', href: '/' }, { label: 'Support', href: '/support/' },
     title: 'How-to videos — Support — ARMERA',
     desc: 'ARMERA how-to videos.',
     path: '/support/',
+    canonicalPath: '/support/how-to-videos/',
     body,
     extraBody: `<script src="${v('videos.js')}" defer></script>`
   }));
@@ -1134,8 +1142,79 @@ ${crumbs([{ label: 'Home', href: '/' }, { label: 'Support', href: '/support/' },
     title: 'Register your guarantee — ARMERA',
     desc: 'Register your ARMERA products to extend your guarantee for parts, up to 25 years depending on the product.',
     path: '/support/',
+    canonicalPath: '/register-guarantee/',
     body,
     extraBody: `<script src="${v('guarantee.js')}" defer></script>`
+  }));
+}
+
+/* ---------------- order a colour swatch ---------------- */
+// The colours offered are read from the live catalogue by swatch.js, so a
+// colour added to a range in the admin can be ordered straight away.
+function swatchPage() {
+  const field = (name, label, opts = {}) => `
+          <label class="gf${opts.wide ? ' gf--wide' : ''}">
+            <span>${esc(label)}${opts.required ? ' <b>*</b>' : ''}</span>
+            <input type="${opts.type || 'text'}" name="${name}" maxlength="${opts.max || 160}" ${opts.required ? 'required' : ''} ${opts.autocomplete ? `autocomplete="${opts.autocomplete}"` : ''}>
+          </label>`;
+
+  const body = `
+${crumbs([{ label: 'Home', href: '/' }, { label: 'Products', href: '/products/' }, { label: 'Order a colour swatch' }])}
+<section class="pad--tight">
+  <div class="container">
+    <span class="eyebrow">Furniture</span>
+    <h1 style="margin:14px 0 18px">Order a colour swatch</h1>
+    <p class="lede" style="max-width:62ch">Choose the furniture colours you would like to see in your own room, tell us where to send them, and we will post the samples to you.</p>
+  </div>
+</section>
+
+<section class="pad--tight" style="padding-top:0">
+  <div class="container container--mid">
+    <form id="swatch-form" class="gform" novalidate>
+
+      <fieldset>
+        <legend>Colours</legend>
+        <div id="sw-choices"><p class="small">Loading the colours…</p></div>
+        <p class="small" id="sw-count"></p>
+      </fieldset>
+
+      <fieldset>
+        <legend>Where to send them</legend>
+        <div class="gf-grid">
+${field('name', 'Your name', { required: true, autocomplete: 'name', max: 120 })}
+${field('company', 'Company', { autocomplete: 'organization' })}
+${field('email', 'Email address', { required: true, type: 'email', autocomplete: 'email' })}
+${field('phone', 'Telephone', { type: 'tel', autocomplete: 'tel', max: 40 })}
+${field('address1', 'Address line 1', { required: true, autocomplete: 'address-line1', wide: true })}
+${field('address2', 'Address line 2', { autocomplete: 'address-line2', wide: true })}
+${field('town', 'Town or city', { required: true, autocomplete: 'address-level2', max: 80 })}
+${field('postcode', 'Postcode', { required: true, autocomplete: 'postal-code', max: 16 })}
+          <label class="gf gf--wide">
+            <span>Anything we should know</span>
+            <textarea name="notes" rows="3" maxlength="1000"></textarea>
+          </label>
+        </div>
+      </fieldset>
+
+      <div class="gf-submit">
+        <div class="gf-extra" aria-hidden="true">
+          <label>Website <input type="text" name="website" tabindex="-1" autocomplete="off"></label>
+        </div>
+        <button type="submit" class="btn btn--solid" id="sw-send">Send my request</button>
+        <p class="small" id="sw-msg"></p>
+      </div>
+      <p class="small" style="margin-top:18px">We use these details only to send your samples. See our <a href="/privacy/" style="border-bottom:1px solid var(--line-dark)">privacy policy</a>.</p>
+    </form>
+  </div>
+</section>`;
+
+  write('order-swatch/index.html', layout({
+    title: 'Order a colour swatch — ARMERA',
+    desc: 'Order samples of ARMERA furniture colours to see them in your own bathroom before you choose.',
+    path: '/products/',
+    canonicalPath: '/order-swatch/',
+    body,
+    extraBody: `<script src="${v('swatch.js')}" defer></script>`
   }));
 }
 
@@ -1209,7 +1288,7 @@ function adminPage() {
     path: '/admin/',
     body,
     noindex: true,
-    extraBody: `<script src="${v('armera-client.js')}"></script><script src="${v('admin.js')}" defer></script>`
+    extraBody: `<script src="${v('armera-client.js')}"></script><script src="${v('flowchart.js')}" defer></script><script src="${v('admin.js')}" defer></script>`
   }));
 }
 
@@ -1220,7 +1299,7 @@ writeFileSync(join(DIST, '.nojekyll'), '');
 
 const css = readFileSync(join(ROOT, 'static/styles.css'), 'utf8').replaceAll('ASSETS', ASSETS);
 writeFileSync(join(DIST, 'styles.css'), css);
-for (const f of ['site.js', 'search.js', 'track.js', 'guarantee.js', 'catalog.js', 'instructions.js', 'videos.js', 'retailers.js', 'admin.js', 'armera-client.js']) {
+for (const f of ['site.js', 'search.js', 'track.js', 'guarantee.js', 'catalog.js', 'instructions.js', 'videos.js', 'retailers.js', 'admin.js', 'armera-client.js', 'flowchart.js', 'swatch.js']) {
   writeFileSync(join(DIST, f), readFileSync(join(ROOT, 'static', f)));
 }
 
@@ -1233,6 +1312,7 @@ instructionsPage();
 videosPage();
 retailersPage();
 guaranteePage();
+swatchPage();
 contactPage();
 privacyPage();
 // The admin belongs on its own protected hostname, not on the public site.

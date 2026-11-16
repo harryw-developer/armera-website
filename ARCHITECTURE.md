@@ -79,6 +79,7 @@ reach the database — it can only ask the API, and the API decides.
 | `GET /spec/<cat>/<range>/<product>.pdf` | Builds a specification sheet | 20 a minute per address |
 | `POST /track` | Records an anonymous page view | 60 a minute; fields checked and length-capped; no IP stored |
 | `POST /guarantee` | Saves a guarantee registration | 6 a minute; every field checked and capped; hidden trap field for bots |
+| `POST /swatch-request` | Saves a request for furniture colour swatches, then emails sales if email sending is switched on | 6 a minute; fields checked and capped; only colours that exist in the catalogue are accepted; hidden trap field |
 | `POST /guarantee-proof` | Stores a receipt | 6 a minute; JPEG/PNG/WebP/HEIC/PDF only, checked against the file's real contents; 10 MB; the API picks the file name |
 | `POST /auth/login`, `/auth/claim` | Sign in / set first password | 10 a minute per address; 8 wrong passwords locks that email for 15 minutes |
 | `GET /health` | Says `{"ok":true}` | Nothing else revealed |
@@ -124,6 +125,7 @@ are in every page by design — a browser has to be able to read them.
 | Data | Whose | Where | Who can read it |
 |---|---|---|---|
 | Guarantee registration (name, email, address, installer, products) | Customers | D1 `guarantee_registrations` | Signed-in staff |
+| Swatch request (name, postal address, email, optional phone and note) | Customers | D1 `swatch_requests` | Signed-in staff |
 | Proof of purchase (photo or PDF) | Customers | R2 `armera-guarantee-proof` | Signed-in staff |
 | Page views (page, device type, referring site, a random per-tab id) | Visitors, anonymously | D1 `page_views` | Signed-in staff |
 | Staff email, name, password scramble | Staff | D1 `admin_users` | Signed-in staff (never the scramble) |
