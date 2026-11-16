@@ -24,7 +24,7 @@
         method: opts.method || 'GET',
         headers: headers(opts.headers),
         body: opts.body,
-        credentials: 'include'
+        credentials: 'omit'
       }).then(function (r) {
         return r.text().then(function (t) {
           var data = null;
@@ -109,12 +109,20 @@
             return call('/admin/file/' + name + '/' + encodeURIComponent(p), { method: 'DELETE' });
           })).then(function () { return { data: null, error: null }; });
         },
-        createSignedUrl: function (path) {
-          // the proof bucket is served through the Worker, behind the same auth
-          return Promise.resolve({
-            data: { signedUrl: API + '/admin/file/' + name + '/' + encodeURIComponent(path) },
-            error: null
-          });
+        // A private file, fetched with the session and handed back as a local
+        // URL. Only types that cannot run script are shown; anything else is
+        // refused rather than opened inside the admin's own origin.
+        download: function (path) {
+          var SAFE = ['image/jpeg', 'image/png', 'image/webp', 'image/heic', 'application/pdf'];
+          return fetch(API + '/admin/file/' + name + '/' + encodeURIComponent(path), { headers: headers() })
+            .then(function (r) {
+              if (!r.ok) return { data: null, error: { message: 'not found' } };
+              var type = (r.headers.get('content-type') || '').split(';')[0].trim().toLowerCase();
+              if (SAFE.indexOf(type) === -1) return { data: null, error: { message: 'That file type cannot be shown.' } };
+              return r.blob().then(function (b) {
+                return { data: { url: URL.createObjectURL(new Blob([b], { type: type })) }, error: null };
+              });
+            }).catch(function (e) { return { data: null, error: { message: String(e) } }; });
         },
         getPublicUrl: function (path) {
           var base = name === 'instructions' ? cfg.instructionsUrl : cfg.assets;
@@ -147,11 +155,30 @@
         });
       },
       signOut: function () {
-        session = null;
-        try { localStorage.removeItem('armera_session'); } catch (e) {}
-        return call('/auth/logout', { method: 'POST' }).then(function () { return {}; });
+        // Tell the server first, while we still hold the token, so it is
+        // retired there too — then forget it here whatever the answer was.
+        var done = function () {
+          session = null;
+          try { localStorage.removeItem('armera_session'); } catch (e) {}
+          return {};
+        };
+        return call('/auth/logout', { method: 'POST' }).then(done, done);
       },
       updateUser: function (payload) {
+        // A new password goes to its own route, with the current one as proof.
+        // The server retires every earlier token and returns a fresh one.
+        if (payload.password) {
+          return call('/auth/change-password', { method: 'POST',
+            body: JSON.stringify({ password: payload.password, current: payload.current || '' }) })
+            .then(function (r) {
+              if (r.error) return { error: r.error };
+              if (r.data && r.data.token) {
+                session = r.data.token;
+                try { localStorage.setItem('armera_session', session); } catch (e) {}
+              }
+              return { data: { user: null }, error: null };
+            });
+        }
         var body = {};
         if (payload.data) {
           body.prefs = {};
@@ -160,7 +187,6 @@
             else body.prefs[k] = payload.data[k];
           });
         }
-        if (payload.password) body.password = payload.password;
         return call('/prefs', { method: 'POST', body: JSON.stringify(body) }).then(function (r) {
           if (r.error) return { error: r.error };
           return { data: { user: { email: null, user_metadata: Object.assign({}, body.prefs,

@@ -3,7 +3,34 @@
 // random string kept in sessionStorage that is forgotten when the tab closes.
 (function () {
   var cfg = window.ARMERA;
-  if (!cfg || navigator.doNotTrack === '1') return;
+
+  // "Don't count my visits" on the privacy page. The choice is kept in this
+  // browser so it can be honoured on every later visit.
+  var OPT = 'armera_no_stats';
+  function optedOut() { try { return localStorage.getItem(OPT) === '1'; } catch (e) { return false; } }
+  (function wireOptOut() {
+    var btn = document.getElementById('stats-optout');
+    var state = document.getElementById('stats-optout-state');
+    if (!btn) return;
+    var paint = function () {
+      var off = optedOut() || navigator.doNotTrack === '1';
+      btn.textContent = optedOut() ? 'Count my visits again' : 'Don\u2019t count my visits';
+      if (state) state.textContent = navigator.doNotTrack === '1' && !optedOut()
+        ? 'Your browser\u2019s Do Not Track setting is on, so your visits are not counted.'
+        : off ? 'Your visits are not being counted on this device.' : 'Your visits are currently counted, anonymously.';
+    };
+    btn.hidden = false;
+    btn.addEventListener('click', function () {
+      try {
+        if (optedOut()) localStorage.removeItem(OPT);
+        else { localStorage.setItem(OPT, '1'); sessionStorage.removeItem('armera_sid'); }
+      } catch (e) {}
+      paint();
+    });
+    paint();
+  })();
+
+  if (!cfg || navigator.doNotTrack === '1' || optedOut()) return;
 
   function sessionId() {
     try {

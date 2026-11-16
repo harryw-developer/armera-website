@@ -8,11 +8,20 @@
   var esc = function (s) {
     return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
   };
-  var u = function (p) { return (cfg.base || '') + p; };
+  // Addresses are built from names held in the catalogue. Each is encoded
+  // piece by piece, so a name can only ever be a name: it cannot close the
+  // attribute or the url('…') it sits in and start something else.
+  var seg = function (s) {
+    return encodeURIComponent(String(s == null ? '' : s)).replace(/['()]/g, function (c) {
+      return '%' + c.charCodeAt(0).toString(16).toUpperCase();
+    });
+  };
+  var filePath = function (f) { return String(f == null ? '' : f).split('/').map(seg).join('/'); };
+  var u = function (p) { return (cfg.base || '') + p.split('/').map(seg).join('/'); };
   var money = function (n) { return '£' + Number(n).toLocaleString('en-GB'); };
-  var prodImg = function (f) { return cfg.assets + '/products/' + f; };
-  var swatchImg = function (f) { return cfg.assets + '/swatches/' + f; };
-  var lifeImg = function (f) { return cfg.assets + '/lifestyle/' + String(f).replace(/\.png$/, '.jpg'); };
+  var prodImg = function (f) { return cfg.assets + '/products/' + filePath(f); };
+  var swatchImg = function (f) { return cfg.assets + '/swatches/' + filePath(f); };
+  var lifeImg = function (f) { return cfg.assets + '/lifestyle/' + filePath(String(f == null ? '' : f).replace(/\.png$/, '.jpg')); };
 
   function spread(p) {
     var prices = p.variants.map(function (v) { return v.price; });

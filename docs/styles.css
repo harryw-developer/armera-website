@@ -1019,3 +1019,18 @@ table.guar-products td { padding: 8px 10px 8px 0; border-bottom: 1px solid var(-
 .adm .tile-pick-frame .ph { font-size: 11px; letter-spacing: .18em; text-transform: uppercase; color: var(--line-dark); }
 .adm .tile-pick-side { flex: 1 1 260px; min-width: 240px; }
 .adm .tile-pick-side .abtn.on { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+
+/* A form field kept out of sight and out of the tab order. People never fill
+   it; automated form-fillers do, which is how they are told apart. */
+.gf-extra { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+
+/* ---- Long-form pages (privacy) ---- */
+.legal h2 { font-size: clamp(22px, 2.2vw, 28px); margin: 44px 0 12px; }
+.legal h3 { font-size: 17px; font-weight: 600; margin: 28px 0 8px; }
+.legal p, .legal li { max-width: 72ch; line-height: 1.7; color: var(--ink-soft); margin-top: 10px; }
+.legal ul { padding-left: 20px; margin-top: 8px; }
+.legal a { border-bottom: 1px solid var(--line-dark); }
+/* The plain lists search engines read before the catalogue draws itself */
+.plain-list { list-style: none; padding: 0; margin: 22px 0 0; }
+.plain-list li { padding: 9px 0; border-bottom: 1px solid var(--line); color: var(--muted); }
+.plain-list a { color: var(--ink); }

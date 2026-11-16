@@ -1,0 +1,5 @@
+# ARMERA — https://www.armera.co.uk
+User-agent: *
+Allow: /
+
+Sitemap: https://www.armera.co.uk/sitemap.xml

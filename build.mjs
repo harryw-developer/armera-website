@@ -196,6 +196,23 @@ const catBand = ({ dark = false } = {}) => `
 // Favicon: the ARMERA 'A' from the logo, on the brand ink tile.
 const FAVICON = `${ASSETS}/brand/favicon-32.png`;
 
+// The address the finished site lives at. Canonical links, the sitemap and
+// social previews all use it, whichever host this particular build is served
+// from — so a preview copy never claims to be the real thing. The current live
+// site answers on www, so the new one keeps that to hold on to its rankings.
+const SITE_URL = (process.env.SITE_URL || 'https://www.armera.co.uk').replace(/\/$/, '');
+// Search engines are kept out until launch. Set INDEXABLE=1 on the launch build.
+const INDEXABLE = process.env.INDEXABLE === '1';
+
+// The registered company, as Companies House records it. A UK company's
+// website has to state these.
+const COMPANY = { name: 'ARMERA Limited', number: '12405257', registeredIn: 'England and Wales' };
+
+// Every page written, for the sitemap.
+const sitePages = [];
+const jsonLd = obj => `<script type="application/ld+json">${JSON.stringify(obj).replace(/</g, '\\u003c')}</script>`;
+
+
 const navModel = [
   { href: '/products/', label: 'Products', children: categories.map(c => ({ href: `/products/${c.slug}/`, label: c.name })) },
   { href: '/inspiration/', label: 'Inspiration' },
@@ -205,7 +222,11 @@ const navModel = [
   { href: '/contact/', label: 'Contact' }
 ];
 
-function layout({ title, desc, path, body, extraHead = '', extraBody = '', noindex = false }) {
+function layout({ title, desc, path, body, extraHead = '', extraBody = '', noindex = false,
+                  canonicalPath, ogImage, ogType = 'website', structured = [] }) {
+  const canonical = canonicalPath === null ? '' : SITE_URL + (canonicalPath || path);
+  const shareImage = ogImage || `${ASSETS}/lifestyle/p001_01.jpg`;
+  if (canonical && !noindex) sitePages.push(canonicalPath || path);
   const nav = navModel.map(item => {
     const active = path.startsWith(item.href) ? ' active' : '';
     const drop = item.children ? `<div class="menu-drop">${item.children.map(c => `<a href="${c.href}">${esc(c.label)}</a>`).join('')}</div>` : '';
@@ -225,6 +246,15 @@ function layout({ title, desc, path, body, extraHead = '', extraBody = '', noind
 <title>${esc(title)}</title>
 <meta name="description" content="${esc(desc)}">
 ${noindex ? '<meta name="robots" content="noindex">' : ''}
+${canonical ? `<link rel="canonical" href="${canonical}">` : ''}
+<meta property="og:site_name" content="ARMERA">
+<meta property="og:type" content="${ogType}">
+<meta property="og:title" content="${esc(title)}">
+<meta property="og:description" content="${esc(desc)}">
+${canonical ? `<meta property="og:url" content="${canonical}">` : ''}
+<meta property="og:image" content="${esc(shareImage)}">
+<meta name="twitter:card" content="summary_large_image">
+${structured.map(jsonLd).join('\n')}
 <link rel="icon" type="image/png" sizes="32x32" href="${FAVICON}">
 <link rel="apple-touch-icon" sizes="180x180" href="${ASSETS}/brand/favicon-180.png">
 <link rel="stylesheet" href="${v('styles.css')}">
@@ -310,7 +340,8 @@ ${body}
       </div>
     </div>
     <div class="fine">
-      <span>© ${new Date().getFullYear()} ARMERA. All rights reserved.</span>
+      <span>© ${new Date().getFullYear()} ARMERA. All rights reserved. <a href="/privacy/" style="border-bottom:1px solid #4c463b">Privacy</a></span>
+      <span>${COMPANY.name}, registered in ${COMPANY.registeredIn}, company number ${COMPANY.number}. Registered office: ${esc(site.address)}</span>
       <span>Water-using products conform to the Water Regulatory Advisory Scheme (WRAS)</span>
       <span>${esc(site.priceNote)}</span>
     </div>
@@ -475,38 +506,222 @@ ${catBand()}
     title: 'ARMERA — Designer Bathroomware | Designed to Inspire',
     desc: 'ARMERA creates coordinated bathroomware collections for considered, practical interiors.',
     path: '/',
-    body
+    body,
+    structured: [{
+      '@context': 'https://schema.org', '@type': 'Organization',
+      name: 'ARMERA', legalName: COMPANY.name, url: SITE_URL + '/',
+      logo: `${ASSETS}/brand/logo.png`,
+      telephone: site.phone, email: site.email,
+      address: { '@type': 'PostalAddress', streetAddress: 'Units 1 & 2 Northlands Industrial Estate, Copheap Lane',
+                 addressLocality: 'Warminster', addressRegion: 'Wiltshire', postalCode: 'BA12 0BG', addressCountry: 'GB' },
+      sameAs: SOCIAL.map(([, href]) => href)
+    }]
   }));
 }
 
 /* ---------------- catalogue shells (rendered at runtime by catalog.js) ---------------- */
-function catalogShell(path, title, desc, crumbLabels) {
+// Catalogue pages are drawn in the browser from live data, so an edit in the
+// admin shows at once. But a page that is empty until JavaScript runs gives a
+// search engine — and most AI tools, which do not run JavaScript at all —
+// nothing to read. So each shell is built with its real content already in
+// it: heading, description, prices, links. The browser replaces it with the
+// live version a moment after loading.
+const prodImg = f => `${ASSETS}/products/${encodeURIComponent(f)}`;
+const money = n => '£' + Number(n).toLocaleString('en-GB');
+const firstImage = p => p.image || (p.variants || []).map(v => v.image).filter(Boolean)[0] || null;
+const crumbData = trail => ({
+  '@context': 'https://schema.org', '@type': 'BreadcrumbList',
+  itemListElement: trail.map(([name, path], i) => ({ '@type': 'ListItem', position: i + 1, name, item: SITE_URL + path }))
+});
+
+function catalogShell(path, title, desc, { urlPath, fallback = '', structured = [], ogImage, ogType, noindex = false } = {}) {
   const body = `
-${crumbLabels ? crumbs(crumbLabels) : ''}
 <div id="catalog" class="container" data-shell>
-  <section class="pad--tight"><p class="small">Loading the collection…</p></section>
+  ${fallback || '<section class="pad--tight"><p class="small">Loading the collection…</p></section>'}
 </div>
 ${catBand()}`;
   write(path, layout({
     title, desc, path: '/products/', body,
+    canonicalPath: urlPath === undefined ? null : urlPath,
+    structured, ogImage, ogType, noindex,
     extraBody: `<script src="${v('catalog.js')}" defer></script>`
   }));
 }
 
 function catalogShells() {
+  const home = ['Home', '/'], all = ['Products', '/products/'];
+
   catalogShell('products/index.html', 'Products — ARMERA',
-    'Explore the ARMERA collection: furniture & basins, WCs, concealed cisterns & flush plates, taps, wastes, thermostatic valves, showering and accessories.');
+    'Explore the ARMERA collection: furniture & basins, WCs, concealed cisterns & flush plates, taps, wastes, thermostatic valves, showering and accessories.',
+    { urlPath: '/products/',
+      structured: [crumbData([home, all])],
+      fallback: `<section class="pad--tight"><h1>Products</h1><ul class="plain-list">${
+        categories.map(c => `<li><a href="/products/${c.slug}/">${esc(c.name)}</a></li>`).join('')}</ul></section>` });
+
   for (const cat of categories) {
-    catalogShell(`products/${cat.slug}/index.html`, `${cat.name} — ARMERA`, `${cat.name} by ARMERA.`);
+    const catPath = `/products/${cat.slug}/`;
+    catalogShell(`products/${cat.slug}/index.html`, `${cat.name} — ARMERA`,
+      `${cat.name} by ARMERA: ${cat.ranges.map(r => r.name).join(', ')}.`.slice(0, 300),
+      { urlPath: catPath,
+        structured: [crumbData([home, all, [cat.name, catPath]])],
+        ogImage: cat.hero && cat.hero.img ? lifeImg(cat.hero.img) : undefined,
+        fallback: `<section class="pad--tight"><h1>${esc(cat.name)}</h1><ul class="plain-list">${
+          cat.ranges.map(r => `<li><a href="${catPath}${r.slug}/">${esc(r.title || r.name)}</a>${r.tagline ? ' — ' + esc(r.tagline) : ''}</li>`).join('')}</ul></section>` });
+
     for (const range of cat.ranges) {
-      catalogShell(`products/${cat.slug}/${range.slug}/index.html`, `${range.title} — ARMERA`, `${range.title}: ${range.tagline}`);
+      const rangePath = `${catPath}${range.slug}/`;
+      const rangeTitle = range.title || range.name;
+      catalogShell(`products/${cat.slug}/${range.slug}/index.html`, `${rangeTitle} — ARMERA`,
+        `${rangeTitle}${range.tagline ? ': ' + range.tagline : ''}`.slice(0, 300),
+        { urlPath: rangePath,
+          structured: [crumbData([home, all, [cat.name, catPath], [range.name, rangePath]])],
+          ogImage: range.hero && range.hero.img ? lifeImg(range.hero.img) : undefined,
+          fallback: `<section class="pad--tight"><h1>${esc(rangeTitle)}</h1>${range.tagline ? `<p class="lede">${esc(range.tagline)}</p>` : ''}<ul class="plain-list">${
+            range.products.map(p => `<li><a href="${rangePath}${p.slug}/">${esc(p.name)}</a></li>`).join('')}</ul></section>` });
+
       for (const p of range.products) {
-        catalogShell(`products/${cat.slug}/${range.slug}/${p.slug}/index.html`, `${p.name} — ${range.title} — ARMERA`, `${range.name} ${p.name}.`);
+        const prodPath = `${rangePath}${p.slug}/`;
+        const variants = p.variants || [];
+        const prices = variants.map(v => v.price).filter(n => typeof n === 'number');
+        const img = firstImage(p);
+        const dims = p.dims ? `${p.dims}${/x/i.test(p.dims) ? ' mm' : ''}` : '';
+        const description = [`${range.name} ${p.name}`, dims, range.tagline, p.note].filter(Boolean).join('. ').slice(0, 300);
+        catalogShell(`products/${cat.slug}/${range.slug}/${p.slug}/index.html`,
+          `${p.name} — ${rangeTitle} — ARMERA`, description,
+          { urlPath: prodPath, ogType: 'product', ogImage: img ? prodImg(img) : undefined,
+            structured: [
+              crumbData([home, all, [cat.name, catPath], [range.name, rangePath], [p.name, prodPath]]),
+              { '@context': 'https://schema.org', '@type': 'Product',
+                name: `${range.name} ${p.name}`, description,
+                brand: { '@type': 'Brand', name: 'ARMERA' },
+                category: cat.name, url: SITE_URL + prodPath,
+                ...(img ? { image: prodImg(img) } : {}),
+                ...(variants[0] && variants[0].sku ? { sku: variants[0].sku, mpn: variants[0].sku } : {}) }
+            ],
+            fallback: `<section class="pad--tight"><p class="eyebrow">${esc(rangeTitle)}</p><h1>${esc(p.name)}</h1>${
+              dims ? `<p>${esc(dims)}</p>` : ''}${
+              prices.length ? `<p>${prices.length > 1 && Math.min(...prices) !== Math.max(...prices) ? 'From ' : ''}${money(Math.min(...prices))} RRP inc. VAT</p>` : ''}${
+              variants.length ? `<table class="pricing"><thead><tr><th>Code</th><th>Finish / option</th><th>RRP</th></tr></thead><tbody>${
+                variants.map(v => `<tr><td>${esc(v.sku)}</td><td>${esc(v.finish || '')}</td><td>${typeof v.price === 'number' ? money(v.price) : ''}</td></tr>`).join('')}</tbody></table>` : ''}${
+              p.note ? `<p class="note">${esc(p.note)}</p>` : ''}</section>` });
       }
     }
   }
-  // 404 doubles as the shell for products added after this build.
-  catalogShell('404.html', 'ARMERA', 'ARMERA designer bathroomware.');
+  // 404 doubles as the shell for products added after this build. It is never
+  // the canonical address of anything, so it carries no canonical link.
+  catalogShell('404.html', 'ARMERA', 'ARMERA designer bathroomware.', { noindex: true });
+}
+
+/* ---------------- privacy ----------------
+   Written to match what the site actually does. If the site changes what it
+   collects, this page has to change with it — they are checked against each
+   other in PRE-LAUNCH-REPORT.md (DATA-1 and DATA-2). */
+function privacyPage() {
+  const body = `
+${crumbs([{ label: 'Home', href: '/' }, { label: 'Privacy' }])}
+<section class="pad--tight">
+  <div class="container container--mid legal">
+    <span class="eyebrow">Your information</span>
+    <h1 style="margin:14px 0 10px">Privacy</h1>
+    <p class="small">Last updated: 16 November 2026</p>
+
+    <h2>The short version</h2>
+    <ul>
+      <li>This website does not use cookies.</li>
+      <li>It carries no advertising and no social-media tracking.</li>
+      <li>We do not sell your information, or pass it to anyone for their marketing.</li>
+      <li>We only hold personal details about you if you register a guarantee or get in touch with us.</li>
+    </ul>
+
+    <h2>Who we are</h2>
+    <p>This website is run by ${COMPANY.name}, a company registered in ${COMPANY.registeredIn} (company number ${COMPANY.number}).
+    Our registered office is ${esc(site.address)}. For the purposes of UK data protection law we are the
+    “controller” of the personal information described on this page, which means we decide how it is used and are responsible for it.</p>
+    <p>If you have any question about your information, or want to use any of the rights set out below, contact us at
+    <a href="mailto:${site.email}">${site.email}</a>, on <a href="${telHref(site.phone)}">${site.phone}</a>, or by post at the address above.</p>
+
+    <h2>What we collect, why, and for how long</h2>
+
+    <h3>When you register a guarantee</h3>
+    <p><strong>What:</strong> your name, email address and postal address; where and when you bought the product; the products you are registering;
+    and, if you choose to give them, the name of your developer, the date you moved in, your installer’s name and address, and a photograph or copy of your proof of purchase.</p>
+    <p><strong>Why:</strong> to register your guarantee, to deal with any claim you make under it, and to contact you if there is something you need to know about a product you own, such as a safety notice.</p>
+    <p><strong>Our legal basis:</strong> it is necessary for the guarantee, which is a contract between us and you. We also have a legitimate interest in keeping accurate records of the products we have guaranteed.</p>
+    <p><strong>How long:</strong> for as long as the guarantee lasts — up to 25 years, depending on the product — and for up to six years after it ends, which is the period in which a legal claim could be brought.</p>
+    <p>If you give us your installer’s details, please make sure they are happy for you to do so. We use them only in connection with your guarantee.</p>
+
+    <h3>When you contact us</h3>
+    <p><strong>What:</strong> your contact details and whatever you tell us, whether by email, telephone or post.</p>
+    <p><strong>Why:</strong> to answer your enquiry and to help with spares, advice or a problem with a product.</p>
+    <p><strong>Our legal basis:</strong> our legitimate interest in responding to people who get in touch with us.</p>
+    <p><strong>How long:</strong> for as long as it takes to deal with your enquiry, and normally for no more than two years afterwards unless it relates to a guarantee.</p>
+
+    <h3>When you visit this website</h3>
+    <p><strong>What:</strong> which pages are viewed, the kind of device used (phone, tablet or computer), the website that led to ours, and a random number
+    that lets us count pages viewed in one visit. We do <strong>not</strong> record your IP address, your name, or anything else that identifies you, and the random number is forgotten as soon as you close the tab.</p>
+    <p><strong>Why:</strong> to understand which pages and products are useful, so we can improve the website.</p>
+    <p><strong>Our legal basis:</strong> our legitimate interest in knowing how the website is used. You can object at any time using the button below.</p>
+    <p><strong>How long:</strong> 14 months, after which the records are deleted automatically.</p>
+    <p><button type="button" class="btn" id="stats-optout" hidden>Don’t count my visits</button>
+       <span class="small" id="stats-optout-state" style="margin-left:12px"></span></p>
+    <p class="small">The website also respects your browser’s “Do Not Track” setting: if it is switched on, your visits are never counted.</p>
+
+    <h3>When you search for a retailer</h3>
+    <p>The town or postcode you type is sent to a postcode lookup service so the map can show the right area. We do not keep it.</p>
+
+    <h3>Keeping the website secure</h3>
+    <p>Like every website, ours is sent your device’s IP address in order to deliver pages to it. Our hosting provider uses it briefly to do that and to
+    block abuse — for example, to stop a form being submitted thousands of times. We do not keep a record of it.</p>
+
+    <h2>Cookies and your browser’s storage</h2>
+    <p>This website sets no cookies. It uses your browser’s own storage in two small ways: the random visit number described above, which lasts only until you
+    close the tab; and, if you choose “Don’t count my visits”, a note of that choice so we can honour it next time. Neither is shared with anyone.</p>
+
+    <h2>Who we share your information with</h2>
+    <p>We do not sell your information. We share it only with the companies that provide services we need to run this website, and only as far as they need it:</p>
+    <ul>
+      <li><strong>Cloudflare</strong>, which hosts the website and securely stores its database and files, acting on our instructions.</li>
+      <li><strong>CARTO and OpenStreetMap</strong>, which supply the map on the “Find a retailer” page. Your browser fetches the map images directly from them, so they see its IP address.</li>
+      <li><strong>postcodes.io</strong>, which looks up the town or postcode you search for.</li>
+    </ul>
+    <p>We may also disclose information where the law requires us to.</p>
+
+    <h2>Where your information is held</h2>
+    <p>Some of the companies above operate internationally, so information may be processed outside the United Kingdom. Where that happens we rely on
+    UK adequacy regulations, or on safeguards approved under UK data protection law such as the International Data Transfer Agreement.</p>
+
+    <h2>Your rights</h2>
+    <p>Under UK data protection law you have the right to:</p>
+    <ul>
+      <li>ask for a copy of the information we hold about you;</li>
+      <li>ask us to correct anything that is wrong or incomplete;</li>
+      <li>ask us to delete your information, where we no longer need it;</li>
+      <li>ask us to restrict how we use it;</li>
+      <li>object to our using it — including for the visit statistics described above;</li>
+      <li>ask for the information you gave us in a form you can take elsewhere.</li>
+    </ul>
+    <p>To use any of these, contact us using the details above. There is no charge, and we will reply within one month.</p>
+
+    <h2>If you are unhappy</h2>
+    <p>Please tell us first, so we can try to put it right. You also have the right to complain to the Information Commissioner’s Office, the UK’s data protection regulator:
+    <a href="https://ico.org.uk/make-a-complaint/" target="_blank" rel="noopener">ico.org.uk/make-a-complaint</a>, telephone 0303 123 1113,
+    or by post to Wycliffe House, Water Lane, Wilmslow, Cheshire SK9 5AF.</p>
+
+    <h2>A few other things</h2>
+    <p><strong>You do not have to give us any personal information to use this website.</strong> If you register a guarantee, the details marked as required are needed to register it; without them we cannot.</p>
+    <p><strong>No automated decisions.</strong> We do not use your information to make decisions about you by automated means, and we do not build profiles of visitors.</p>
+    <p><strong>Children.</strong> This website is not aimed at children, and we do not knowingly collect information from them.</p>
+    <p><strong>Links to other websites.</strong> Links to our social media pages, to videos and to map directions open on those companies’ own websites, which have their own privacy policies. Nothing is sent to them unless you follow the link.</p>
+    <p><strong>Changes to this page.</strong> If we change how we use your information we will update this page and change the date at the top.</p>
+  </div>
+</section>`;
+
+  write('privacy/index.html', layout({
+    title: 'Privacy — ARMERA',
+    desc: 'How ARMERA uses personal information: what we collect, why, how long we keep it, and your rights under UK data protection law.',
+    path: '/privacy/',
+    body
+  }));
 }
 
 /* ---------------- inspiration ---------------- */
@@ -897,6 +1112,9 @@ ${crumbs([{ label: 'Home', href: '/' }, { label: 'Support', href: '/support/' },
       </fieldset>
 
       <div class="gf-submit">
+        <div class="gf-extra" aria-hidden="true">
+          <label>Website <input type="text" name="website" tabindex="-1" autocomplete="off"></label>
+        </div>
         <button type="submit" class="btn btn--solid" id="gf-send">Register my guarantee</button>
         <p class="small" id="gf-msg"></p>
       </div>
@@ -1008,9 +1226,64 @@ videosPage();
 retailersPage();
 guaranteePage();
 contactPage();
+privacyPage();
 // The admin belongs on its own protected hostname, not on the public site.
 // Public builds leave it out entirely, so there is one door rather than three.
 if (process.env.INCLUDE_ADMIN === '1') adminPage();
 else console.log('Admin page: omitted (set INCLUDE_ADMIN=1 to include it)');
 
+/* ---------------- sitemap, robots, headers ---------------- */
+
+// Every indexable page, at the address it will finally live at.
+const pages = [...new Set(sitePages)].sort();
+writeFileSync(join(DIST, 'sitemap.xml'),
+  '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' +
+  pages.map(path => `  <url><loc>${esc(SITE_URL + path)}</loc></url>`).join('\n') + '\n</urlset>\n');
+
+writeFileSync(join(DIST, 'robots.txt'),
+  `# ARMERA — ${SITE_URL}\nUser-agent: *\nAllow: /\n\nSitemap: ${SITE_URL}/sitemap.xml\n`);
+
+// The one inline script on every page is the site's settings. Its fingerprint
+// goes in the policy below, so the browser will run that script and no other
+// inline script — which is what stops an injected one from running.
+const inlineHash = createHash('sha256').update(`window.ARMERA=${JSON.stringify(CFG)}`).digest('base64');
+const api = DATA_URL ? new URL(DATA_URL).origin : '';
+const csp = [
+  `default-src 'self'`,
+  `script-src 'self' 'sha256-${inlineHash}' ${api}`,
+  `style-src 'self' 'unsafe-inline' ${api}`,
+  `img-src 'self' data: blob: ${api} https://*.basemaps.cartocdn.com`,
+  `font-src 'self' ${api}`,
+  `media-src 'self' ${api}`,
+  `connect-src 'self' ${api} https://api.postcodes.io`,
+  `worker-src 'self' blob:`,
+  `frame-src 'none'`, `object-src 'none'`, `base-uri 'self'`, `form-action 'self'`,
+  `frame-ancestors 'none'`, `upgrade-insecure-requests`
+].map(rule => rule.replace(/\s+/g, ' ').trim()).join('; ');
+
+// Read by Cloudflare. (GitHub Pages ignores this file and cannot set headers.)
+writeFileSync(join(DIST, '_headers'), [
+  '/*',
+  '  X-Content-Type-Options: nosniff',
+  '  X-Frame-Options: DENY',
+  '  Referrer-Policy: strict-origin-when-cross-origin',
+  '  Strict-Transport-Security: max-age=31536000',
+  '  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=()',
+  `  Content-Security-Policy: ${csp}`,
+  ...(INDEXABLE ? [] : ['  X-Robots-Tag: noindex']),
+  '',
+  '# The admin is never for search engines, and is never cached.',
+  '/admin/*',
+  '  X-Robots-Tag: noindex',
+  '  Cache-Control: no-store',
+  ''
+].join('\n'));
+
+// Old addresses from the previous website, sent on to their new homes so
+// links and search rankings carry over. Maintained in data/redirects.txt.
+try {
+  writeFileSync(join(DIST, '_redirects'), readFileSync(join(ROOT, 'data/redirects.txt'), 'utf8'));
+} catch { /* no redirect map yet */ }
+
+console.log(`Sitemap: ${pages.length} pages at ${SITE_URL} — search engines ${INDEXABLE ? 'ALLOWED' : 'kept out (set INDEXABLE=1 at launch)'}`);
 console.log(`Built site into ${DIST}${BASE ? ` (base path ${BASE})` : ''}`);

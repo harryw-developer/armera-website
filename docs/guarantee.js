@@ -43,15 +43,19 @@
       return;
     }
     proofState.textContent = 'Uploading…';
-    var name = 'proof-' + Date.now() + '-' + Math.random().toString(36).slice(2, 8) +
-      (f.name.match(/\.[a-z0-9]+$/i) || ['.jpg'])[0].toLowerCase();
-    fetch(cfg.dataUrl + '/guarantee-proof/' + encodeURIComponent(name), {
+    fetch(cfg.dataUrl + '/guarantee-proof', {
       method: 'POST',
-      headers: {  'Content-Type': f.type || 'application/octet-stream' },
+      headers: { 'Content-Type': f.type || 'application/octet-stream' },
       body: f
     }).then(function (r) {
-      if (r.ok) { proofName = name; proofState.textContent = 'Attached: ' + f.name; }
-      else { proofState.textContent = 'We could not attach that file, but you can still register — we will ask for it if needed.'; }
+      return r.json().catch(function () { return {}; }).then(function (res) {
+        if (r.ok && res.key) { proofName = res.key; proofState.textContent = 'Attached: ' + f.name; }
+        else {
+          proofName = null;
+          proofState.textContent = (res.error ? res.error + ' ' : 'We could not attach that file. ') +
+            'You can still register — we will ask for it if needed.';
+        }
+      });
     }).catch(function () {
       proofState.textContent = 'We could not attach that file, but you can still register.';
     });
@@ -94,7 +98,8 @@
       installer_name: val('installer_name'), installer_address1: val('installer_address1'),
       installer_address2: val('installer_address2'), installer_town: val('installer_town'),
       installer_postcode: val('installer_postcode'), installer_country: val('installer_country'),
-      products: products, proof_file: proofName
+      products: products, proof_file: proofName,
+      website: val('website')
     };
 
     send.disabled = true;

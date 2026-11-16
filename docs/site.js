@@ -210,7 +210,9 @@
         if (b.bg) banner.style.background = b.bg;
         if (b.fg) banner.style.color = b.fg;
         if (b.font === 'custom' && b.fontFile) {
-          var url = cfg.assets + '/fonts/' + encodeURIComponent(b.fontFile);
+          var url = cfg.assets + '/fonts/' + encodeURIComponent(b.fontFile).replace(/['()]/g, function (c) {
+            return '%' + c.charCodeAt(0).toString(16).toUpperCase();   // cannot end the url('…') it sits in
+          });
           var ext = (b.fontFile.split('.').pop() || '').toLowerCase();
           var fmt = ext === 'woff2' ? 'woff2' : ext === 'woff' ? 'woff' : ext === 'otf' ? 'opentype' : 'truetype';
           var st = document.createElement('style');

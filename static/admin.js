@@ -58,25 +58,13 @@
       if (!state.catKey) state.catKey = state.keys[0];
     });
   }
-  // The admin writes to Supabase; the site reads Cloudflare. Nudge the API to
-  // pull the change straight across so edits appear at once rather than waiting
-  // for its five-minute sync. Failure here is not an error worth showing: the
-  // cron will catch it.
-  function pushLive() {
-    if (!cfg.dataUrl) return Promise.resolve();
-    return fetch(cfg.dataUrl + '/sync', { method: 'POST' })
-      .catch(function () { /* the scheduled sync will pick it up */ });
-  }
-
   function saveRow(key, target, okText) {
     return sb.from('site_content')
       .update({ data: state.rows[key], updated_at: new Date().toISOString() })
       .eq('key', key)
       .then(function (res) {
         if (res.error) { msg(target, 'Could not save: ' + res.error.message, 'err'); return; }
-        return pushLive().then(function () {
-          msg(target, okText || 'Saved. Changes are live on the site.', 'ok');
-        });
+        msg(target, okText || 'Saved. Changes are live on the site.', 'ok');
       });
   }
   function saveRowUpsert(key, target, okText) {
@@ -84,9 +72,7 @@
       .upsert({ key: key, data: state.rows[key], updated_at: new Date().toISOString() })
       .then(function (res) {
         if (res.error) { msg(target, 'Could not save: ' + res.error.message, 'err'); return; }
-        return pushLive().then(function () {
-          msg(target, okText || 'Saved. Changes are live on the site.', 'ok');
-        });
+        msg(target, okText || 'Saved. Changes are live on the site.', 'ok');
       });
   }
   function thisKey(range, p) {
@@ -326,7 +312,6 @@
         (bucket === cfg.instructionsBucket ? 'instructions' : bucket) + '/' +
         path.split('/').map(encodeURIComponent).join('/'));
         xhr.setRequestHeader('Authorization', 'Bearer ' + token);
-      xhr.withCredentials = true;
         xhr.setRequestHeader('cache-control', 'max-age=3600');
         if (contentType || file.type) xhr.setRequestHeader('Content-Type', contentType || file.type);
         xhr.upload.onprogress = function (e) {
@@ -659,7 +644,7 @@
 
     // storage + catalogue file
     jobs.push(probe(cfg.assets + '/brand/logo.png').then(function (ok) {
-      if (!ok) add('bad', 'Image store unreachable', 'The logo could not be loaded from storage.', 'Product photos may not appear. Check the Supabase project is running.');
+      if (!ok) add('bad', 'Image store unreachable', 'The logo could not be loaded from storage.', 'Product photos may not appear. Check the ARMERA API on Cloudflare is running.');
     }));
     if (cat.file) {
       jobs.push(probe(cfg.assets + '/documents/' + encodeURIComponent(cat.file)).then(function (ok) {
@@ -1097,7 +1082,10 @@
     var list = el('div', { class: 'adm-list' });
     range.products.forEach(function (p, i) {
       var item = el('div', { class: 'item' });
-      item.appendChild(el('span', { class: 'nm', html: p.name + (p.dims ? ' <span class="dim">' + p.dims + '</span>' : '') }));
+      // Built from text nodes, never markup: a product name is whatever someone typed.
+      var nm = el('span', { class: 'nm', text: p.name });
+      if (p.dims) { nm.appendChild(document.createTextNode(' ')); nm.appendChild(el('span', { class: 'dim', text: p.dims })); }
+      item.appendChild(nm);
       item.appendChild(el('button', { class: 'abtn abtn--ghost abtn--sm', text: 'Edit', onclick: function () { state.editing = i; renderShell(); } }));
       item.appendChild(el('button', {
         class: 'abtn abtn--danger abtn--sm', text: 'Remove',
@@ -2444,9 +2432,11 @@
         pf.appendChild(el('h4', { text: 'Proof of purchase' }));
         var link = el('button', { class: 'abtn abtn--ghost abtn--sm', text: 'Open proof', onclick: function (e) {
           e.stopPropagation();
-          sb.storage.from('guarantee-proof').createSignedUrl(r.proof_file, 300).then(function (res) {
-            if (res.data && res.data.signedUrl) window.open(res.data.signedUrl, '_blank');
-            else toast('Could not open that file', 'err');
+          // Open the tab during the click, or the browser treats it as a pop-up.
+          var tab = window.open('about:blank', '_blank');
+          sb.storage.from('guarantee-proof').download(r.proof_file).then(function (res) {
+            if (res.data && res.data.url) { if (tab) tab.location = res.data.url; else window.open(res.data.url, '_blank'); }
+            else { if (tab) tab.close(); toast('Could not open that file', 'err'); }
           });
         } });
         pf.appendChild(link);
@@ -2614,19 +2604,22 @@
     }));
     panel.appendChild(el('hr', { class: 'rule' }));
     panel.appendChild(el('h3', { text: 'Change password' }));
+    var p0 = el('input', { type: 'password', autocomplete: 'current-password' });
     var p1 = el('input', { type: 'password', autocomplete: 'new-password' });
     var p2 = el('input', { type: 'password', autocomplete: 'new-password' });
+    panel.appendChild(lbl('Current password')); panel.appendChild(p0);
     panel.appendChild(lbl('New password')); panel.appendChild(p1);
-    panel.appendChild(el('p', { class: 'hint', text: 'At least 8 characters.' }));
+    panel.appendChild(el('p', { class: 'hint', text: 'At least 10 characters. Changing it signs you out everywhere else.' }));
     panel.appendChild(lbl('Repeat new password')); panel.appendChild(p2);
     panel.appendChild(el('button', {
       class: 'abtn', text: 'Update password', style: 'margin-top:22px;display:block',
       onclick: function () {
-        if (p1.value.length < 8) return msg(panel, 'Password must be at least 8 characters.', 'err');
+        if (!p0.value) return msg(panel, 'Enter your current password first.', 'err');
+        if (p1.value.length < 10) return msg(panel, 'Password must be at least 10 characters.', 'err');
         if (p1.value !== p2.value) return msg(panel, 'Passwords do not match.', 'err');
-        sb.auth.updateUser({ password: p1.value }).then(function (res) {
+        sb.auth.updateUser({ password: p1.value, current: p0.value }).then(function (res) {
           if (res.error) msg(panel, res.error.message, 'err');
-          else { p1.value = p2.value = ''; msg(panel, 'Password updated.', 'ok'); }
+          else { p0.value = p1.value = p2.value = ''; msg(panel, 'Password updated.', 'ok'); }
         });
       }
     }));
@@ -2945,7 +2938,7 @@
     panel.appendChild(list);
 
     function linkFor(token) {
-      return location.origin + location.pathname.replace(/[^/]*$/, '') + '?setup=' + token;
+      return location.origin + location.pathname.replace(/[^/]*$/, '') + '#setup=' + token;
     }
 
     function showLink(email, token) {
@@ -2967,7 +2960,7 @@
 
     function paint() {
       list.innerHTML = '';
-      fetch(cfg.dataUrl + '/admin/users', { credentials: 'include', headers: authHeader() })
+      fetch(cfg.dataUrl + '/admin/users', { headers: authHeader() })
         .then(function (r) { return r.json(); })
         .then(function (rows) {
           if (!Array.isArray(rows)) { list.appendChild(el('p', { class: 'hint', text: 'Could not load the list.' })); return; }
@@ -3037,7 +3030,7 @@
     }
     function post(path, body, method) {
       return fetch(cfg.dataUrl + path, {
-        method: method || 'POST', credentials: 'include', headers: authHeader(),
+        method: method || 'POST', headers: authHeader(),
         body: body ? JSON.stringify(body) : undefined
       }).then(function (r) { return r.json(); })
         .catch(function (e) { return { error: String(e) }; });
@@ -3078,8 +3071,13 @@
     });
   }
 
-  var setupToken = new URLSearchParams(location.search).get('setup');
+  // The link carries its token after a "#", which browsers never send to a
+  // server, so it cannot end up in a log. It is wiped from the address bar
+  // straight away. ("?setup=" is still read, for links made before this.)
+  var setupToken = (/^#setup=([a-f0-9]{64})$/.exec(location.hash) || [])[1] ||
+                   new URLSearchParams(location.search).get('setup');
   if (setupToken) {
+    try { history.replaceState({}, '', location.pathname); } catch (e) {}
     renderClaim(setupToken);
   } else {
     sb.auth.getSession().then(function (res) {

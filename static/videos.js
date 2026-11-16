@@ -17,7 +17,7 @@
     videos.forEach(function (v) {
       var a = document.createElement('a');
       a.className = 'video-card';
-      a.href = v.url;
+      a.href = /^https?:\/\//i.test(String(v.url || '')) ? v.url : '#';   // never a javascript: link
       a.target = '_blank';
       a.rel = 'noopener';
       var img = document.createElement('img');

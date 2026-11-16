@@ -10,7 +10,16 @@
     { "binding": "INSTRUCTIONS", "bucket_name": "armera-instructions" },
     { "binding": "PROOF", "bucket_name": "armera-guarantee-proof" }
   ],
-  "triggers": { "crons": ["*/5 * * * *"] },
+  // No scheduled job. (The five-minute pull from Supabase is gone, and nothing
+  // is deleted automatically — retention clean-up awaits a decision.)
+  "triggers": { "crons": [] },
+  // Throttles, counted per visitor address. period is in seconds.
+  "ratelimits": [
+    { "name": "RL_AUTH",  "namespace_id": "4101", "simple": { "limit": 10, "period": 60 } },
+    { "name": "RL_FORM",  "namespace_id": "4102", "simple": { "limit": 6,  "period": 60 } },
+    { "name": "RL_TRACK", "namespace_id": "4103", "simple": { "limit": 60, "period": 60 } },
+    { "name": "RL_SPEC",  "namespace_id": "4104", "simple": { "limit": 20, "period": 60 } }
+  ],
   "observability": { "enabled": true },
   // The public site reads from the workers.dev address; adding a route
   // switches it off unless it is asked for explicitly.

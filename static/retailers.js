@@ -55,11 +55,20 @@
     var lines = [];
     lines.push('<strong>' + esc(r.name) + '</strong>');
     lines.push('<span class="addr">' + esc(fullAddress(r)) + '</span>');
-    if (r.phone) lines.push('<a href="tel:' + esc(r.phone.replace(/\s+/g, '')) + '">' + esc(r.phone) + '</a>');
-    if (r.website) lines.push('<a href="' + esc(r.website) + '" target="_blank" rel="noopener">' + esc(tidyUrl(r.website)) + '</a>');
+    if (r.phone) lines.push('<a href="tel:' + esc(String(r.phone).replace(/[^0-9+]/g, '')) + '">' + esc(r.phone) + '</a>');
+    if (webUrl(r.website)) lines.push('<a href="' + esc(webUrl(r.website)) + '" target="_blank" rel="noopener">' + esc(tidyUrl(r.website)) + '</a>');
     lines.push('<a href="https://www.google.com/maps/dir/?api=1&destination=' +
       encodeURIComponent(fullAddress(r)) + '" target="_blank" rel="noopener">Directions</a>');
     return '<div class="retailer-popup">' + lines.join('') + '</div>';
+  }
+
+  // Only ever link to a real web address. A value like "javascript:…" in the
+  // data would otherwise run as code when clicked.
+  function webUrl(u) {
+    u = String(u || '').trim();
+    if (/^https?:\/\//i.test(u)) return u;
+    if (/^[a-z0-9.-]+\.[a-z]{2,}(\/|$)/i.test(u)) return 'https://' + u;   // "example.co.uk" with no scheme
+    return '';
   }
 
   function buildMap() {
@@ -163,8 +172,8 @@
         '<span class="raddr">' + esc(fullAddress(r)) + '</span>';
       if (r._distance != null) bits += '<span class="rdist">' + r._distance.toFixed(1) + ' miles away</span>';
       var links = '';
-      if (r.phone) links += '<a href="tel:' + esc(r.phone.replace(/\s+/g, '')) + '" class="rlink">' + esc(r.phone) + '</a>';
-      if (r.website) links += '<a href="' + esc(r.website) + '" target="_blank" rel="noopener" class="rlink">' + esc(tidyUrl(r.website)) + '</a>';
+      if (r.phone) links += '<a href="tel:' + esc(String(r.phone).replace(/[^0-9+]/g, '')) + '" class="rlink">' + esc(r.phone) + '</a>';
+      if (webUrl(r.website)) links += '<a href="' + esc(webUrl(r.website)) + '" target="_blank" rel="noopener" class="rlink">' + esc(tidyUrl(r.website)) + '</a>';
       if (links) bits += '<span class="rlinks">' + links + '</span>';
       card.innerHTML = bits;
       card.addEventListener('click', function (e) {

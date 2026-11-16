@@ -90,7 +90,10 @@
 
       STATIC_PAGES.forEach(function (p) { items.push(p); });
 
-      items.forEach(function (it) { it._hay = (it.title + ' ' + (it.terms || '')).toLowerCase(); });
+      items.forEach(function (it) {
+        it.title = String(it.title == null ? '' : it.title);
+        it._hay = (it.title + ' ' + (it.terms || '')).toLowerCase();
+      });
       index = items;
       return index;
     });
@@ -155,7 +158,7 @@
       groups[kind].forEach(function (it) {
         var href = it.external ? it.href : u(it.href);
         html += '<a class="search-hit" href="' + esc(href) + '"' + (it.external ? ' target="_blank" rel="noopener"' : '') + '>' +
-          (it.img ? '<span class="shot"><img src="' + cfg.assets + '/products/' + encodeURIComponent(it.img) + '" alt="" loading="lazy"></span>' : '') +
+          (it.img ? '<span class="shot"><img src="' + esc(cfg.assets + '/products/' + String(it.img).split('/').map(encodeURIComponent).join('/')) + '" alt="" loading="lazy"></span>' : '') +
           '<span class="txt"><span class="t">' + esc(it.title) + '</span>' +
           (it.sub ? '<span class="s">' + esc(it.sub) + '</span>' : '') + '</span></a>';
       });

@@ -71,11 +71,21 @@ export async function issueSession(email, secret, days = 14, epoch = 0) {
   return `${payload}.${sig}`;
 }
 
+// The fingerprint of a one-time link. The link itself is shown once to the
+// person who made it and is never stored.
+export async function tokenDigest(token) {
+  const bytes = await crypto.subtle.digest('SHA-256', enc.encode(String(token)));
+  return [...new Uint8Array(bytes)].map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
 export async function readSession(token, secret) {
-  if (!token || !token.includes('.')) return null;
+  if (!secret || !token || token.length > 2048 || !token.includes('.')) return null;
   const [payload, sig] = token.split('.');
-  const ok = await crypto.subtle.verify('HMAC', await hmacKey(secret), unb64(sig), enc.encode(payload));
-  if (!ok) return null;
+  try {
+    // A mangled token is simply not a session — it must never be an error.
+    const ok = await crypto.subtle.verify('HMAC', await hmacKey(secret), unb64(sig), enc.encode(payload));
+    if (!ok) return null;
+  } catch { return null; }
   try {
     const data = JSON.parse(new TextDecoder().decode(unb64(payload)));
     if (!data.exp || data.exp < Date.now()) return null;
@@ -102,18 +112,25 @@ export async function readAccess(request, env) {
   if (!token || !env.ACCESS_TEAM_DOMAIN || !env.ACCESS_AUD) return null;
   const [h, p, s] = token.split('.');
   if (!s) return null;
-  const header = JSON.parse(new TextDecoder().decode(unb64(h)));
-  const keys = await accessKeys(env.ACCESS_TEAM_DOMAIN);
-  const jwk = keys && keys.find(k => k.kid === header.kid);
-  if (!jwk) return null;
-  const key = await crypto.subtle.importKey('jwk', jwk,
-    { name: 'RSASSA-PKCS1-v1_5', hash: 'SHA-256' }, false, ['verify']);
-  const ok = await crypto.subtle.verify('RSASSA-PKCS1-v1_5', key, unb64(s), enc.encode(`${h}.${p}`));
-  if (!ok) return null;
-  const claims = JSON.parse(new TextDecoder().decode(unb64(p)));
+  let claims;
+  try {
+    const header = JSON.parse(new TextDecoder().decode(unb64(h)));
+    if (header.alg !== 'RS256') return null;         // the only kind Access issues
+    const keys = await accessKeys(env.ACCESS_TEAM_DOMAIN);
+    const jwk = keys && keys.find(k => k.kid === header.kid);
+    if (!jwk) return null;
+    const key = await crypto.subtle.importKey('jwk', jwk,
+      { name: 'RSASSA-PKCS1-v1_5', hash: 'SHA-256' }, false, ['verify']);
+    const ok = await crypto.subtle.verify('RSASSA-PKCS1-v1_5', key, unb64(s), enc.encode(`${h}.${p}`));
+    if (!ok) return null;
+    claims = JSON.parse(new TextDecoder().decode(unb64(p)));
+  } catch { return null; }                            // anything malformed is just not a pass
   const aud = Array.isArray(claims.aud) ? claims.aud : [claims.aud];
   if (!aud.includes(env.ACCESS_AUD)) return null;
-  if (claims.exp * 1000 < Date.now()) return null;
+  if (claims.iss !== `https://${env.ACCESS_TEAM_DOMAIN}`) return null;
+  if (!claims.exp || claims.exp * 1000 < Date.now()) return null;
+  if (claims.nbf && claims.nbf * 1000 > Date.now() + 60000) return null;
+  if (!claims.email) return null;
   return { email: (claims.email || '').toLowerCase(), via: 'access' };
 }
 
