@@ -2,8 +2,8 @@
 // ARMERA static site generator.
 // Static pages (home, inspiration, about, support, contact) are fully baked.
 // The /products tree is generated as shell pages rendered at runtime by catalog.js
-// from the Supabase `site_content` table, so the admin area can add/edit/remove
-// ranges and products without a rebuild. All assets live in Supabase Storage.
+// from the content API (Cloudflare D1), so the admin area can add/edit/remove
+// ranges and products without a rebuild. All files live in Cloudflare R2.
 
 import { readFileSync, writeFileSync, mkdirSync, readdirSync, rmSync } from 'node:fs';
 import { join, dirname } from 'node:path';
@@ -20,12 +20,11 @@ const DIST = process.env.OUT_DIR
 // Site base path. '' for a custom domain / root site; '/<repo>' for GitHub project pages.
 const BASE = process.env.BASE_PATH ?? '';
 
-const SUPABASE_URL = 'https://pcouznwpyhtfrleedcsv.supabase.co';
-const ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBjb3V6bndweWh0ZnJsZWVkY3N2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM4NjM3NzIsImV4cCI6MjA5OTQzOTc3Mn0.pNRCs82pde-0vMnaTh6ygtQNeWKgFS2s3lrIkhM8uZU';
-// The site reads its content and files from Cloudflare. The admin still writes
-// to Supabase, and the API syncs those writes back into D1 — so there is one
-// place to edit and one place the site reads from.
 const DATA_URL = process.env.DATA_URL ?? 'https://armera-api.harry-01f.workers.dev';
+// Where the build itself fetches content from. Usually the same as DATA_URL,
+// but DATA_URL may be '' for a same-origin build, and the build still needs a
+// real address to read from.
+const CONTENT_API = process.env.CONTENT_API || DATA_URL || 'https://armera-api.harry-01f.workers.dev';
 const ASSETS = `${DATA_URL}/assets`;
 const INSTRUCTIONS_URL = `${DATA_URL}/instructions`;
 const INSTRUCTIONS_BUCKET = 'instructions';
@@ -43,7 +42,7 @@ const assetVersions = Object.fromEntries(STATIC_FILES.map(f => [
 const v = f => `/${f}?v=${assetVersions[f]}`;
 
 // ---------------------------------------------------------------------------
-// Everything editable in the admin is read LIVE from Supabase at build time.
+// Everything editable in the admin is read LIVE from the content API at build time.
 // Nothing editable is hard-coded here: the catalogue of products, the page
 // wording, the contact details and the catalogue PDF all come from the
 // site_content table, exactly as the running site sees them. data/*.json is
@@ -57,13 +56,11 @@ const ALLOW_STALE = process.env.ALLOW_STALE === '1';
 
 let live = {};
 try {
-  const res = await fetch(`${SUPABASE_URL}/rest/v1/site_content?select=key,data`, {
-    headers: { apikey: ANON_KEY, Authorization: `Bearer ${ANON_KEY}` }
-  });
-  if (!res.ok) throw new Error(`Supabase replied ${res.status}`);
+  const res = await fetch(`${CONTENT_API}/rest/v1/site_content?select=key,data`);
+  if (!res.ok) throw new Error(`The content API replied ${res.status}`);
   for (const row of await res.json()) live[row.key] = row.data;
 } catch (e) {
-  const why = `Could not read the live content from Supabase (${e.message}).`;
+  const why = `Could not read the live content from the API (${e.message}).`;
   if (!ALLOW_STALE) {
     throw new Error(`${why}\n\n` +
       'Refusing to build: the pages would be generated from the repository copy\n' +
@@ -108,7 +105,7 @@ const site = {
 };
 
 console.log(categories === undefined ? '' :
-  `Catalogue: ${liveCategoryKeys.length ? 'live from Supabase' : 'REPOSITORY COPY (stale)'} — ` +
+  `Catalogue: ${liveCategoryKeys.length ? 'live from Cloudflare' : 'REPOSITORY COPY (stale)'} — ` +
   `${categories.length} categories, ` +
   `${categories.reduce((n, c) => n + c.ranges.reduce((m, r) => m + r.products.length, 0), 0)} products`);
 console.log('Homepage hero:', livePages?.home?.hero ? `${livePages.home.hero.type} — ${livePages.home.hero.file}` : 'default photograph');
@@ -143,9 +140,6 @@ function heroMarkup() {
 const esc = s => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 const lifeImg = f => `${ASSETS}/lifestyle/${f.replace(/\.png$/, '.jpg')}`;
 
-// The site no longer talks to Supabase, so its URL and key are not shipped to
-// visitors any more. The admin's bridge for setting a Cloudflare password is
-// the last thing that needs them, and it only loads on /admin/.
 const CFG = {
   assets: ASSETS,
   base: BASE,
@@ -155,7 +149,7 @@ const CFG = {
   cartoKey: CARTO_KEY
 };
 
-// Catalogue: the filename lives in the Supabase `pages` row so the admin can
+// Catalogue: the filename lives in the `pages` content row so the admin can
 // swap in a new edition; every link below is tagged data-catalogue and gets
 // its href rewritten at runtime by site.js.
 // Social accounts. Monochrome marks so they sit quietly with the rest.
