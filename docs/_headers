@@ -4,7 +4,7 @@
   Referrer-Policy: strict-origin-when-cross-origin
   Strict-Transport-Security: max-age=31536000
   Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=()
-  Content-Security-Policy: default-src 'self'; script-src 'self' 'sha256-TgMg0CYdQ//iZhzfjNbIGTLU7+Dv2jaE4PmmsMjjiJ8=' https://armera-api.harry-01f.workers.dev; style-src 'self' 'unsafe-inline' https://armera-api.harry-01f.workers.dev; img-src 'self' data: blob: https://armera-api.harry-01f.workers.dev https://*.basemaps.cartocdn.com; font-src 'self' https://armera-api.harry-01f.workers.dev; media-src 'self' https://armera-api.harry-01f.workers.dev; connect-src 'self' https://armera-api.harry-01f.workers.dev https://api.postcodes.io; worker-src 'self' blob:; frame-src 'none'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'sha256-TgMg0CYdQ//iZhzfjNbIGTLU7+Dv2jaE4PmmsMjjiJ8=' https://armera-api.harry-01f.workers.dev/assets/vendor/; style-src 'self' 'unsafe-inline' https://armera-api.harry-01f.workers.dev/assets/vendor/; img-src 'self' data: blob: https://armera-api.harry-01f.workers.dev https://*.basemaps.cartocdn.com; font-src 'self' https://armera-api.harry-01f.workers.dev; media-src 'self' https://armera-api.harry-01f.workers.dev; connect-src 'self' https://armera-api.harry-01f.workers.dev https://api.postcodes.io; worker-src 'self' blob:; frame-src 'none'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests
   X-Robots-Tag: noindex
 
 # The admin is never for search engines, and is never cached.

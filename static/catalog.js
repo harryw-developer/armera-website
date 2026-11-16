@@ -1,4 +1,4 @@
-// Renders the /products tree from the Supabase site_content table.
+// Renders the /products tree from the live catalogue (the armera-api Worker).
 // Content is editable in the admin area; changes appear here without a rebuild.
 (function () {
   var cfg = window.ARMERA;

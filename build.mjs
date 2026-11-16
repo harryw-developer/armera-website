@@ -93,6 +93,14 @@ for (const k of liveCategoryKeys) {
       throw new Error(`Range "${r && r.slug}" in "${k}" has no products array. Nothing has been written; fix the row and build again.`);
     }
   }
+  // Each address becomes a folder name on disk and part of a link, so it may
+  // only be lower-case letters, digits and hyphens — never "..", a slash or markup.
+  const plain = /^[a-z0-9][a-z0-9-]{0,119}$/;
+  for (const s of [c.slug, ...c.ranges.flatMap(r => [r.slug, ...r.products.map(p => p && p.slug)])]) {
+    if (typeof s !== 'string' || !plain.test(s)) {
+      throw new Error(`"${String(s).slice(0, 60)}" in "${k}" is not a usable address. Nothing has been written; fix it in the admin and build again.`);
+    }
+  }
 }
 
 const livePages = live.pages || {};
@@ -661,7 +669,7 @@ ${crumbs([{ label: 'Home', href: '/' }, { label: 'Privacy' }])}
     that lets us count pages viewed in one visit. We do <strong>not</strong> record your IP address, your name, or anything else that identifies you, and the random number is forgotten as soon as you close the tab.</p>
     <p><strong>Why:</strong> to understand which pages and products are useful, so we can improve the website.</p>
     <p><strong>Our legal basis:</strong> our legitimate interest in knowing how the website is used. You can object at any time using the button below.</p>
-    <p><strong>How long:</strong> 14 months, after which the records are deleted automatically.</p>
+    <p><strong>How long:</strong> no longer than 14 months.</p>
     <p><button type="button" class="btn" id="stats-optout" hidden>Don’t count my visits</button>
        <span class="small" id="stats-optout-state" style="margin-left:12px"></span></p>
     <p class="small">The website also respects your browser’s “Do Not Track” setting: if it is switched on, your visits are never counted.</p>
@@ -1248,10 +1256,15 @@ writeFileSync(join(DIST, 'robots.txt'),
 // inline script — which is what stops an injected one from running.
 const inlineHash = createHash('sha256').update(`window.ARMERA=${JSON.stringify(CFG)}`).digest('base64');
 const api = DATA_URL ? new URL(DATA_URL).origin : '';
+// Script and stylesheets may come from this site, and from one folder on the
+// API — the map and PDF libraries — and nowhere else. That folder cannot be
+// written to through the admin, so even a stolen admin sign-in cannot put
+// code in front of visitors.
+const vendor = api ? `${api}/assets/vendor/` : '';
 const csp = [
   `default-src 'self'`,
-  `script-src 'self' 'sha256-${inlineHash}' ${api}`,
-  `style-src 'self' 'unsafe-inline' ${api}`,
+  `script-src 'self' 'sha256-${inlineHash}' ${vendor}`,
+  `style-src 'self' 'unsafe-inline' ${vendor}`,
   `img-src 'self' data: blob: ${api} https://*.basemaps.cartocdn.com`,
   `font-src 'self' ${api}`,
   `media-src 'self' ${api}`,

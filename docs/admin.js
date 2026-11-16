@@ -2460,7 +2460,7 @@
         }));
       });
       actions.appendChild(el('a', {
-        class: 'abtn abtn--ghost abtn--sm', href: 'mailto:' + r.email, text: 'Email customer',
+        class: 'abtn abtn--ghost abtn--sm', href: 'mailto:' + encodeURIComponent(String(r.email || '')).replace(/%40/g, '@'), text: 'Email customer',
         onclick: function (e) { e.stopPropagation(); }
       }));
       wrap.appendChild(actions);
@@ -2475,7 +2475,14 @@
       var cols = ['created_at','title','first_name','last_name','email','address1','address2','town','postcode','country',
                   'retailer_name','purchase_date','developer_name','moved_in_date','installer_name','installer_address1',
                   'installer_address2','installer_town','installer_postcode','installer_country','status'];
-      var esc = function (v) { return '"' + String(v == null ? '' : v).replace(/"/g, '""') + '"'; };
+      // These words were typed by members of the public. A cell beginning with
+      // = + - or @ is run as a formula by Excel and Sheets, so such a cell is
+      // given a leading apostrophe, which makes the spreadsheet show it as text.
+      var esc = function (v) {
+        var t = String(v == null ? '' : v);
+        if (/^[=+\-@\t\r]/.test(t)) t = "'" + t;
+        return '"' + t.replace(/"/g, '""') + '"';
+      };
       var lines = [cols.concat(['products']).map(esc).join(',')];
       rows.forEach(function (r) {
         var prod = (r.products || []).map(function (p) { return (p.code || '') + ' — ' + (p.description || ''); }).join(' | ');

@@ -1,112 +1,88 @@
 # ARMERA website
 
-Static site for [ARMERA](https://www.armera.co.uk) bathroomware. Every product, price, colour and
-finish comes from the March 2026 catalogue — no invented data. All imagery, documents and vendor
-files are served from Supabase Storage.
+The website for [ARMERA](https://www.armera.co.uk) bathroomware. Every product,
+price, colour and finish comes from the March 2026 catalogue or from edits made
+in the admin — no invented data.
 
-## How it works
+**How the whole thing fits together, where data and secrets live, and how to
+back up and restore: [`ARCHITECTURE.md`](ARCHITECTURE.md).**
 
-- **Static pages** (home, inspiration, about, support, contact) are baked by `build.mjs` into `docs/`,
-  which GitHub Pages serves from the `main` branch.
-- **The /products tree** is rendered in the browser (`static/catalog.js`) from the Supabase
-  `site_content` table, so catalogue edits made in the admin area appear immediately — no rebuild.
-  `docs/404.html` renders any product page added after the last build, so new URLs work too.
-- **Editable text blocks** on the static pages (home hero, About sections, spares line, contact
-  details) carry `data-ck` attributes; `static/site.js` overlays the latest values from Supabase.
-- **The admin area** at `/admin/` (unlisted — bookmark the URL, there is no link on the site) uses
-  Supabase Auth. Tabs: Products (ranges, products, prices, photos), Pages (editable text),
-  Retailers, Instructions, Videos, Catalogue and Account.
-- **Find a retailer** (`/retailers/`) draws pins on a Leaflet map from the `retailers` content row.
-  Pins use the ARMERA "A" (`brand/mark-a-light.png`); 100+ pins are clustered. Postcode search uses
-  postcodes.io, as does the admin's "Locate from postcode" button. Tiles come from CARTO/OSM — the
-  only third-party requests the site makes.
-- **The catalogue PDF** is pointed to by `pages.catalogue` (`{file, label, cover}`). Every link on
-  the site carries `data-catalogue` (and `data-catalogue-title` / `data-catalogue-cover`), and
-  `site.js` rewrites them all from that one record — so uploading a new edition in the admin's
-  Catalogue tab updates every link, title and cover image at once. The cover is rendered from the
-  PDF's first page with pdf.js at upload time.
+## In one paragraph
 
-## Building
+Everything runs on Cloudflare. The pages are plain files built by `build.mjs`
+and served by the `armera-website` Worker. All data — catalogue, page wording,
+retailers, guarantee registrations, visit counts, staff accounts — is in the D1
+database `armera`, and all files are in R2 storage; both are reached only
+through the `armera-api` Worker (`cloudflare/api/`). Supabase and GitHub Pages
+are no longer part of the live site.
+
+## Publishing
 
 ```sh
-node build.mjs                            # for a custom domain / root hosting
-BASE_PATH=/armera-website node build.mjs  # for GitHub Pages project hosting
+./deploy.sh
 ```
 
-Commit and push; GitHub Pages serves `docs/` automatically. A rebuild is only needed when the
-templates/design change — content edits happen in the admin area.
+Builds from the live content and uploads to Cloudflare. The API is deployed
+separately: `cd cloudflare/api && npx wrangler deploy`.
 
-## Structure
+On launch day, to let search engines in:
 
-- `data/` — the original catalogue transcription (also the seed for Supabase; `seed-content.mjs`
-  regenerates the seed SQL if the table ever needs resetting).
-- `static/` — stylesheet and client scripts (site.js, catalog.js, instructions.js, admin.js).
-- `assets-src/` — prepared source assets, mirrored to Supabase Storage.
-- `docs/` — the built site.
+```sh
+INDEXABLE=1 SITE_URL=https://www.armera.co.uk ./deploy.sh
+```
 
-## Supabase
+A rebuild is only needed when the design or templates change. Edits made in the
+admin appear on the site straight away.
 
-Project: `pcouznwpyhtfrleedcsv` (ARMERA Website, London).
+## How content reaches a page
 
-- Table `site_content` — one row per product category plus a `pages` row. Public read; signed-in
-  admin write.
-- Bucket `site-assets` (public) — products/, lifestyle/, swatches/, inspiration/, brand/,
-  documents/, vendor/. The admin uploads new product/hero/swatch photos here.
-- Bucket `instructions` (public) — instruction PDFs, listed on /support/instructions/ in filename
-  order with a first-page thumbnail (pdf.js). Manage them in the admin's Instructions tab, or the
-  Supabase dashboard. Prefix filenames with numbers to control order.
+- **Products** (`/products/…`) are drawn in the browser by `static/catalog.js`
+  from the live catalogue, so an edit shows at once. Each page also carries the
+  real name, prices and links in its HTML for search engines, and `404.html`
+  draws any product added since the last build.
+- **Editable wording** on the other pages carries `data-ck` attributes;
+  `static/site.js` overlays the latest values.
+- **The admin** is at `/admin/` (not linked from the site). Sign-in is handled
+  by `armera-api`; `static/armera-client.js` is the thin layer between the
+  admin's code and the API.
+- **Find a retailer** uses Leaflet with CARTO/OpenStreetMap map tiles and
+  postcodes.io for postcode lookups — the only outside services a visitor's
+  browser contacts.
+- **Old addresses** from the previous website are redirected by
+  `data/redirects.txt`.
 
-Admin sign-in is at `/admin/` — manage the password in the admin's Account tab.
+## What is where
 
-## Where the live data lives, and what can destroy it
+- `build.mjs` — the page generator. No dependencies.
+- `static/` — stylesheet and browser scripts.
+- `cloudflare/` — the two Workers and the database structure.
+- `data/` — the original catalogue transcription, the redirect list, and the
+  few things the admin cannot edit (inspiration page, guarantee-years table).
+- `backups/` — snapshots of the editable content. Nothing personal.
+- `docs/` — a second built copy for GitHub Pages. Rebuilt by `deploy.sh`,
+  public pages only. Safe to stop using.
 
-The live site reads **Supabase**, not this repository. Everything editable in
-the admin — products, prices, page wording, retailers, videos, the photo
-gallery, instruction links, homepage hero, chosen crops — is rows in the
-`site_content` table. Uploaded files live in the storage buckets. Customer
-guarantee registrations and visitor figures are their own tables.
+## What can and cannot damage live data
 
-**Safe — these never touch live data:**
+The live site reads Cloudflare, not this repository.
 
-- `node build.mjs` — regenerates `docs/` only. It *reads* Supabase to bake the
-  homepage hero into the HTML; it never writes.
-- Editing anything in `static/`, `build.mjs` or `data/`, and deploying.
-- `node .tools/backup.mjs` — snapshots `site_content` into `backups/`.
+**Safe — these never change live data:**
 
-**The one thing that would destroy admin work:** applying the SQL printed by
-`seed-content.mjs`. It replaces every `site_content` row from `data/*.json`,
-which is the original catalogue transcription and drifts behind the live data
-the moment anyone edits anything in the admin. It was for first setup. Do not
-apply it to rebuild the site or to correct one product.
+- `node build.mjs` and `./deploy.sh` — they only read.
+- Editing anything in `static/`, `build.mjs` or `data/`.
+- `node .tools/backup.mjs` — only reads.
 
-**Direct SQL or storage writes** (bulk corrections like the Oct 2026 swap to
-approved photography) do change live data. Take a backup first, make the change
-targeted rather than wholesale, and count rows before and after.
+**Changes live data:**
 
-### The build reads live data
+- Saving anything in the admin. That is its job.
+- `npx wrangler d1 execute armera --remote …` with a statement that writes.
+  Take a backup first, change only the rows you mean to, and count rows before
+  and after.
 
-`node build.mjs` fetches `site_content` from Supabase and generates the pages
-from that — the products, the page wording, the contact details, the spares
-line, the catalogue PDF and its edition name, the homepage hero. Nothing the
-admin can change is hard-coded. A rebuild therefore always publishes what is
-live, and a range added in the admin gets real pages rather than relying on the
-`404.html` fallback.
+**Never apply the SQL printed by `seed-content.mjs`.** It was for first setup,
+on the old database. It would replace the catalogue with the original
+transcription and wipe every edit made in the admin since.
 
-If Supabase cannot be reached the build **stops** rather than quietly falling
-back to the repository copy, which would publish a site missing anything
-changed in the admin since. `ALLOW_STALE=1 node build.mjs` overrides that
-deliberately. Malformed category rows also stop the build. Either way nothing is
-written back, so live data is never at risk.
-
-`data/categories/*.json` is the original catalogue transcription (509 SKUs,
-price-verified). It is history and the emergency fallback — not a mirror of
-what is live, and no longer the source for any published page.
-
-Still deliberately static, because the admin cannot edit them: the inspiration
-page (`data/inspiration.json`), the guarantee-years table and the strapline
-(`data/site.json`).
-
-## Custom domain
-
-To serve at www.armera.co.uk: add the domain in the repo's Pages settings, point DNS at GitHub
-Pages, then rebuild without `BASE_PATH` and push.
+If the content API cannot be reached, the build **stops** rather than publish
+from the stale copy in `data/`. `ALLOW_STALE=1 node build.mjs` overrides that
+on purpose. A malformed catalogue also stops the build.
