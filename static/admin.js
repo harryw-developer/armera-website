@@ -481,7 +481,7 @@
     var head = el('div', { class: 'adm-head' });
     var hd = el('div', {});
     if (here) {
-      var back = el('button', { class: 'adm-back', type: 'button', text: '‹  Quick access' });
+      var back = el('button', { class: 'adm-back', type: 'button', text: isRestricted() ? '‹  Your apps' : '‹  Quick access' });
       back.addEventListener('click', function () { openSection('home'); });
       hd.appendChild(back);
       hd.appendChild(el('h1', { style: 'margin-top:8px;font-size:34px', text: here[1] }));
@@ -508,7 +508,7 @@
       mp.addEventListener('click', function (e) { e.stopPropagation(); });
       menuWrap.appendChild(mp);
     }
-    bar.appendChild(menuWrap);
+    if (!isRestricted()) bar.appendChild(menuWrap);
     bar.appendChild(el('button', { class: 'abtn abtn--ghost abtn--sm', text: 'Sign out', onclick: function () { sb.auth.signOut().then(function () { renderLogin(); }); } }));
     head.appendChild(bar);
     wrap.appendChild(head);
@@ -3181,7 +3181,37 @@
   }
 
   /* ---------- quick access ---------- */
+  // Someone given only some parts of the admin gets a plain screen of those
+  // parts — no menu, no pinning. Full access keeps quick access as it was.
+  function isRestricted() {
+    var a = state.user && state.user.access;
+    return Array.isArray(a);
+  }
+  function renderAssigned(panel) {
+    var keys = SECTIONS.map(function (s) { return s[0]; })
+      .filter(function (k) { return k !== 'account' && section(k); });
+    panel.appendChild(el('p', { class: 'assigned-intro', text: 'Your admin has assigned you the following apps:' }));
+    var grid = el('div', { class: 'qa-grid qa-grid--assigned' });
+    keys.forEach(function (key) {
+      var sec = section(key);
+      var tile = el('button', { class: 'qa-tile', type: 'button' });
+      tile.appendChild(el('span', { class: 'qa-ico' }, [icon(sec[3], 30)]));
+      tile.appendChild(el('span', { class: 'qa-name', text: sec[1] }));
+      tile.appendChild(el('span', { class: 'qa-blurb', text: sec[2] }));
+      tile.addEventListener('click', function () { openSection(key); });
+      grid.appendChild(tile);
+    });
+    if (!keys.length) grid.appendChild(el('p', { class: 'small', text: 'Nothing has been assigned to you yet.' }));
+    panel.appendChild(grid);
+    var foot = el('p', { class: 'qa-foot' });
+    foot.appendChild(document.createTextNode('If something is missing please contact your administrator. '));
+    foot.appendChild(el('button', { class: 'linkbtn', type: 'button', text: 'Your name and password',
+      onclick: function () { openSection('account'); } }));
+    panel.appendChild(foot);
+  }
+
   function renderHome(panel) {
+    if (isRestricted()) { renderAssigned(panel); return; }
     var list = pins();
     var grid = el('div', { class: 'qa-grid' });
 

@@ -1124,3 +1124,9 @@ table.guar-products td { padding: 8px 10px 8px 0; border-bottom: 1px solid var(-
 .pair-range { font-size: 10.5px; letter-spacing: .18em; text-transform: uppercase; color: var(--muted); }
 .pair-name { font-size: 14.5px; color: var(--ink); line-height: 1.35; }
 .pair:hover .pair-name { text-decoration: underline; text-decoration-color: var(--line-dark); text-underline-offset: 3px; }
+
+/* admin: the home screen for someone given only some parts */
+.assigned-intro { font-size: 17px; color: var(--ink-soft); margin-bottom: 26px; text-align: center; }
+.qa-grid--assigned .qa-tile { text-align: left; font: inherit; cursor: pointer; }
+.linkbtn { background: none; border: 0; padding: 0; font: inherit; color: var(--ink-soft); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+.linkbtn:hover { color: var(--ink); }
