@@ -148,7 +148,7 @@
       getUser: function () {
         return call('/auth/me').then(function (r) {
           if (r.error) return { data: { user: null } };
-          return { data: { user: { email: r.data.email,
+          return { data: { user: { email: r.data.email, access: r.data.access || 'all',
             user_metadata: Object.assign({ display_name: r.data.display_name }, r.data.prefs || {}) } } };
         });
       },

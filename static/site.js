@@ -34,29 +34,52 @@
     });
   }
 
-  // editable text blocks + catalogue links (stored in Supabase site_content 'pages')
   var cfg = window.ARMERA;
-  var marked = document.querySelectorAll('[data-ck], [data-ck-sections], [data-catalogue], [data-catalogue-title], [data-catalogue-cover]');
-  if (!cfg || !marked.length) return;
 
   /* ---------------- chosen crops ----------------
-     A photograph shown in a frame of a different shape has to lose something.
-     The admin picks which part stays; it is stored as a point in the picture
-     (per cent across, per cent down) and applied as object-position. Without a
-     choice the browser keeps the middle, as it always did. */
+     Every picture frame on the site has a fixed shape. The admin chooses, for
+     each frame a picture appears in, which part of it is shown and how far in
+     it is zoomed. That is stored as a point (per cent across, per cent down)
+     and a zoom (1 = the whole picture), and applied here:
+       - room photographs fill their frame (object-fit: cover) and the point
+         says which part stays in view;
+       - product photographs are shown whole (object-fit: contain) and the
+         zoom brings the product up to fill the frame, centred on the point.
+     Without a choice the browser keeps the middle, as it always did. */
   var FOCUS = {};
   window.armeraFocus = function (root) {
-    var imgs = (root || document).querySelectorAll('img[data-img]');
+    var host = root || document;
+    var imgs = host.matches && host.matches('img[data-img]') ? [host] : host.querySelectorAll('img[data-img]');
     [].forEach.call(imgs, function (im) {
       var saved = FOCUS[im.getAttribute('data-img')];
-      if (!saved) { im.style.objectPosition = ''; return; }
-      // Each frame shape is cropped separately; data-frame says which this is.
-      // A single point saved before that change still applies to every frame.
       var frame = im.getAttribute('data-frame');
-      var p = (frame && saved[frame]) || (typeof saved.x === 'number' ? saved : null);
-      im.style.objectPosition = p ? (p.x + '% ' + p.y + '%') : '';
+      // A single point saved before frames were cropped separately still applies to every frame.
+      var p = saved && ((frame && saved[frame]) || (typeof saved.x === 'number' ? saved : null));
+      if (!p) {
+        im.style.objectPosition = ''; im.style.transformOrigin = ''; im.style.removeProperty('--z');
+        return;
+      }
+      var x = Math.max(0, Math.min(100, +p.x || 0)), y = Math.max(0, Math.min(100, +p.y || 0));
+      var z = Math.max(1, Math.min(6, +p.z || 1));
+      im.style.objectPosition = x + '% ' + y + '%';
+      im.style.transformOrigin = x + '% ' + y + '%';
+      if (z > 1) im.style.setProperty('--z', z); else im.style.removeProperty('--z');
     });
   };
+  if (cfg) {
+    fetch(cfg.dataUrl + '/rest/v1/site_content?key=in.(pages,crops)&select=key,data')
+      .then(function (r) { return r.json(); }).then(function (rows) {
+        var pages = ((rows || []).filter(function (r) { return r.key === 'pages'; })[0] || {}).data || {};
+        var crops = ((rows || []).filter(function (r) { return r.key === 'crops'; })[0] || {}).data || {};
+        // crops saved before they had their own record live in pages.focus
+        FOCUS = Object.assign({}, pages.focus || {}, crops);
+        window.armeraFocus();
+      }).catch(function () { /* pictures stay centred */ });
+  }
+
+  // editable text blocks + catalogue links (stored in site_content 'pages')
+  var marked = document.querySelectorAll('[data-ck], [data-ck-sections], [data-catalogue], [data-catalogue-title], [data-catalogue-cover]');
+  if (!cfg || !marked.length) return;
 
   /* ---------------- homepage hero ----------------
      The build bakes the chosen media into the page, so the browser fetches
@@ -197,8 +220,6 @@
   }).then(function (r) { return r.json(); }).then(function (rows) {
     var pages = rows && rows[0] && rows[0].data;
     if (!pages) return;
-    FOCUS = pages.focus || {};
-    window.armeraFocus();
 
     // News banner across the top of the homepage (homepage only).
     var banner = document.getElementById('news-banner');

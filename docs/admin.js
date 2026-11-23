@@ -63,16 +63,18 @@
       .update({ data: state.rows[key], updated_at: new Date().toISOString() })
       .eq('key', key)
       .then(function (res) {
-        if (res.error) { msg(target, 'Could not save: ' + res.error.message, 'err'); return; }
+        if (res.error) { msg(target, 'Could not save: ' + res.error.message, 'err'); return false; }
         msg(target, okText || 'Saved. Changes are live on the site.', 'ok');
+        return true;
       });
   }
   function saveRowUpsert(key, target, okText) {
     return sb.from('site_content')
       .upsert({ key: key, data: state.rows[key], updated_at: new Date().toISOString() })
       .then(function (res) {
-        if (res.error) { msg(target, 'Could not save: ' + res.error.message, 'err'); return; }
+        if (res.error) { msg(target, 'Could not save: ' + res.error.message, 'err'); return false; }
         msg(target, okText || 'Saved. Changes are live on the site.', 'ok');
+        return true;
       });
   }
   function thisKey(range, p) {
@@ -312,7 +314,9 @@
         (bucket === cfg.instructionsBucket ? 'instructions' : bucket) + '/' +
         path.split('/').map(encodeURIComponent).join('/'));
         xhr.setRequestHeader('Authorization', 'Bearer ' + token);
-        xhr.setRequestHeader('cache-control', 'max-age=3600');
+        // Only headers the API lists as allowed may be sent from another
+        // site; anything else makes the browser refuse the upload outright,
+        // which the page can only report as a network error.
         if (contentType || file.type) xhr.setRequestHeader('Content-Type', contentType || file.type);
         xhr.upload.onprogress = function (e) {
           if (e.lengthComputable) t.progress(e.loaded / e.total * 100);
@@ -321,7 +325,7 @@
           if (xhr.status >= 200 && xhr.status < 300) { t.progress(100); resolve(t); }
           else { t.finish('Upload failed (' + xhr.status + ')', false); reject(new Error('Upload failed: ' + xhr.status)); }
         };
-        xhr.onerror = function () { t.finish('Upload failed — check your connection', false); reject(new Error('Network error')); };
+        xhr.onerror = function () { t.finish('Upload failed — the file did not reach the server. Check your connection and try again.', false); reject(new Error('the file did not reach the server')); };
         xhr.send(file);
       });
     });
@@ -470,6 +474,7 @@
   }
 
   function renderShell() {
+    if (state.tab !== 'home' && !section(state.tab)) state.tab = 'home';
     root.innerHTML = '';
     var wrap = el('div', { class: 'adm' });
     var here = section(state.tab);
@@ -1146,6 +1151,10 @@
     var singleImage = p.image || null;
 
     var drawImages = function () {}; // redefined below; re-run when the option rows change
+    var swatchFor = function (c) {
+      if (!c) return null;
+      return (range.swatches || []).filter(function (s) { return String(s.code || '') === String(c); })[0] || null;
+    };
     var drawV = function () {
       vWrap.innerHTML = '';
       variants.forEach(function (v, i) {
@@ -1158,7 +1167,27 @@
         sku.addEventListener('change', function () { drawImages(); });
         fin.addEventListener('input', function () { v.finish = fin.value; });
         fin.addEventListener('change', function () { drawImages(); });
-        code.addEventListener('input', function () { v.code = code.value.trim(); });
+        // A colour code belongs to one of this range's colours, so typing it
+        // fills in the colour's name (and shows its swatch in the box).
+        var showSwatch = function () {
+          var sw = swatchFor(v.code);
+          code.style.backgroundImage = sw && sw.img ? 'url("' + cfg.assets + '/swatches/' + encodeURIComponent(sw.img) + '")' : '';
+          code.classList.toggle('has-swatch', !!(sw && sw.img));
+          code.title = sw ? sw.name : (v.code ? 'No colour with code ' + v.code + ' in this range yet — add it under Range details → Colours' : '');
+        };
+        var fillFromCode = function () {
+          var sw = swatchFor(v.code);
+          if (sw && sw.name) { v.finish = sw.name; fin.value = sw.name; }
+          showSwatch();
+        };
+        code.addEventListener('input', function () { v.code = code.value.trim(); fillFromCode(); });
+        // an order code ending in a colour code (AT.620.600.17) fills both in
+        sku.addEventListener('change', function () {
+          if (v.code) return;
+          var tail = (v.sku || '').split('.').pop();
+          if (tail && swatchFor(tail)) { v.code = tail; code.value = tail; fillFromCode(); }
+        });
+        showSwatch();
         price.addEventListener('input', function () { v.price = +price.value; });
         r.appendChild(sku); r.appendChild(fin); r.appendChild(code); r.appendChild(price);
         r.appendChild(el('button', { class: 'abtn abtn--danger abtn--sm', type: 'button', text: '×', onclick: function () { variants.splice(i, 1); drawV(); drawImages(); } }));
@@ -1195,6 +1224,7 @@
           }).catch(function (e) { msg(box, 'Upload failed: ' + e.message, 'err'); });
         });
         row.appendChild(f);
+        if (v.image || singleImage) row.appendChild(cropButton(v.image || singleImage, 'products', function () { drawImages(); }));
         imgWrap.appendChild(row);
       });
     };
@@ -1204,7 +1234,7 @@
       class: 'abtn abtn--ghost abtn--sm', type: 'button', text: 'Add option',
       onclick: function () { variants.push({ sku: '', finish: '', price: 0 }); drawV(); drawImages(); }
     }));
-    box.appendChild(el('p', { class: 'hint', text: 'Each option gets its own photo slot below, so every variation can show its own preview. The colour code links a furniture option to its colour swatch under Range details → Colours.' }));
+    box.appendChild(el('p', { class: 'hint', text: 'Type a colour code and the colour name fills itself in from this range’s colours (Range details → Colours) — an order code ending in a colour code fills both. Each option gets its own photo slot below.' }));
 
     /* ---- the tile photo ---- */
     box.appendChild(el('hr', { class: 'rule' }));
@@ -1251,6 +1281,11 @@
       });
       side.appendChild(up);
 
+      if (shown) {
+        var cb = cropButton(shown, 'products', function () { drawTile(); });
+        cb.style.marginTop = '10px'; cb.style.marginRight = '8px';
+        side.appendChild(cb);
+      }
       if (p.image) {
         side.appendChild(el('button', {
           class: 'abtn abtn--ghost abtn--sm', type: 'button', text: 'Clear', style: 'margin-top:10px',
@@ -1395,14 +1430,16 @@
 
     /* ---- looks good with ---- */
     box.appendChild(el('hr', { class: 'rule' }));
-    box.appendChild(lbl('Looks good with…', 'Tick other products to show underneath this one as suggested pairings. Leave all unticked to hide the section.'));
+    box.appendChild(lbl('Complete the look', 'The products suggested under this one on its page (this replaces the old “Why not add” and “Looks good with” sections). Each shows as its name and picture, linking to that product’s page. Choose products from other categories — a tap and a waste for a basin, a flush plate for a WC.'));
     var goesWith = (p.goesWith || []).slice();
     var pairSlot = el('div', {});
     var pairSummary = el('p', { class: 'small' });
     var drawPairSummary = function () {
+      var names = {};
+      allProducts().forEach(function (x) { names[x.key] = x.range + ' — ' + x.name; });
       pairSummary.textContent = goesWith.length
-        ? goesWith.length + ' product' + (goesWith.length === 1 ? '' : 's') + ' selected'
-        : 'Nothing selected yet.';
+        ? goesWith.map(function (k) { return names[k] || k; }).join('  ·  ')
+        : 'Nothing chosen yet — the section is hidden on this product’s page.';
     };
     drawPairSummary();
     box.appendChild(pairSummary);
@@ -2047,6 +2084,8 @@
         };
         setChosen();
         body.appendChild(chosen);
+        // On a product page a room photograph is shown whole; this lets it be zoomed in instead.
+        if ((g.products || []).length) body.appendChild(cropButton(g.file, 'gallery', function () { draw(); }));
 
         var slot = el('div', {});
         body.appendChild(el('button', {
@@ -2368,7 +2407,7 @@
         card.appendChild(head);
         var ul = el('ul', { style: 'margin:10px 0 10px 18px' });
         (r.swatches || []).forEach(function (s) {
-          ul.appendChild(el('li', { text: (s.range || '') + ' — ' + (s.name || '') + (s.code ? ' (' + s.code + ')' : '') }));
+          ul.appendChild(el('li', { text: (s.name || '') + (s.code ? ' (' + s.code + ')' : '') + (s.range ? ' — ' + s.range : '') }));
         });
         card.appendChild(ul);
         var addr = [r.name, r.company, r.address1, r.address2, r.town, r.postcode].filter(Boolean);
@@ -2840,8 +2879,16 @@
   ];
   var DEFAULT_PINS = ['catalogue', 'pages', 'guarantees', 'instructions'];
 
+  // Only the sections this person may use exist for them: they are left out
+  // of the menu, the tiles and the pins. (The API enforces the same rule; this
+  // just keeps the admin from offering what would be refused.)
+  function allowed(key) {
+    if (key === 'account') return true;
+    var a = state.user && state.user.access;
+    return !a || a === 'all' || (Array.isArray(a) && a.indexOf(key) !== -1);
+  }
   function section(key) {
-    for (var i = 0; i < SECTIONS.length; i++) if (SECTIONS[i][0] === key) return SECTIONS[i];
+    for (var i = 0; i < SECTIONS.length; i++) if (SECTIONS[i][0] === key) return allowed(key) ? SECTIONS[i] : null;
     return null;
   }
   function icon(paths, size) {
@@ -2862,7 +2909,12 @@
   function pins() {
     var m = (state.user && state.user.user_metadata) || {};
     var list = m.admin_pins;
-    if (!Array.isArray(list)) return DEFAULT_PINS.slice();
+    if (!Array.isArray(list)) {
+      // someone with a narrow role starts with exactly the sections they have
+      var a = state.user && state.user.access;
+      if (Array.isArray(a)) return a.filter(section);
+      return DEFAULT_PINS.slice();
+    }
     return list.filter(section);
   }
   function setPins(list) {
@@ -2899,96 +2951,168 @@
 
 
   /* ---------- choosing the crop ----------
-     A wide frame cannot show all of a tall photograph. Rather than always
-     keeping the middle, the admin drags the picture to the part that matters
-     and we store that point. The frames below are the real shapes used on
-     the site, so what you line up is what visitors see. */
-  var FRAMES = [
-    ['banner', 'Banner across a range page', 1.38],
-    ['hero', 'Top of the homepage', 1.9],
-    ['tile', 'Square-ish tile', 0.87]
-  ];
+     Every frame a picture appears in has a fixed shape. For each one, the
+     admin drags the picture to the part that matters and, where the frame
+     allows, zooms in. The frames offered are only the ones this picture is
+     actually used in, each labelled with where that is, so one photograph
+     used in several places can be framed differently in each — or matched.
 
+     Product photographs are shown whole and zoomed to fill the frame (so a
+     product is never cut off unless you choose to). Room photographs fill
+     their frame and the drag picks which part stays in view. */
+  var FRAMES = [
+    // key, name, shape (width ÷ height), how the picture sits, can zoom
+    ['stage', 'Product page photo', 1.5, 'contain', true],
+    ['card', 'Product tiles and “Complete the look”', 1.28, 'contain', true],
+    ['tile', 'Category and range tiles', 1.28, 'cover', true],
+    ['banner', 'Banner across a range page', 1.38, 'cover', false],
+    ['hero', 'Top of the homepage', 1.9, 'cover', false]
+  ];
+  var frameInfo = function (k) { return FRAMES.filter(function (f) { return f[0] === k; })[0]; };
+
+  // Every crop saved so far: the "crops" record, plus older ones kept in pages.focus.
   function focusMap() {
     var pages = state.rows.pages || {};
-    pages.focus = pages.focus || {};
-    return pages.focus;
+    return Object.assign({}, pages.focus || {}, state.rows.crops || {});
   }
 
-  // file: the image filename as the site refers to it; folder: where it lives.
-  function cropPicker(file, folder, onSaved) {
-    var map = focusMap();
-    // Each frame keeps its own point. An older single point, saved when they
-    // all moved together, is used as the starting position for every frame.
-    var saved = map[file] || {};
-    var legacy = (typeof saved.x === 'number') ? { x: saved.x, y: saved.y } : { x: 50, y: 50 };
-    var pts = {};
-    FRAMES.forEach(function (f) {
-      var own = saved[f[0]];
-      pts[f[0]] = own ? { x: own.x, y: own.y } : { x: legacy.x, y: legacy.y };
+  // Where a picture is used, frame by frame: { stage: ['Atoll — 600mm unit', …], … }
+  function usagesOf(path) {
+    var out = {};
+    var add = function (frame, where) { (out[frame] = out[frame] || []).indexOf(where) === -1 && out[frame].push(where); };
+    var folder = path.indexOf('/') === -1 ? 'lifestyle' : path.split('/')[0];
+    var file = path.indexOf('/') === -1 ? path : path.split('/').slice(1).join('/');
+    state.keys.forEach(function (k) {
+      var cat = state.rows[k];
+      if (folder === 'lifestyle' && cat.hero && cat.hero.img === file) add('tile', cat.name + ' (category tile)');
+      (cat.ranges || []).forEach(function (rg) {
+        if (folder === 'lifestyle' && rg.hero && rg.hero.img === file) {
+          add('banner', rg.title + ' range page');
+          add('tile', rg.title + ' (tile on the ' + cat.name + ' page)');
+        }
+        if (folder !== 'products') return;
+        (rg.products || []).forEach(function (p) {
+          var files = [p.image].concat((p.variants || []).map(function (v) { return v.image; }),
+            Object.keys(p.imagesByCode || {}).map(function (c) { return p.imagesByCode[c]; }), p.gallery || []);
+          if (files.indexOf(file) !== -1) {
+            add('stage', rg.title + ' — ' + p.name);
+            add('card', rg.title + ' — ' + p.name);
+          }
+        });
+      });
     });
-    // lifestyle photography is stored as .jpg even where the catalogue data still says .png
-    var path = file.indexOf('/') !== -1 ? file : (folder || 'lifestyle') + '/' + file;
-    if (path.indexOf('lifestyle/') === 0) path = path.replace(/\.png$/i, '.jpg');
-    var url = cfg.assets + '/' + path.split('/').map(encodeURIComponent).join('/');
+    var pages = state.rows.pages || {};
+    var hero = (pages.home || {}).hero || {};
+    if (folder === 'lifestyle' && ((hero.files || []).indexOf(file) !== -1 || hero.file === file)) add('hero', 'Homepage');
+    if (folder === 'gallery') {
+      (Array.isArray(state.rows.gallery) ? state.rows.gallery : []).forEach(function (g) {
+        if (g && g.file === file) (g.products || []).forEach(function (key) { add('stage', key.split('/').slice(1).join(' / ')); });
+      });
+    }
+    return out;
+  }
+
+  // path: "products/x.jpg", "gallery/x.jpg", or a bare lifestyle file name as the site refers to it.
+  function cropPicker(path, folder, onSaved) {
+    if (path.indexOf('/') === -1 && folder && folder !== 'lifestyle') path = folder + '/' + path;
+    var map = focusMap();
+    var saved = map[path] || {};
+    var legacy = (typeof saved.x === 'number') ? { x: saved.x, y: saved.y, z: 1 } : null;
+    var used = usagesOf(path);
+    var isProduct = path.indexOf('products/') === 0;
+    var keys = FRAMES.map(function (f) { return f[0]; }).filter(function (k) { return used[k]; });
+    if (!keys.length) keys = isProduct ? ['stage', 'card'] : path.indexOf('gallery/') === 0 ? ['stage'] : ['banner', 'tile', 'hero'];
+    var pts = {};
+    keys.forEach(function (k) {
+      var own = saved[k];
+      pts[k] = own ? { x: own.x, y: own.y, z: own.z || 1 } : legacy ? Object.assign({}, legacy) : { x: 50, y: 50, z: 1 };
+    });
+
+    var file = path.indexOf('/') === -1 ? 'lifestyle/' + path : path;
+    if (file.indexOf('lifestyle/') === 0) file = file.replace(/\.png$/i, '.jpg');
+    var url = cfg.assets + '/' + file.split('/').map(encodeURIComponent).join('/');
 
     var back = el('div', { class: 'crop-back' });
     var box = el('div', { class: 'crop-box' });
     box.addEventListener('click', function (e) { e.stopPropagation(); });
-    box.appendChild(el('h3', { text: 'Choose what stays in frame' }));
-    box.appendChild(el('p', { class: 'hint', text:
-      'Drag each photograph on its own. The frames are the real shapes the site uses, so whatever you line up ' +
-      'in each is what people see there. Nothing is cut from the file itself — this only chooses which part is shown.' }));
+    box.appendChild(el('h3', { text: 'Choose how this picture is framed' }));
+    box.appendChild(el('p', { class: 'hint', text: isProduct
+      ? 'Each frame below is a real shape from the site. Drag to move the product, use the slider (or scroll) to zoom so it fills the frame. Keep the whole product in view. Nothing is cut from the file itself.'
+      : 'Each frame below is a real shape from the site, and lists where it is used. Drag the picture to choose which part shows. Nothing is cut from the file itself.' }));
 
     var stageWrap = el('div', { class: 'crop-stages' });
-    var stages = FRAMES.map(function (f) {
+    var stages = keys.map(function (k) {
+      var f = frameInfo(k);
       var hold = el('div', { class: 'crop-stage' });
       hold.appendChild(el('span', { class: 'crop-stage-name', text: f[1] }));
-      var frame = el('div', { class: 'crop-frame', style: 'aspect-ratio:' + f[2] });
+      var frame = el('div', { class: 'crop-frame' + (f[3] === 'contain' ? ' contain' : ''), style: 'aspect-ratio:' + f[2] });
       var im = el('img', { src: url, alt: '', draggable: 'false' });
       frame.appendChild(im);
       hold.appendChild(frame);
+      var where = used[k] || [];
+      if (where.length) {
+        hold.appendChild(el('span', { class: 'crop-where', text: 'Used on: ' + where.slice(0, 3).join('; ') +
+          (where.length > 3 ? ' and ' + (where.length - 3) + ' more' : '') }));
+      }
+      var zoom = null;
+      if (f[4]) {
+        zoom = el('input', { type: 'range', min: '1', max: '4', step: '0.01', 'aria-label': 'Zoom for ' + f[1] });
+        zoom.addEventListener('input', function () { pts[k].z = +zoom.value; paint(); });
+        var zl = el('label', { class: 'crop-zoom' }, [el('span', { text: 'Zoom' }), zoom]);
+        hold.appendChild(zl);
+      }
+      var tools = el('div', { class: 'crop-tools' });
+      tools.appendChild(el('button', {
+        class: 'abtn abtn--ghost abtn--sm', type: 'button', text: f[3] === 'contain' ? 'Whole picture' : 'Centre',
+        onclick: function () { pts[k] = { x: 50, y: 50, z: 1 }; paint(); }
+      }));
+      if (keys.length > 1) {
+        var same = el('select', { class: 'crop-same', 'aria-label': 'Match another frame' });
+        same.appendChild(el('option', { value: '', text: 'Same as…' }));
+        keys.filter(function (o) { return o !== k; }).forEach(function (o) {
+          same.appendChild(el('option', { value: o, text: frameInfo(o)[1] }));
+        });
+        same.addEventListener('change', function () {
+          if (!same.value) return;
+          var src = pts[same.value];
+          pts[k] = { x: src.x, y: src.y, z: f[4] ? src.z : 1 };
+          same.value = '';
+          paint();
+        });
+        tools.appendChild(same);
+      }
+      hold.appendChild(tools);
       var note = el('span', { class: 'crop-stage-note' });
       hold.appendChild(note);
-      hold.appendChild(el('button', {
-        class: 'abtn abtn--ghost abtn--sm', type: 'button', text: 'Centre this one',
-        style: 'margin-top:8px',
-        onclick: function () { pts[f[0]] = { x: 50, y: 50 }; paint(); }
-      }));
       stageWrap.appendChild(hold);
-      return { key: f[0], frame: frame, img: im, note: note };
+      return { key: k, frame: frame, img: im, note: note, zoom: zoom, contain: f[3] === 'contain', canZoom: f[4] };
     });
     box.appendChild(stageWrap);
 
-    var readout = el('p', { class: 'crop-readout' });
     var paint = function () {
       stages.forEach(function (st) {
         var pt = pts[st.key];
         st.img.style.objectPosition = pt.x + '% ' + pt.y + '%';
-        st.note.textContent = Math.round(pt.x) + '% across, ' + Math.round(pt.y) + '% down' +
-          (Math.round(pt.x) === 50 && Math.round(pt.y) === 50 ? ' (middle)' : '');
+        st.img.style.transformOrigin = pt.x + '% ' + pt.y + '%';
+        st.img.style.transform = 'scale(' + (st.canZoom ? pt.z : 1) + ')';
+        if (st.zoom) st.zoom.value = pt.z;
+        st.note.textContent = (st.canZoom && pt.z > 1.005 ? 'Zoom ' + pt.z.toFixed(2) + '×, ' : '') +
+          Math.round(pt.x) + '% across, ' + Math.round(pt.y) + '% down';
       });
-      readout.textContent = 'Each frame is cropped on its own — drag them separately.';
     };
 
-    // drag anywhere on a frame to move the picture behind it
+    // drag anywhere on a frame to move the picture behind it; scroll to zoom
     stages.forEach(function (s) {
       var dragging = false, last = null;
-      var start = function (e) {
-        dragging = true; last = point(e);
-        s.frame.classList.add('dragging');
-        e.preventDefault();
-      };
-      var point = function (e) {
-        var t = e.touches ? e.touches[0] : e;
-        return { x: t.clientX, y: t.clientY };
-      };
+      var point = function (e) { var t = e.touches ? e.touches[0] : e; return { x: t.clientX, y: t.clientY }; };
+      var start = function (e) { dragging = true; last = point(e); s.frame.classList.add('dragging'); e.preventDefault(); };
       var move = function (e) {
         if (!dragging) return;
         var p = point(e), r = s.frame.getBoundingClientRect(), pt = pts[s.key];
-        // dragging the full width or height of the frame walks the picture right across it
-        pt.x = Math.max(0, Math.min(100, pt.x - (p.x - last.x) / r.width * 100));
-        pt.y = Math.max(0, Math.min(100, pt.y - (p.y - last.y) / r.height * 100));
+        // A zoomed product moves less per drag the less it is zoomed, so slow the point to match.
+        var k = s.contain ? 1 / Math.max(0.25, (s.canZoom ? pt.z : 1) - 1) : 1;
+        pt.x = Math.max(0, Math.min(100, pt.x - (p.x - last.x) / r.width * 100 * k));
+        pt.y = Math.max(0, Math.min(100, pt.y - (p.y - last.y) / r.height * 100 * k));
         last = p;
         paint();
       };
@@ -2999,31 +3123,35 @@
       document.addEventListener('touchmove', move, { passive: false });
       document.addEventListener('mouseup', end);
       document.addEventListener('touchend', end);
+      if (s.canZoom) {
+        s.frame.addEventListener('wheel', function (e) {
+          e.preventDefault();
+          var pt = pts[s.key];
+          pt.z = Math.max(1, Math.min(4, pt.z * (e.deltaY < 0 ? 1.05 : 1 / 1.05)));
+          paint();
+        }, { passive: false });
+      }
     });
-
-    box.appendChild(readout);
 
     var row = el('div', { class: 'adm-row', style: 'margin-top:18px' });
     row.appendChild(el('button', {
-      class: 'abtn abtn--sm', type: 'button', text: 'Save this crop',
+      class: 'abtn abtn--sm', type: 'button', text: 'Save framing',
       onclick: function () {
-        var pages = state.rows.pages || {};
-        pages.focus = pages.focus || {};
-        var entry = {};
-        FRAMES.forEach(function (f) {
-          entry[f[0]] = { x: Math.round(pts[f[0]].x), y: Math.round(pts[f[0]].y) };
+        state.rows.crops = state.rows.crops || {};
+        var entry = Object.assign({}, state.rows.crops[path] || {});
+        delete entry.x; delete entry.y;
+        keys.forEach(function (k) {
+          var pt = pts[k], o = { x: Math.round(pt.x), y: Math.round(pt.y) };
+          if (frameInfo(k)[4] && pt.z > 1.005) o.z = Math.round(pt.z * 100) / 100;
+          entry[k] = o;
         });
-        pages.focus[file] = entry;
-        state.rows.pages = pages;
-        saveRow('pages', box, 'Crop saved for ' + file.split('/').pop() + '.').then(function () {
+        state.rows.crops[path] = entry;
+        saveRowUpsert('crops', box, 'Framing saved for ' + path.split('/').pop() + '.').then(function (ok) {
+          if (!ok) return;            // the message says why; keep the window open
           back.remove();
           if (onSaved) onSaved();
         });
       }
-    }));
-    row.appendChild(el('button', {
-      class: 'abtn abtn--ghost abtn--sm', type: 'button', text: 'Centre them all',
-      onclick: function () { FRAMES.forEach(function (f) { pts[f[0]] = { x: 50, y: 50 }; }); paint(); }
     }));
     row.appendChild(el('button', {
       class: 'abtn abtn--ghost abtn--sm', type: 'button', text: 'Cancel',
@@ -3042,13 +3170,13 @@
 
   // A button that opens the picker for one image.
   function cropButton(file, folder, onSaved) {
-    var map = focusMap();
-    var set = !!map[file];
+    var path = (file.indexOf('/') === -1 && folder && folder !== 'lifestyle') ? folder + '/' + file : file;
+    var set = !!focusMap()[path];
     return el('button', {
       class: 'abtn abtn--ghost abtn--sm', type: 'button',
-      text: set ? 'Crop chosen ✓' : 'Choose crop',
-      title: 'Pick which part of this photograph is shown where the frame is a different shape',
-      onclick: function () { cropPicker(file, folder, onSaved); }
+      text: set ? 'Framing chosen ✓' : 'Choose framing',
+      title: 'Choose how this picture sits in each frame it is shown in',
+      onclick: function () { cropPicker(path, folder, onSaved); }
     });
   }
 
@@ -3100,7 +3228,7 @@
     m.appendChild(homeRow);
     m.appendChild(el('div', { class: 'mdiv' }));
 
-    SECTIONS.forEach(function (sec) {
+    SECTIONS.filter(function (sec) { return allowed(sec[0]); }).forEach(function (sec) {
       var pinned = list.indexOf(sec[0]) !== -1;
       var row = el('div', { class: 'mrow' + (state.tab === sec[0] ? ' on' : '') });
       var go = el('button', { class: 'mrow-go', type: 'button' });
@@ -3116,6 +3244,49 @@
 
 
   /* ---------- team ---------- */
+  // The sections a person can be given, in menu order. Account is always theirs.
+  function accessSections() {
+    return SECTIONS.filter(function (s) { return s[0] !== 'account'; });
+  }
+  function accessLabel(a) {
+    if (!a || a === 'all') return 'Everything';
+    var names = accessSections().filter(function (s) { return a.indexOf(s[0]) !== -1; }).map(function (s) { return s[1]; });
+    return names.length ? names.join(', ') : 'Nothing';
+  }
+  // Ticks for each section, plus "Everything". Returns the node and a reader.
+  function accessPicker(current) {
+    var node = el('div', { class: 'access-pick' });
+    var everything = el('input', { type: 'checkbox' });
+    everything.checked = !current || current === 'all';
+    var allRow = el('label', { class: 'access-all' }, [everything, el('span', { text: 'Everything, including the Team screen' })]);
+    node.appendChild(allRow);
+    var grid = el('div', { class: 'access-grid' });
+    var boxes = accessSections().map(function (s) {
+      var cb = el('input', { type: 'checkbox', value: s[0] });
+      cb.checked = everything.checked || (Array.isArray(current) && current.indexOf(s[0]) !== -1);
+      var l = el('label', {}, [cb, el('span', { text: s[1] })]);
+      if (s[0] === 'team') l.title = 'Team lets them add people and change what everyone can do.';
+      grid.appendChild(l);
+      return cb;
+    });
+    var sync = function () {
+      boxes.forEach(function (b) { b.disabled = everything.checked; if (everything.checked) b.checked = true; });
+    };
+    everything.addEventListener('change', function () {
+      if (!everything.checked) boxes.forEach(function (b) { b.checked = false; });
+      sync();
+    });
+    sync();
+    node.appendChild(grid);
+    return {
+      node: node,
+      value: function () {
+        if (everything.checked) return 'all';
+        return boxes.filter(function (b) { return b.checked; }).map(function (b) { return b.value; });
+      }
+    };
+  }
+
   function renderTeam(panel) {
     panel.appendChild(el('p', { class: 'tab-intro', text:
       'Everyone who can sign in to this admin. Adding someone creates a one-time link for them to choose their own password — you never see it, and the link stops working once used.' }));
@@ -3152,7 +3323,7 @@
           if (!Array.isArray(rows)) { list.appendChild(el('p', { class: 'hint', text: 'Could not load the list.' })); return; }
           var table = el('table', { class: 'team-table' });
           var head = el('tr', {});
-          ['Name', 'Email', 'Can sign in', 'Last seen', ''].forEach(function (h) {
+          ['Name', 'Email', 'Can sign in', 'Access', 'Last seen', ''].forEach(function (h) {
             head.appendChild(el('th', { text: h }));
           });
           table.appendChild(head);
@@ -3164,9 +3335,39 @@
             tr.appendChild(el('td', { text: u.disabled ? 'switched off'
               : u.has_password ? 'yes'
               : u.has_link ? 'link sent, not used yet' : 'no password yet' }));
+            tr.appendChild(el('td', { class: 'team-access', text: accessLabel(u.access) }));
             tr.appendChild(el('td', { text: u.last_seen ? niceDate(new Date(u.last_seen)) : '—' }));
 
             var tools = el('td', { class: 'team-tools' });
+            if (!u.you) {
+              tools.appendChild(el('button', {
+                class: 'abtn abtn--ghost abtn--sm', type: 'button', text: 'Access',
+                title: 'Choose which parts of the admin ' + (u.display_name || u.email) + ' can use',
+                onclick: function () {
+                  var open = tr.nextSibling && tr.nextSibling.classList && tr.nextSibling.classList.contains('team-access-row');
+                  Array.prototype.forEach.call(table.querySelectorAll('.team-access-row'), function (x) { x.remove(); });
+                  if (open) return;
+                  var row = el('tr', { class: 'team-access-row' });
+                  var td = el('td', { colspan: '6' });
+                  var pick = accessPicker(u.access);
+                  td.appendChild(pick.node);
+                  td.appendChild(el('button', {
+                    class: 'abtn abtn--sm', type: 'button', text: 'Save access', style: 'margin-top:14px',
+                    onclick: function () {
+                      var chosen = pick.value();
+                      if (Array.isArray(chosen) && !chosen.length) { toast('Choose at least one part of the admin, or switch them off instead', 'err'); return; }
+                      post('/admin/users/' + encodeURIComponent(u.email), { access: chosen }).then(function (res) {
+                        if (res.error) { toast(res.error, 'err'); return; }
+                        toast('Access saved — ' + u.email + ' will be asked to sign in again', 'ok');
+                        paint();
+                      });
+                    }
+                  }));
+                  row.appendChild(td);
+                  tr.parentNode.insertBefore(row, tr.nextSibling);
+                }
+              }));
+            }
             tools.appendChild(el('button', {
               class: 'abtn abtn--ghost abtn--sm', type: 'button', text: 'New link',
               title: 'Issue a fresh one-time link, for someone who has forgotten their password',
@@ -3228,12 +3429,17 @@
     var mailIn = el('input', { type: 'email', placeholder: 'their.name@armera.co.uk' });
     panel.appendChild(lbl('Name')); panel.appendChild(nameIn);
     panel.appendChild(lbl('Email')); panel.appendChild(mailIn);
+    panel.appendChild(lbl('What they can use', 'Tick only the parts of the admin this person needs — for example just Guarantees for someone who handles registrations. Everything else is hidden from them, and the server refuses it too.'));
+    var newPick = accessPicker('all');
+    panel.appendChild(newPick.node);
     panel.appendChild(el('button', {
       class: 'abtn abtn--sm', type: 'button', text: 'Add and create their link', style: 'margin-top:14px',
       onclick: function () {
         var email = mailIn.value.trim();
         if (!email) { toast('An email address is needed', 'err'); return; }
-        post('/admin/users', { email: email, display_name: nameIn.value.trim() }).then(function (res) {
+        var access = newPick.value();
+        if (Array.isArray(access) && !access.length) { toast('Choose at least one part of the admin', 'err'); return; }
+        post('/admin/users', { email: email, display_name: nameIn.value.trim(), access: access }).then(function (res) {
           if (res.error) { toast(res.error, 'err'); return; }
           nameIn.value = ''; mailIn.value = '';
           paint();

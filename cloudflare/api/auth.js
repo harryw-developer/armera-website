@@ -142,7 +142,7 @@ const cookie = (header, name) =>
 export async function requireAuth(request, env) {
   const access = await readAccess(request, env);
   if (access) {
-    const row = await env.DB.prepare('select email, display_name, prefs, disabled from admin_users where email = ?')
+    const row = await env.DB.prepare('select email, display_name, prefs, disabled, access from admin_users where email = ?')
       .bind(access.email).first();
     if (!row || row.disabled) return null;          // Access let them in, we still decide
     return { ...row, via: 'access' };
@@ -157,7 +157,7 @@ export async function requireAuth(request, env) {
   const session = await readSession(token, env.SESSION_SECRET);
   if (!session) return null;
   const row = await env.DB.prepare(
-    'select email, display_name, prefs, disabled, session_epoch from admin_users where email = ?')
+    'select email, display_name, prefs, disabled, session_epoch, access from admin_users where email = ?')
     .bind(session.email).first();
   if (!row || row.disabled) return null;
   // A password change bumps the epoch, which retires every token issued before it.

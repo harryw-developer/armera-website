@@ -42,7 +42,7 @@ function trusted(origin) {
 
 const CORS = {
   'access-control-allow-origin': '*',
-  'access-control-allow-headers': 'apikey, authorization, content-type, prefer, range',
+  'access-control-allow-headers': 'apikey, authorization, content-type, prefer, range, cache-control, x-upsert',
   'access-control-allow-methods': 'GET, POST, PUT, DELETE, OPTIONS'
 };
 
@@ -54,6 +54,68 @@ const json = (body, status = 200, extra = {}) =>
 
 // Checked when there is no such account, so the response takes as long either way.
 const DUMMY_HASH = '100000$AAAAAAAAAAAAAAAAAAAAAA$AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA';
+
+/* ---------- who may do what in the admin ---------- */
+
+// The admin's sections. A person's access is either everything (stored as
+// null — what everyone had before access levels existed) or a list of these.
+const SECTIONS = ['catalogue', 'pages', 'guarantees', 'swatches', 'instructions', 'retailers',
+                  'gallery', 'videos', 'brochure', 'dashboard', 'team'];
+
+function accessOf(who) {
+  if (!who || who.access === null || who.access === undefined || who.access === '' || who.access === 'all') return null;
+  try {
+    const list = JSON.parse(who.access);
+    return Array.isArray(list) ? list.filter(s => SECTIONS.includes(s)) : [];
+  } catch { return []; }                  // unreadable: the safe answer is nothing
+}
+const isFull = who => accessOf(who) === null;
+const can = (who, ...wanted) => { const a = accessOf(who); return a === null || wanted.some(w => a.includes(w)); };
+
+// Which sections may save each stored document.
+function contentPerms(key) {
+  if (/^\d\d-/.test(key)) return ['catalogue'];
+  return {
+    pages: ['pages', 'brochure'],
+    crops: ['catalogue', 'pages', 'gallery'],
+    retailers: ['retailers'],
+    videos: ['videos'],
+    gallery: ['gallery'],
+    instruction_links: ['instructions']
+  }[key] || null;                         // anything else: full access only
+}
+
+// Which sections may add, read or remove a file, by bucket and folder.
+const CONTENT_SECTIONS = ['catalogue', 'pages', 'gallery', 'videos', 'brochure'];
+function filePerms(bucket, key) {
+  if (bucket === 'guarantee-proof') return ['guarantees'];
+  if (bucket === 'instructions') return ['instructions'];
+  const folder = String(key || '').split('/')[0];
+  return {
+    products: ['catalogue'], swatches: ['catalogue'], drawings: ['catalogue'],
+    lifestyle: ['catalogue', 'pages'], documents: ['brochure'], gallery: ['gallery'],
+    videos: ['videos'], fonts: ['pages']
+  }[folder] || null;
+}
+
+// A list of sections sent from the Team screen: null for everything, a JSON
+// string for a list, or false if it is not something we understand.
+function cleanAccess(v) {
+  if (v === null || v === 'all') return null;
+  if (!Array.isArray(v) || v.length > SECTIONS.length) return false;
+  const list = [...new Set(v.filter(s => typeof s === 'string' && SECTIONS.includes(s)))];
+  if (list.length !== v.length) return false;
+  return JSON.stringify(list);
+}
+// Nobody can hand out more than they have themselves: without this, someone
+// trusted only with the Team screen could create a full-access account.
+function mayGrant(who, stored) {
+  if (isFull(who)) return true;
+  if (stored === null) return false;
+  const mine = accessOf(who);
+  return JSON.parse(stored).every(s => mine.includes(s));
+}
+const noAccess = extra => json({ error: 'Your account does not have access to that part of the admin.' }, 403, extra || {});
 
 /* ---------- being careful with strangers ---------- */
 
@@ -452,7 +514,8 @@ const handler = {
       const who = await requireAuth(request, env);
       if (!who) return json({ error: 'not signed in' }, 401, credCors);
       return json({ email: who.email, display_name: who.display_name,
-                    prefs: JSON.parse(who.prefs || '{}'), via: who.via }, 200, credCors);
+                    prefs: JSON.parse(who.prefs || '{}'), via: who.via,
+                    access: accessOf(who) || 'all' }, 200, credCors);
     }
 
     // Setting a first password, from a one-time link. The link proves nothing
@@ -523,6 +586,8 @@ const handler = {
       if (path.startsWith('/admin/content/') && request.method === 'POST') {
         const key = decoded(path.slice('/admin/content/'.length));
         if (!key || !/^[a-z0-9][a-z0-9_-]{0,63}$/.test(key)) return json({ error: 'That is not a valid content key.' }, 400, credCors);
+        const need = contentPerms(key);
+        if (need ? !can(who, ...need) : !isFull(who)) return noAccess(credCors);
         const data = await readJson(request, 2 * 1024 * 1024);
         if (data === null || typeof data !== 'object') return json({ error: 'That could not be read, or is too large to save.' }, 400, credCors);
         const now = new Date().toISOString();
@@ -539,6 +604,7 @@ const handler = {
       }
 
       if (path === '/admin/page_views') {
+        if (!can(who, 'dashboard')) return noAccess(credCors);
         const since = url.searchParams.get('since') || new Date(Date.now() - 30 * 86400000).toISOString();
         const rows = await env.DB.prepare(
           'select ts,page_type,item_name,item_ref,referrer_host,device,session_id from page_views where ts > ? order by ts desc limit 20000')
@@ -546,6 +612,7 @@ const handler = {
         return json(rows.results, 200, credCors);
       }
 
+      if (path.startsWith('/admin/guarantees') && !can(who, 'guarantees')) return noAccess(credCors);
       if (path === '/admin/guarantees' && request.method === 'GET') {
         const rows = await env.DB.prepare('select * from guarantee_registrations order by created_at desc limit 5000').all();
         return json(rows.results.map(r => ({ ...r, products: JSON.parse(r.products || '[]') })), 200, credCors);
@@ -560,6 +627,7 @@ const handler = {
         return json({ ok: true }, 200, credCors);
       }
 
+      if (path.startsWith('/admin/swatch-requests') && !can(who, 'swatches')) return noAccess(credCors);
       if (path === '/admin/swatch-requests' && request.method === 'GET') {
         const rows = await env.DB.prepare('select * from swatch_requests order by created_at desc limit 5000').all();
         return json(rows.results.map(r => ({ ...r, swatches: JSON.parse(r.swatches || '[]') })), 200, credCors);
@@ -578,7 +646,11 @@ const handler = {
         which === 'instructions' ? env.INSTRUCTIONS : which === 'guarantee-proof' ? env.PROOF : env.ASSETS;
 
       if (path === '/admin/files') {
-        const bucket = pickBucket(url.searchParams.get('bucket') || 'site-assets');
+        const which = url.searchParams.get('bucket') || 'site-assets';
+        const listPerms = which === 'guarantee-proof' ? ['guarantees']
+          : which === 'instructions' ? ['instructions', 'catalogue'] : CONTENT_SECTIONS;
+        if (!can(who, ...listPerms)) return noAccess(credCors);
+        const bucket = pickBucket(which);
         const prefix = url.searchParams.get('prefix') || '';
         const out = [];
         let cursor;
@@ -601,6 +673,8 @@ const handler = {
         if (!key || key.length > 300 || key.startsWith('/') || key.includes('..') || /[\u0000-\u001f\\]/.test(key)) {
           return json({ error: 'That file name cannot be used.' }, 400, credCors);
         }
+        const upNeed = filePerms(which, key);
+        if (upNeed ? !can(who, ...upNeed) : !isFull(who)) return noAccess(credCors);
         const sentType = (request.headers.get('content-type') || 'application/octet-stream').slice(0, 120);
         if (PROTECTED_PREFIX.test(key) || RISKY_NAME.test(key) || RISKY_TYPE.test(sentType)) {
           return json({ error: 'That kind of file cannot be uploaded here.' }, 415, credCors);
@@ -614,9 +688,14 @@ const handler = {
       if (path.startsWith('/admin/file/')) {
         const rest = path.slice('/admin/file/'.length);
         const cut = rest.indexOf('/');
-        const bucket = pickBucket(rest.slice(0, cut));
+        const bucketName = rest.slice(0, cut);
+        const bucket = pickBucket(bucketName);
         const key = decoded(rest.slice(cut + 1));
         if (!key) return json({ error: 'not found' }, 404, credCors);
+        const fileNeed = request.method === 'DELETE' ? filePerms(bucketName, key)
+          : bucketName === 'guarantee-proof' ? ['guarantees']
+          : bucketName === 'instructions' ? ['instructions', 'catalogue'] : CONTENT_SECTIONS;
+        if (fileNeed ? !can(who, ...fileNeed) : !isFull(who)) return noAccess(credCors);
         if (request.method === 'DELETE') {
           if (bucket === env.ASSETS && PROTECTED_PREFIX.test(key)) {
             return json({ error: 'The site needs that file to work, so it cannot be removed here.' }, 403, credCors);
@@ -629,16 +708,23 @@ const handler = {
 
       /* ---- who may sign in ---- */
 
+      if (path.startsWith('/admin/users') && !can(who, 'team')) return noAccess(credCors);
+
       if (path === '/admin/users' && request.method === 'GET') {
         const rows = await env.DB.prepare(
           `select email, display_name, password_hash is not null as has_password,
-                  setup_token is not null as has_link, setup_expires, last_seen, disabled
+                  setup_token is not null as has_link, setup_expires, last_seen, disabled, access
              from admin_users order by email`).all();
-        return json(rows.results.map(r => ({ ...r, you: r.email === who.email })), 200, credCors);
+        return json(rows.results.map(r => ({ ...r, access: accessOf(r) || 'all', you: r.email === who.email })), 200, credCors);
       }
 
       if (path === '/admin/users' && request.method === 'POST') {
-        const { email, display_name } = await readJson(request, 4096) || {};
+        const { email, display_name, access } = await readJson(request, 4096) || {};
+        const newAccess = access === undefined ? undefined : cleanAccess(access);
+        if (newAccess === false) return json({ error: 'Those access settings could not be read.' }, 400, credCors);
+        if (!mayGrant(who, newAccess === undefined ? null : newAccess)) {
+          return json({ error: 'You can only give someone access to parts of the admin you can use yourself.' }, 403, credCors);
+        }
         const addr = String(email || '').trim().toLowerCase();
         if (!isEmail(addr)) {
           return json({ error: 'That does not look like an email address.' }, 400, credCors);
@@ -648,8 +734,9 @@ const handler = {
         const token = crypto.randomUUID().replace(/-/g, '') + crypto.randomUUID().replace(/-/g, '');
         const expires = new Date(Date.now() + 7 * 86400000).toISOString();
         await env.DB.prepare(
-          'insert into admin_users (email, display_name, prefs, setup_token, setup_expires) values (?,?,?,?,?)')
-          .bind(addr, text(display_name, 60) || addr.split('@')[0], '{}', await tokenDigest(token), expires).run();
+          'insert into admin_users (email, display_name, prefs, setup_token, setup_expires, access) values (?,?,?,?,?,?)')
+          .bind(addr, text(display_name, 60) || addr.split('@')[0], '{}', await tokenDigest(token), expires,
+                newAccess === undefined ? null : newAccess).run();
         return json({ ok: true, email: addr, token, expires }, 200, credCors);
       }
 
@@ -657,9 +744,16 @@ const handler = {
         const rest = path.slice('/admin/users/'.length);
         const makeLink = rest.endsWith('/link');
         const addr = (decoded(makeLink ? rest.slice(0, -5) : rest) || '').toLowerCase();
-        const target = await env.DB.prepare('select email, disabled from admin_users where email = ?')
+        const target = await env.DB.prepare('select email, disabled, access from admin_users where email = ?')
           .bind(addr).first();
         if (!target) return json({ error: 'No such person.' }, 404, credCors);
+        // Managing someone — a new sign-in link, switching them off, removing
+        // them — is only for people whose access is no wider than your own.
+        // Otherwise a fresh link for a full-access account would hand it over.
+        const targetAccess = accessOf(target);
+        if (!mayGrant(who, targetAccess === null ? null : JSON.stringify(targetAccess))) {
+          return json({ error: 'That person has access you do not, so only someone with full access can change their account.' }, 403, credCors);
+        }
 
         // a new one-time link, for someone who never set a password or forgot it
         if (makeLink && request.method === 'POST') {
@@ -678,11 +772,32 @@ const handler = {
           if (disabled === 1 && addr === who.email) {
             return json({ error: 'You cannot switch off your own access.' }, 400, credCors);
           }
+          // What they may do. Nobody changes their own, and there must always
+          // be someone left who can do everything, so the admin cannot be
+          // locked away from itself.
+          let accessSet = undefined;
+          if (sent.access !== undefined) {
+            accessSet = cleanAccess(sent.access);
+            if (accessSet === false) return json({ error: 'Those access settings could not be read.' }, 400, credCors);
+            if (addr === who.email) return json({ error: 'Ask someone else to change your own access.' }, 400, credCors);
+            if (!mayGrant(who, accessSet)) {
+              return json({ error: 'You can only give someone access to parts of the admin you can use yourself.' }, 403, credCors);
+            }
+            if (accessSet !== null) {
+              const full = await env.DB.prepare(
+                `select count(*) as n from admin_users where disabled = 0 and password_hash is not null
+                   and (access is null or access = '' or access = 'all') and email != ?`).bind(addr).first();
+              if (full.n === 0) return json({ error: 'At least one person must keep full access.' }, 400, credCors);
+            }
+            await env.DB.prepare('update admin_users set access = ?, session_epoch = session_epoch + 1 where email = ?')
+              .bind(accessSet, addr).run();
+          }
           if (disabled === 1) {
             const left = await env.DB.prepare(
-              'select count(*) as n from admin_users where disabled = 0 and password_hash is not null and email != ?')
+              `select count(*) as n from admin_users where disabled = 0 and password_hash is not null
+                and (access is null or access = '' or access = 'all') and email != ?`)
               .bind(addr).first();
-            if (left.n === 0) return json({ error: 'That is the last person who can sign in.' }, 400, credCors);
+            if (left.n === 0) return json({ error: 'That is the last person with full access.' }, 400, credCors);
           }
           await env.DB.prepare(
             'update admin_users set display_name = coalesce(?, display_name), disabled = coalesce(?, disabled) where email = ?')
@@ -698,9 +813,10 @@ const handler = {
         if (request.method === 'DELETE') {
           if (addr === who.email) return json({ error: 'You cannot remove yourself.' }, 400, credCors);
           const left = await env.DB.prepare(
-            'select count(*) as n from admin_users where disabled = 0 and password_hash is not null and email != ?')
+            `select count(*) as n from admin_users where disabled = 0 and password_hash is not null
+                and (access is null or access = '' or access = 'all') and email != ?`)
             .bind(addr).first();
-          if (left.n === 0) return json({ error: 'That is the last person who can sign in.' }, 400, credCors);
+          if (left.n === 0) return json({ error: 'That is the last person with full access.' }, 400, credCors);
           await env.DB.prepare('delete from admin_users where email = ?').bind(addr).run();
           await env.DB.prepare('delete from auth_attempts where email = ?').bind(addr).run();
           return json({ ok: true }, 200, credCors);
@@ -805,17 +921,25 @@ const handler = {
       }
       if (!isEmail(row.email)) return json({ error: 'That email address does not look right.' }, 400);
 
-      const ranges = await env.DB.prepare('select slug, name, swatches from catalogue_ranges where swatches is not null').all();
+      // Furniture colours only. The same colour in several ranges is one sample.
+      const ranges = await env.DB.prepare(`select r.slug, r.name, r.swatches from catalogue_ranges r
+          join catalogue_categories c on c.key = r.category_key
+         where c.slug = 'furniture-and-basins' and r.swatches is not null order by r.position`).all();
       const known = new Map();
       for (const r of ranges.results) {
         for (const sw of (JSON.parse(r.swatches || '[]') || [])) {
-          if (sw && sw.name) known.set(`${r.slug}|${sw.code || ''}|${sw.name}`, { range: r.name, name: sw.name, code: sw.code || '' });
+          if (!sw || !sw.name) continue;
+          const k = `${sw.code || ''}|${String(sw.name).toLowerCase()}`;
+          if (!known.has(k)) known.set(k, { name: sw.name, code: sw.code || '', ranges: [] });
+          if (!known.get(k).ranges.includes(r.name)) known.get(k).ranges.push(r.name);
         }
       }
       const chosen = [];
       for (const item of (Array.isArray(g.swatches) ? g.swatches : []).slice(0, 40)) {
-        const hit = item && known.get(`${item.range}|${item.code || ''}|${item.name}`);
-        if (hit && !chosen.some(c => c.range === hit.range && c.name === hit.name)) chosen.push(hit);
+        const hit = item && known.get(`${item.code || ''}|${String(item.name || '').toLowerCase()}`);
+        if (hit && !chosen.some(c => c.name === hit.name && c.code === hit.code)) {
+          chosen.push({ name: hit.name, code: hit.code, range: hit.ranges.join(', ') });
+        }
       }
       if (!chosen.length) return json({ error: 'Please choose at least one colour.' }, 400);
       if (chosen.length > 12) return json({ error: 'Please choose no more than twelve colours.' }, 400);

@@ -47,6 +47,14 @@
   }
   var BLANK = 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==';
   function prodImgSafe(f) { return f ? prodImg(f) : BLANK; }
+  // The name a crop is saved under: folder and file, e.g. "products/sku-at-620.jpg".
+  var cropKey = function (f) { return f ? 'products/' + f : ''; };
+  // An <img> for a product photo in a frame of a given shape; the chosen crop
+  // (if any) is applied by armeraFocus once the page has drawn.
+  function prodPic(f, frame, alt, extra) {
+    return '<img src="' + prodImgSafe(f) + '"' + (f ? ' data-img="' + esc(cropKey(f)) + '" data-frame="' + frame + '"' : '') +
+      ' alt="' + esc(alt || '') + '"' + (extra || '') + '>';
+  }
   function codeImage(p, code) { return (p.imagesByCode && p.imagesByCode[code]) || mainImage(p); }
   // Each variant carries its own photo; fall back through colour code then product.
   function variantImage(p, v) {
@@ -55,12 +63,12 @@
   // Generic finish swatches for brassware and accessories.
   function finishSwatch(name) {
     var f = String(name || '').toLowerCase();
-    if (/matt\s*white/.test(f)) return 'finish-matt-white.png';
-    if (/matt\s*black/.test(f)) return 'finish-matt-black.png';
-    if (/brushed\s*black/.test(f)) return 'finish-black.png';
-    if (/brushed\s*gold|^gold/.test(f)) return 'finish-gold.png';
-    if (/stainless/.test(f)) return 'finish-stainless.png';
-    if (/chrome/.test(f)) return 'finish-chrome.png';
+    if (/matt\s*white/.test(f)) return 'metal-matt-white.png';
+    if (/matt\s*black/.test(f)) return 'metal-matt-black.png';
+    if (/brushed\s*black/.test(f)) return 'metal-brushed-black.png';
+    if (/brushed\s*gold|^gold/.test(f)) return 'metal-brushed-gold.png';
+    if (/stainless/.test(f)) return 'metal-brushed-stainless.png';
+    if (/chrome/.test(f)) return 'metal-chrome.png';
     if (/white/.test(f)) return 'finish-white.png';
     return null;
   }
@@ -129,23 +137,11 @@
     }).join('') + '</nav>';
   }
 
-  // Ranges that come in colours can have a sample posted out.
-  function swatchLink(range) {
+  // Furniture colours can have a sample posted out.
+  function swatchLink(cat, range) {
+    if (cat.slug !== 'furniture-and-basins') return '';
     if (!range.swatches || !range.swatches.some(function (s) { return s && s.img; })) return '';
     return '<p class="swatch-order"><a href="' + u('/order-swatch/') + '?range=' + seg(range.slug) + '">Order a colour swatch</a></p>';
-  }
-
-  function addonBlock(addons) {
-    if (!addons || !addons.length) return '';
-    return '<div class="addons"><span class="eyebrow">Complete the look</span><h3 style="margin-top:12px">Why not add…</h3>' +
-      '<div class="grid grid--2" style="margin-top:26px">' + addons.map(function (a) {
-        return '<div class="addon-card">' +
-          '<div class="pic"><img src="' + prodImg(a.image) + '" alt="' + esc(a.name) + '" loading="lazy"></div>' +
-          '<div class="body"><h4>' + esc(a.name) + '</h4><ul>' +
-          a.variants.map(function (v) {
-            return '<li><span><span class="sku">' + esc(v.sku) + '</span>' + esc(v.finish) + '</span><span class="p">' + money(v.price) + '</span></li>';
-          }).join('') + '</ul></div></div>';
-      }).join('') + '</div></div>';
   }
 
   /* ---------- views ---------- */
@@ -185,17 +181,19 @@
   function rangeView(cat, range) {
     document.title = range.title + ' — ' + cat.name + ' — ARMERA';
     var swatches = '';
+    var features = (range.features && range.features.length)
+      ? '<div style="margin-top:28px"><span class="eyebrow">In the detail</span><ul style="list-style:none;margin-top:16px">' +
+        range.features.map(function (f) {
+          return '<li style="padding:9px 0;border-bottom:1px solid var(--line);font-size:14.5px;color:var(--ink-soft)">' + esc(f) + '</li>';
+        }).join('') + '</ul></div>' : '';
     if (range.swatches && range.swatches.length) {
       swatches = '<div><span class="eyebrow" style="margin-bottom:16px">Colours</span><div class="swatches" style="margin-top:16px">' +
         range.swatches.map(function (s) {
           var chip = s.img ? '<div class="chip" style="background-image:url(\'' + swatchImg(s.img) + '\')"></div>' : '<div class="chip chip--plain"></div>';
           return '<div class="swatch">' + chip + '<p>' + esc(s.name) + '</p></div>';
-        }).join('') + '</div></div>';
-    } else if (range.features && range.features.length) {
-      swatches = '<div><span class="eyebrow">In the detail</span><ul style="list-style:none;margin-top:16px">' +
-        range.features.map(function (f) {
-          return '<li style="padding:9px 0;border-bottom:1px solid var(--line);font-size:14.5px;color:var(--ink-soft)">' + esc(f) + '</li>';
-        }).join('') + '</ul></div>';
+        }).join('') + '</div></div>' + features;
+    } else {
+      swatches = features.replace('margin-top:28px', 'margin-top:0');
     }
 
     return crumbs([{ label: 'Home', href: '/' }, { label: 'Products', href: '/products/' }, { label: cat.name, href: '/products/' + cat.slug + '/' }, { label: range.name }]) +
@@ -205,18 +203,18 @@
       '<span class="eyebrow">' + esc(cat.name) + '</span>' +
       '<h1 style="margin:14px 0 18px">' + esc(range.title) + '</h1>' +
       '<p class="lede" style="max-width:48ch">' + esc(range.tagline) + '</p></div>' +
-      '<div>' + swatches + swatchLink(range) + '</div></div></section>' +
+      '<div>' + swatches + swatchLink(cat, range) + '</div></div></section>' +
       '<section class="pad--tight"><div class="grid grid--3">' +
       range.products.map(function (p) {
         return '<a class="tile" href="' + u('/products/' + cat.slug + '/' + range.slug + '/' + p.slug + '/') + '">' +
-          '<div class="frame cutout"><img src="' + prodImgSafe(mainImage(p)) + '" alt="' + esc(p.name) + '" loading="lazy"></div>' +
+          '<div class="frame cutout">' + prodPic(mainImage(p), 'card', p.name, ' loading="lazy"') + '</div>' +
           '<div class="meta"><div class="name">' + esc(p.name) + '</div>' +
           (p.dims ? '<div class="sub">' + esc(p.dims) + (/x/.test(p.dims) ? ' mm' : '') + '</div>' : '') +
           '<div class="pricefrom">' + fromLabel(p) + ' <span class="small">RRP</span></div>' +
           '<span class="cue">View details</span></div></a>';
       }).join('') + '</div>' +
       (range.footnote ? '<p class="small" style="margin-top:38px;max-width:90ch">' + esc(range.footnote) + '</p>' : '') +
-      addonBlock(range.addons) + '</section>';
+      '</section>';
   }
 
   function productView(cat, range, p) {
@@ -256,9 +254,9 @@
 
     var gallery = '';
     if (p.gallery && p.gallery.length) {
-      gallery = '<div class="thumbs"><button type="button" class="on" data-img="' + prodImgSafe(heroImg) + '"><img src="' + prodImgSafe(heroImg) + '" alt=""></button>' +
+      gallery = '<div class="thumbs"><button type="button" class="on" data-file="' + esc(heroImg || '') + '"><img src="' + prodImgSafe(heroImg) + '" alt=""></button>' +
         p.gallery.map(function (g) {
-          return '<button type="button" data-img="' + prodImg(g) + '"><img src="' + prodImg(g) + '" alt=""></button>';
+          return '<button type="button" data-file="' + esc(g) + '"><img src="' + prodImg(g) + '" alt=""></button>';
         }).join('') + '</div>';
     }
 
@@ -283,25 +281,24 @@
       '<a class="more" href="' + u('/products/' + cat.slug + '/' + range.slug + '/') + '">View all</a></div>' +
       '<div class="grid grid--4">' + related.map(function (x) {
         return '<a class="tile" href="' + u('/products/' + cat.slug + '/' + range.slug + '/' + x.slug + '/') + '">' +
-          '<div class="frame cutout"><img src="' + prodImgSafe(mainImage(x)) + '" alt="' + esc(x.name) + '" loading="lazy"></div>' +
+          '<div class="frame cutout">' + prodPic(mainImage(x), 'card', x.name, ' loading="lazy"') + '</div>' +
           '<div class="meta"><div class="name" style="font-size:16px">' + esc(x.name) + '</div>' +
           '<div class="pricefrom">' + fromLabel(x) + '</div></div></a>';
       }).join('') + '</div></section>' : '';
 
     return crumbs([{ label: 'Home', href: '/' }, { label: 'Products', href: '/products/' }, { label: cat.name, href: '/products/' + cat.slug + '/' }, { label: range.name, href: '/products/' + cat.slug + '/' + range.slug + '/' }, { label: p.name }]) +
       '<section class="pad--tight pdp-sec"><div class="pdp">' +
-      '<div class="stage"><div class="inner"><img src="' + prodImgSafe(heroImg) + '" alt="' + esc(range.name) + ' ' + esc(p.name) + '"></div>' + gallery + '</div>' +
+      '<div class="stage"><div class="inner">' + prodPic(heroImg, 'stage', range.name + ' ' + p.name) + '</div>' + gallery + '</div>' +
       '<div class="info"><span class="eyebrow">' + esc(range.title) + '</span>' +
       '<h1>' + esc(p.name) + '</h1>' +
       (p.dims ? '<p class="dims">' + esc(p.dims) + (/x/.test(p.dims) ? ' mm' : '') + '</p>' : '') +
       '<p class="from">' + fromLabel(p) + '<span class="inc">RRP inc. VAT</span></p>' +
-      swatchButtons + (hasColours ? swatchLink(range) : '') + table + notes + basinNote +
+      swatchButtons + (hasColours ? swatchLink(cat, range) : '') + table + notes + basinNote +
       (p.footnote ? '<p class="footnote">' + esc(p.footnote) + '</p>' : '') +
       assure + '</div>' +
       '<div id="product-docs"></div></div>' +
       (window.armeraFlow ? window.armeraFlow.block(p.flow) : '') +
       '<div id="product-pairs"></div>' +
-      addonBlock(range.addons) +
       (range.footnote ? '<p class="small" style="margin-top:30px;max-width:90ch">' + esc(range.footnote) + '</p>' : '') +
       '</section>' + relatedHtml;
   }
@@ -364,39 +361,64 @@
     if (p.goesWith && p.goesWith.length) renderPairs(cats, p);
   }
 
+  // Room photographs tagged with this product join a strip under the photo.
+  // They are shown whole — never cropped to the frame — so the product in the
+  // room is always fully in view; the frame keeps its shape so nothing on the
+  // page moves when you switch between them.
   function addGalleryStrip(p, shots) {
     var stage = root.querySelector('.pdp .stage');
     var stageImg = root.querySelector('.pdp .stage .inner img');
     if (!stage || !stageImg) return;
-    var productSrc = stageImg.src;
     var strip = document.createElement('div');
     strip.className = 'gallery-strip';
 
-    var mk = function (src, isLifestyle, label) {
+    var mk = function (getSrc, cropName, isLifestyle, label) {
       var b = document.createElement('button');
       b.type = 'button';
       b.title = label || '';
+      if (isLifestyle) b.className = 'portrait';
       var im = document.createElement('img');
-      im.src = src; im.alt = label || '';
+      im.src = getSrc(); im.alt = label || '';
       im.loading = 'lazy';
       b.appendChild(im);
       b.addEventListener('click', function () {
         Array.prototype.forEach.call(strip.children, function (c) { c.classList.remove('on'); });
         b.classList.add('on');
-        stageImg.src = src;
-        stageImg.classList.toggle('lifestyle', !!isLifestyle);
+        showOnStage(getSrc(), cropName(), !!isLifestyle);
       });
       return b;
     };
-    var first = mk(productSrc, false, 'Product photograph');
-    first.classList.add('on');
+    // the first button is whichever product photo is current, so it follows the colour chosen
+    var first = mk(function () { return stageImg.getAttribute('data-product-src') || stageImg.src; },
+                   function () { return stageImg.getAttribute('data-product-crop') || ''; }, false, 'Product photograph');
+    first.classList.add('on', 'product-shot');
     strip.appendChild(first);
     shots.forEach(function (g) {
-      strip.appendChild(mk(cfg.assets + '/gallery/' + encodeURIComponent(g.file), true, g.caption || 'In a bathroom'));
+      var path = 'gallery/' + g.file;
+      strip.appendChild(mk(function () { return cfg.assets + '/' + filePath(path); },
+                           function () { return path; }, true, g.caption || 'In a bathroom'));
     });
     stage.appendChild(strip);
   }
 
+  // Put a picture on the product photo frame, with its own crop for that frame.
+  function showOnStage(src, crop, isLifestyle) {
+    var stageImg = root.querySelector('.pdp .stage .inner img');
+    if (!stageImg) return;
+    stageImg.classList.toggle('lifestyle', !!isLifestyle);
+    if (crop) { stageImg.setAttribute('data-img', crop); stageImg.setAttribute('data-frame', 'stage'); }
+    else stageImg.removeAttribute('data-img');
+    stageImg.style.transform = ''; stageImg.style.transformOrigin = '';
+    var pre = new Image();
+    pre.onload = function () {
+      stageImg.src = src;
+      if (window.armeraFocus) window.armeraFocus(stageImg.parentNode);
+    };
+    pre.src = src;
+  }
+
+  // "Complete the look": the products chosen in the admin to go with this one.
+  // A name, a picture and a link — prices and codes are on each product's own page.
   function renderPairs(cats, p) {
     var holder = root.querySelector('#product-pairs');
     if (!holder) return;
@@ -408,18 +430,17 @@
         });
       });
     });
-    var picks = p.goesWith.map(function (k) { return byKey[k]; }).filter(Boolean);
+    var picks = (p.goesWith || []).map(function (k) { return byKey[k]; }).filter(Boolean);
     if (!picks.length) return;
-    holder.innerHTML = '<div class="pairs"><span class="eyebrow">Coordinated</span>' +
-      '<h3 style="margin-top:12px">Looks good with…</h3>' +
-      '<p class="sub">Pieces selected to coordinate with this product.</p>' +
-      '<div class="grid grid--4">' + picks.map(function (o) {
-        return '<a class="tile" href="' + u('/products/' + o.cat.slug + '/' + o.rng.slug + '/' + o.p.slug + '/') + '">' +
-          '<div class="frame cutout"><img src="' + prodImgSafe(mainImage(o.p)) + '" alt="' + esc(o.p.name) + '" loading="lazy"></div>' +
-          '<div class="meta"><div class="name" style="font-size:16px">' + esc(o.p.name) + '</div>' +
-          '<div class="sub">' + esc(o.rng.title) + '</div>' +
-          '<div class="pricefrom">' + fromLabel(o.p) + '</div></div></a>';
+    holder.innerHTML = '<div class="pairs"><span class="eyebrow">Complete the look</span>' +
+      '<h3 style="margin-top:12px">Looks good with</h3>' +
+      '<div class="pair-list">' + picks.map(function (o) {
+        return '<a class="pair" href="' + u('/products/' + o.cat.slug + '/' + o.rng.slug + '/' + o.p.slug + '/') + '">' +
+          '<span class="pair-pic">' + prodPic(mainImage(o.p), 'card', '', ' loading="lazy"') + '</span>' +
+          '<span class="pair-txt"><span class="pair-range">' + esc(o.rng.title || o.rng.name) + '</span>' +
+          '<span class="pair-name">' + esc(o.p.name) + '</span></span></a>';
       }).join('') + '</div></div>';
+    if (window.armeraFocus) window.armeraFocus(holder);
   }
 
   function notFound() {
@@ -434,13 +455,26 @@
     var stageImg = root.querySelector('.pdp .stage .inner img');
     if (!stageImg || !p) return;
 
+    // Remember which product photo is current, so the strip's first button
+    // and any later switch back always return to it.
+    var heroFile = variantImage(p, p.variants[0]);
+    stageImg.setAttribute('data-product-src', prodImgSafe(heroFile));
+    stageImg.setAttribute('data-product-crop', cropKey(heroFile));
+
     function selectVariant(i) {
       var v = p.variants[i];
       if (!v) return;
-      var src = prodImgSafe(variantImage(p, v));
-      var pre = new Image();
-      pre.onload = function () { stageImg.src = src; };
-      pre.src = src;
+      var f = variantImage(p, v);
+      stageImg.setAttribute('data-product-src', prodImgSafe(f));
+      stageImg.setAttribute('data-product-crop', cropKey(f));
+      // whatever was on show — a room photograph included — gives way to the product in this colour
+      showOnStage(prodImgSafe(f), cropKey(f), false);
+      var strip = root.querySelector('.pdp .gallery-strip');
+      if (strip) {
+        Array.prototype.forEach.call(strip.children, function (c) { c.classList.remove('on'); });
+        var firstBtn = strip.querySelector('.product-shot');
+        if (firstBtn) { firstBtn.classList.add('on'); var fi = firstBtn.querySelector('img'); if (fi) fi.src = prodImgSafe(f); }
+      }
       Array.prototype.forEach.call(root.querySelectorAll('.variant-swatches button'), function (b) {
         b.classList.toggle('on', +b.getAttribute('data-v') === i);
       });
@@ -460,7 +494,8 @@
       btn.addEventListener('click', function () {
         Array.prototype.forEach.call(thumbs, function (b) { b.classList.remove('on'); });
         btn.classList.add('on');
-        stageImg.src = btn.getAttribute('data-img');
+        var f = btn.getAttribute('data-file');
+        showOnStage(prodImgSafe(f), cropKey(f), false);
       });
     });
   }

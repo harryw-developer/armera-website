@@ -33,41 +33,76 @@
   var wanted = '';
   try { wanted = new URLSearchParams(location.search).get('range') || ''; } catch (e) {}
 
+  // One entry per colour. A colour offered in several ranges (Potter's clay is
+  // in four) is the same sample, so it is listed once, shown with one picture,
+  // and labelled with every range it comes in.
+  function collect(rows) {
+    var byKey = {}, order = [];
+    (rows || []).filter(function (r) { return /^\d\d-/.test(r.key) && r.data && r.data.slug === 'furniture-and-basins'; })
+      .forEach(function (row) {
+        (row.data.ranges || []).forEach(function (rg) {
+          (rg.swatches || []).forEach(function (s) {
+            if (!s || !s.name) return;
+            var key = (s.code ? String(s.code) : '') + '|' + String(s.name).toLowerCase();
+            var c = byKey[key];
+            if (!c) { c = byKey[key] = { code: s.code || '', name: s.name, img: null, ranges: [], slugs: [] }; order.push(c); }
+            if (!c.img && s.img) c.img = s.img;
+            if (c.slugs.indexOf(rg.slug) === -1) { c.slugs.push(rg.slug); c.ranges.push(rg.name); }
+          });
+        });
+      });
+    return order.filter(function (c) { return c.img; });
+  }
+
+  function choice(c) {
+    var lab = el('label', 'sw-pick');
+    var box = document.createElement('input');
+    box.type = 'checkbox';
+    box.value = JSON.stringify({ code: c.code, name: c.name });
+    box.addEventListener('change', tally);
+    var chip = el('span', 'sw-chip');
+    var im = document.createElement('img');
+    im.src = cfg.assets + '/swatches/' + filePath(c.img);
+    im.alt = '';
+    im.loading = 'lazy';
+    chip.appendChild(im);
+    lab.appendChild(box);
+    lab.appendChild(chip);
+    lab.appendChild(el('span', 'sw-name', c.name));
+    lab.appendChild(el('span', 'sw-ranges', c.ranges.join(' · ')));
+    return lab;
+  }
+
+  function group(title, list) {
+    var g = el('div', 'sw-range');
+    if (title) g.appendChild(el('p', 'sw-range-name', title));
+    var grid = el('div', 'sw-grid');
+    list.forEach(function (c) { grid.appendChild(choice(c)); });
+    g.appendChild(grid);
+    host.appendChild(g);
+    return g;
+  }
+
   fetch(cfg.dataUrl + '/rest/v1/site_content?select=key,data&order=key')
     .then(function (r) { return r.json(); }).then(function (rows) {
       host.textContent = '';
-      var any = false;
-      (rows || []).filter(function (r) { return /^\d\d-/.test(r.key); }).forEach(function (row) {
-        (row.data.ranges || []).forEach(function (rg) {
-          var sw = (rg.swatches || []).filter(function (s) { return s && s.name && s.img; });
-          if (!sw.length) return;
-          any = true;
-          var group = el('div', 'sw-range');
-          group.appendChild(el('p', 'sw-range-name', rg.name));
-          var grid = el('div', 'sw-grid');
-          sw.forEach(function (s) {
-            var lab = el('label', 'sw-pick');
-            var box = document.createElement('input');
-            box.type = 'checkbox';
-            box.value = JSON.stringify({ range: rg.slug, code: s.code || '', name: s.name });
-            box.addEventListener('change', tally);
-            var chip = el('span', 'sw-chip');
-            var im = document.createElement('img');
-            im.src = cfg.assets + '/swatches/' + filePath(s.img);
-            im.alt = '';
-            im.loading = 'lazy';
-            chip.appendChild(im);
-            lab.appendChild(box);
-            lab.appendChild(chip);
-            lab.appendChild(el('span', 'sw-name', s.name));
-            grid.appendChild(lab);
-          });
-          group.appendChild(grid);
-          host.appendChild(group);
-          if (wanted && rg.slug === wanted) setTimeout(function () { group.scrollIntoView({ block: 'center', behavior: 'smooth' }); }, 200);
+      var colours = collect(rows);
+      if (!colours.length) {
+        host.appendChild(el('p', 'small', 'There are no colour swatches to order at the moment. Please call 01225 251204.'));
+        return;
+      }
+      // Arriving from a range page: that range's colours come first.
+      var mine = wanted ? colours.filter(function (c) { return c.slugs.indexOf(wanted) !== -1; }) : [];
+      if (mine.length) {
+        var rangeName = '';
+        (rows || []).forEach(function (r) {
+          ((r.data && r.data.ranges) || []).forEach(function (rg) { if (rg.slug === wanted) rangeName = rg.name; });
         });
-      });
-      if (!any) host.appendChild(el('p', 'small', 'There are no colour swatches to order at the moment. Please call 01225 251204.'));
+        group(rangeName ? rangeName + ' colours' : 'This range', mine);
+        group('Other colours', colours.filter(function (c) { return mine.indexOf(c) === -1; }));
+      } else {
+        group('', colours);
+      }
     }).catch(function () {
       host.textContent = '';
       host.appendChild(el('p', 'small', 'The colours could not be loaded. Please refresh, or call 01225 251204.'));

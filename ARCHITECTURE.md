@@ -88,9 +88,49 @@ reach the database — it can only ask the API, and the API decides.
 `/auth/me`, `/auth/change-password`): saving content, reading visit counts and
 registrations, uploading and removing files, managing who can sign in.
 
+**What each person may do (access levels).** Each account either has
+everything or a list of admin sections (Products, Pages, Guarantees, Swatch
+requests, Instructions, Retailers, Photo gallery, Videos, Catalogue,
+Dashboard, Team). The API checks this on every request — hiding a menu item
+is only a courtesy. Content saves, file uploads and deletions are checked by
+what they touch (a product photo needs Products; a receipt needs Guarantees).
+Nobody can change their own access or give anyone access they do not have,
+and only someone whose access covers another person's can reset, switch off
+or remove them. At least one active full-access account must always remain.
+Accounts that existed before access levels have full access.
+
 A stranger cannot read customer data: registrations and receipts are only
 served under `/admin/…`, which answers `401` without a valid session. This was
 tested from outside on 16 November 2026.
+
+## How pictures are framed
+
+Every picture frame on the site has a fixed shape: the product photo on a
+product page (3:2), product tiles and "Complete the look" cards (1.28:1),
+category and range tiles (1.28:1), range banners and the homepage hero. For
+each picture and each frame it appears in, the `crops` content record holds a
+point (per cent across and down) and, where allowed, a zoom. Product photos
+are shown whole and zoomed to fill their frame; room photographs fill theirs
+and the point chooses what stays in view. Older choices in `pages.focus` are
+still read. The admin's "Choose framing" window lists where a picture is used
+and frames each place separately (or "Same as" another).
+
+`.tools/product_framing.py` measured every product photo and set the zoom for
+the 24 that had wide empty margins; the rest already fill their frame.
+
+## Colours and pairings
+
+- A range's colours (`swatches`: code, name, picture) drive the colour
+  circles on its pages. A product option with a colour `code` links to one;
+  typing the code in the admin fills in the colour's name. Tap ranges use the
+  finish codes from the order codes (4 chrome, 5 brushed black, 6 brushed
+  gold, 7 brushed stainless steel). The finish pictures are drawn by
+  `.tools/make_finish_swatches.py` — swap in photographs of real samples
+  whenever they exist.
+- "Complete the look" on a product page is that product's `goesWith` list,
+  chosen in the admin. The old range-level "Why not add" items are now
+  products in their own right and appear in these lists; their original data
+  is still kept on each range (`addons`) but is no longer shown.
 
 ## Signing in
 

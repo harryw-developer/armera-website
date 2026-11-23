@@ -28,7 +28,7 @@ export async function sendSwatchEmail(env, r) {
     `Swatch request #${r.id}`,
     '',
     'Colours:',
-    ...r.swatches.map(s => `  - ${s.range}: ${s.name}${s.code ? ` (${s.code})` : ''}`),
+    ...r.swatches.map(s => `  - ${s.name}${s.code ? ` (${s.code})` : ''}${s.range ? ` — ${s.range}` : ''}`),
     '',
     'Send to:',
     `  ${r.name}`,
